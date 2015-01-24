@@ -1,25 +1,23 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * Copyright Formula Racing at UC Davis, 2015
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *
  * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
+ * WHICH IS THE PROPERTY OF FORMULA RACING 
+ * AT UC DAVIS.
  *
  * ========================================
 */
 #include <project.h>
 
-int main()
+int main(void)
 {
-    /* Place your initialization/startup code here (e.g. MyInst_Start()) */
+	CyGlobalIntEnable;
 
-    /* CyGlobalIntEnable; */ /* Uncomment this line to enable global interrupts. */
-    for(;;)
-    {
-        /* Place your application code here. */
-    }
-}
-
-/* [] END OF FILE */
+	for(;;)
+	{
+	} // main loop
+	return 0;
+} // main()
