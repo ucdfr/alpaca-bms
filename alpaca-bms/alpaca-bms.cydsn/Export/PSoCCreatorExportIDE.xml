@@ -89,11 +89,6 @@
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\CAN_1_INT.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\CAN_1_PM.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\CAN_1_TX_RX_func.c</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SPIM_1.c</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SPIM_1.h</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SPIM_1_PM.c</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SPIM_1_INT.c</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SPIM_1_PVT.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MOSI_aliases.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MOSI.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MOSI.h</File>
@@ -103,11 +98,6 @@
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MISO_aliases.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MISO.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MISO.h</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SPIM_1_IntClock.c</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SPIM_1_IntClock.h</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\Timer_1.c</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\Timer_1.h</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\Timer_1_PM.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\EEPROM_1.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\EEPROM_1.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_Char_1.c</File>
@@ -116,6 +106,38 @@
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_Char_1_LCDPort_aliases.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_Char_1_LCDPort.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_Char_1_LCDPort.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68_PM.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68_INT.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68_PVT.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SS_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SS.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SS.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68_IntClock.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68_IntClock.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\poll.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\poll.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\timer_clock.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\timer_clock.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\collect_timer.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\collect_timer.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\collect_timer_PM.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_PM.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_INT.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_AMux.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_AMux.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_Ext_CP_Clk.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_Ext_CP_Clk.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_IRQ.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_IRQ.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_theACLK.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_theACLK.h</File>
         </Files>
       </Folder>
       <Folder BuildType="STRICT" Path="C:\Users\Jonathan\Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn\Export\ARM_GCC_Generic">

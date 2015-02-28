@@ -18,6 +18,16 @@ int main(void)
 
 	for(;;)
 	{
+		// poll voltages
+
+		// poll current
+		ADC_current_StartConvert();
+		ADC_current_IsEndConversion(ADC_current_WAIT_FOR_RESULT);
+		ADC_current_StopConvert();
+		//sample_full = ADC_DelSig_GetResult16();
+		// calculate SOC
+
+		// send can
 	} // main loop
 	return 0;
 } // main()
