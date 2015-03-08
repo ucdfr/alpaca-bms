@@ -525,6 +525,24 @@ current__PS EQU CYREG_PRT3_PS
 current__SHIFT EQU 5
 current__SLW EQU CYREG_PRT3_SLW
 
+/* current_timer_TimerHW */
+current_timer_TimerHW__CAP0 EQU CYREG_TMR0_CAP0
+current_timer_TimerHW__CAP1 EQU CYREG_TMR0_CAP1
+current_timer_TimerHW__CFG0 EQU CYREG_TMR0_CFG0
+current_timer_TimerHW__CFG1 EQU CYREG_TMR0_CFG1
+current_timer_TimerHW__CFG2 EQU CYREG_TMR0_CFG2
+current_timer_TimerHW__CNT_CMP0 EQU CYREG_TMR0_CNT_CMP0
+current_timer_TimerHW__CNT_CMP1 EQU CYREG_TMR0_CNT_CMP1
+current_timer_TimerHW__PER0 EQU CYREG_TMR0_PER0
+current_timer_TimerHW__PER1 EQU CYREG_TMR0_PER1
+current_timer_TimerHW__PM_ACT_CFG EQU CYREG_PM_ACT_CFG3
+current_timer_TimerHW__PM_ACT_MSK EQU 0x01
+current_timer_TimerHW__PM_STBY_CFG EQU CYREG_PM_STBY_CFG3
+current_timer_TimerHW__PM_STBY_MSK EQU 0x01
+current_timer_TimerHW__RT0 EQU CYREG_TMR0_RT0
+current_timer_TimerHW__RT1 EQU CYREG_TMR0_RT1
+current_timer_TimerHW__SR0 EQU CYREG_TMR0_SR0
+
 /* LCD_Char_1_LCDPort */
 LCD_Char_1_LCDPort__0__MASK EQU 0x01
 LCD_Char_1_LCDPort__0__PC EQU CYREG_PRT0_PC0
@@ -700,24 +718,6 @@ timer_clock__PM_ACT_CFG EQU CYREG_PM_ACT_CFG2
 timer_clock__PM_ACT_MSK EQU 0x04
 timer_clock__PM_STBY_CFG EQU CYREG_PM_STBY_CFG2
 timer_clock__PM_STBY_MSK EQU 0x04
-
-/* collect_timer_TimerHW */
-collect_timer_TimerHW__CAP0 EQU CYREG_TMR0_CAP0
-collect_timer_TimerHW__CAP1 EQU CYREG_TMR0_CAP1
-collect_timer_TimerHW__CFG0 EQU CYREG_TMR0_CFG0
-collect_timer_TimerHW__CFG1 EQU CYREG_TMR0_CFG1
-collect_timer_TimerHW__CFG2 EQU CYREG_TMR0_CFG2
-collect_timer_TimerHW__CNT_CMP0 EQU CYREG_TMR0_CNT_CMP0
-collect_timer_TimerHW__CNT_CMP1 EQU CYREG_TMR0_CNT_CMP1
-collect_timer_TimerHW__PER0 EQU CYREG_TMR0_PER0
-collect_timer_TimerHW__PER1 EQU CYREG_TMR0_PER1
-collect_timer_TimerHW__PM_ACT_CFG EQU CYREG_PM_ACT_CFG3
-collect_timer_TimerHW__PM_ACT_MSK EQU 0x01
-collect_timer_TimerHW__PM_STBY_CFG EQU CYREG_PM_STBY_CFG3
-collect_timer_TimerHW__PM_STBY_MSK EQU 0x01
-collect_timer_TimerHW__RT0 EQU CYREG_TMR0_RT0
-collect_timer_TimerHW__RT1 EQU CYREG_TMR0_RT1
-collect_timer_TimerHW__SR0 EQU CYREG_TMR0_SR0
 
 /* Miscellaneous */
 BCLK__BUS_CLK__HZ EQU 24000000

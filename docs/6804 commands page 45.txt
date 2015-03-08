@@ -1,0 +1,8 @@
+USE 6804-1 DAISY CHAINED
+
+25: GPIO ADC measurement
+41: CRC (PEC) Specification
+45: Frame Format
+46: SPI Command Tables
+52: Programming Examples
+53: Read Cell Voltage Example

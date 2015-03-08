@@ -525,6 +525,24 @@
 #define current__SHIFT 5
 #define current__SLW CYREG_PRT3_SLW
 
+/* current_timer_TimerHW */
+#define current_timer_TimerHW__CAP0 CYREG_TMR0_CAP0
+#define current_timer_TimerHW__CAP1 CYREG_TMR0_CAP1
+#define current_timer_TimerHW__CFG0 CYREG_TMR0_CFG0
+#define current_timer_TimerHW__CFG1 CYREG_TMR0_CFG1
+#define current_timer_TimerHW__CFG2 CYREG_TMR0_CFG2
+#define current_timer_TimerHW__CNT_CMP0 CYREG_TMR0_CNT_CMP0
+#define current_timer_TimerHW__CNT_CMP1 CYREG_TMR0_CNT_CMP1
+#define current_timer_TimerHW__PER0 CYREG_TMR0_PER0
+#define current_timer_TimerHW__PER1 CYREG_TMR0_PER1
+#define current_timer_TimerHW__PM_ACT_CFG CYREG_PM_ACT_CFG3
+#define current_timer_TimerHW__PM_ACT_MSK 0x01u
+#define current_timer_TimerHW__PM_STBY_CFG CYREG_PM_STBY_CFG3
+#define current_timer_TimerHW__PM_STBY_MSK 0x01u
+#define current_timer_TimerHW__RT0 CYREG_TMR0_RT0
+#define current_timer_TimerHW__RT1 CYREG_TMR0_RT1
+#define current_timer_TimerHW__SR0 CYREG_TMR0_SR0
+
 /* LCD_Char_1_LCDPort */
 #define LCD_Char_1_LCDPort__0__MASK 0x01u
 #define LCD_Char_1_LCDPort__0__PC CYREG_PRT0_PC0
@@ -700,24 +718,6 @@
 #define timer_clock__PM_ACT_MSK 0x04u
 #define timer_clock__PM_STBY_CFG CYREG_PM_STBY_CFG2
 #define timer_clock__PM_STBY_MSK 0x04u
-
-/* collect_timer_TimerHW */
-#define collect_timer_TimerHW__CAP0 CYREG_TMR0_CAP0
-#define collect_timer_TimerHW__CAP1 CYREG_TMR0_CAP1
-#define collect_timer_TimerHW__CFG0 CYREG_TMR0_CFG0
-#define collect_timer_TimerHW__CFG1 CYREG_TMR0_CFG1
-#define collect_timer_TimerHW__CFG2 CYREG_TMR0_CFG2
-#define collect_timer_TimerHW__CNT_CMP0 CYREG_TMR0_CNT_CMP0
-#define collect_timer_TimerHW__CNT_CMP1 CYREG_TMR0_CNT_CMP1
-#define collect_timer_TimerHW__PER0 CYREG_TMR0_PER0
-#define collect_timer_TimerHW__PER1 CYREG_TMR0_PER1
-#define collect_timer_TimerHW__PM_ACT_CFG CYREG_PM_ACT_CFG3
-#define collect_timer_TimerHW__PM_ACT_MSK 0x01u
-#define collect_timer_TimerHW__PM_STBY_CFG CYREG_PM_STBY_CFG3
-#define collect_timer_TimerHW__PM_STBY_MSK 0x01u
-#define collect_timer_TimerHW__RT0 CYREG_TMR0_RT0
-#define collect_timer_TimerHW__RT1 CYREG_TMR0_RT1
-#define collect_timer_TimerHW__SR0 CYREG_TMR0_SR0
 
 /* Miscellaneous */
 #define BCLK__BUS_CLK__HZ 24000000U

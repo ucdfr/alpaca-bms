@@ -120,9 +120,6 @@
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\poll.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\timer_clock.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\timer_clock.h</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\collect_timer.c</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\collect_timer.h</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\collect_timer_PM.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current_aliases.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current.h</File>
@@ -138,6 +135,9 @@
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_IRQ.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_theACLK.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_theACLK.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current_timer.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current_timer.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current_timer_PM.c</File>
         </Files>
       </Folder>
       <Folder BuildType="STRICT" Path="C:\Users\Jonathan\Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn\Export\ARM_GCC_Generic">

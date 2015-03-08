@@ -525,6 +525,24 @@
 .set current__SHIFT, 5
 .set current__SLW, CYREG_PRT3_SLW
 
+/* current_timer_TimerHW */
+.set current_timer_TimerHW__CAP0, CYREG_TMR0_CAP0
+.set current_timer_TimerHW__CAP1, CYREG_TMR0_CAP1
+.set current_timer_TimerHW__CFG0, CYREG_TMR0_CFG0
+.set current_timer_TimerHW__CFG1, CYREG_TMR0_CFG1
+.set current_timer_TimerHW__CFG2, CYREG_TMR0_CFG2
+.set current_timer_TimerHW__CNT_CMP0, CYREG_TMR0_CNT_CMP0
+.set current_timer_TimerHW__CNT_CMP1, CYREG_TMR0_CNT_CMP1
+.set current_timer_TimerHW__PER0, CYREG_TMR0_PER0
+.set current_timer_TimerHW__PER1, CYREG_TMR0_PER1
+.set current_timer_TimerHW__PM_ACT_CFG, CYREG_PM_ACT_CFG3
+.set current_timer_TimerHW__PM_ACT_MSK, 0x01
+.set current_timer_TimerHW__PM_STBY_CFG, CYREG_PM_STBY_CFG3
+.set current_timer_TimerHW__PM_STBY_MSK, 0x01
+.set current_timer_TimerHW__RT0, CYREG_TMR0_RT0
+.set current_timer_TimerHW__RT1, CYREG_TMR0_RT1
+.set current_timer_TimerHW__SR0, CYREG_TMR0_SR0
+
 /* LCD_Char_1_LCDPort */
 .set LCD_Char_1_LCDPort__0__MASK, 0x01
 .set LCD_Char_1_LCDPort__0__PC, CYREG_PRT0_PC0
@@ -700,24 +718,6 @@
 .set timer_clock__PM_ACT_MSK, 0x04
 .set timer_clock__PM_STBY_CFG, CYREG_PM_STBY_CFG2
 .set timer_clock__PM_STBY_MSK, 0x04
-
-/* collect_timer_TimerHW */
-.set collect_timer_TimerHW__CAP0, CYREG_TMR0_CAP0
-.set collect_timer_TimerHW__CAP1, CYREG_TMR0_CAP1
-.set collect_timer_TimerHW__CFG0, CYREG_TMR0_CFG0
-.set collect_timer_TimerHW__CFG1, CYREG_TMR0_CFG1
-.set collect_timer_TimerHW__CFG2, CYREG_TMR0_CFG2
-.set collect_timer_TimerHW__CNT_CMP0, CYREG_TMR0_CNT_CMP0
-.set collect_timer_TimerHW__CNT_CMP1, CYREG_TMR0_CNT_CMP1
-.set collect_timer_TimerHW__PER0, CYREG_TMR0_PER0
-.set collect_timer_TimerHW__PER1, CYREG_TMR0_PER1
-.set collect_timer_TimerHW__PM_ACT_CFG, CYREG_PM_ACT_CFG3
-.set collect_timer_TimerHW__PM_ACT_MSK, 0x01
-.set collect_timer_TimerHW__PM_STBY_CFG, CYREG_PM_STBY_CFG3
-.set collect_timer_TimerHW__PM_STBY_MSK, 0x01
-.set collect_timer_TimerHW__RT0, CYREG_TMR0_RT0
-.set collect_timer_TimerHW__RT1, CYREG_TMR0_RT1
-.set collect_timer_TimerHW__SR0, CYREG_TMR0_SR0
 
 /* Miscellaneous */
 .set BCLK__BUS_CLK__HZ, 24000000

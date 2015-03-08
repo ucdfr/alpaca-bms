@@ -9,3 +9,5 @@
 *_timing.html
 *.cydsn/codegentemp
 *.cydsn/CortexM3
+
+*.vim

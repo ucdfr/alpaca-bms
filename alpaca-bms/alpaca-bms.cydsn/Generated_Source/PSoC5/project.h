@@ -33,7 +33,7 @@
 #include <MISO_aliases.h>
 #include <MISO.h>
 #include <timer_clock.h>
-#include <collect_timer.h>
+#include <current_timer.h>
 #include <EEPROM_1.h>
 #include <LCD_Char_1.h>
 #include <SS_aliases.h>
