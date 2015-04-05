@@ -1,4 +1,4 @@
-#include "cell_inteface.h"
+#include "cell_interface.h"
 
 // define PEC lookup Table
 
