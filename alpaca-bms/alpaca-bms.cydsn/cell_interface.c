@@ -48,8 +48,9 @@ Copyright 2013 Linear Technology Corp. (LTC)
 
 #include "cell_interface.h"
 
-// define PEC lookup Table
 
+void check_chips(){}// check_chips()
+void check_cells(){}// check_cells()
 void get_cell_volt(){}// get_cell_volt()
 void get_cell_temp(){}// get_cell_temp()
 //void balance_cells(){}// balance_cells()

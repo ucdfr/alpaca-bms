@@ -1,6 +1,8 @@
 #include <project.h>
 #include <stdint.h>
+
 #include "cell_interface.h"
+#include "current_sense.h"
 
 #define C1_CELLS 28
 #define C2_CELLS 28
@@ -18,23 +20,17 @@ int main(void)
 
 	for(;;)
 	{
-		// TODO Check if chip exists
-		// TODO Check if cell exists
+		check_chips(); // TODO Check if chip exists
+		check_cells(); // TODO Check if cell exists
 		get_cell_volt(); // TODO Get voltage
 		get_cell_temp(); // TODO Get temperature
 
 
 		// TODO Determine if need to deassert OK pin. (emergency stop)
 
-
-			// poll current
-		ADC_current_StartConvert();
-		ADC_current_IsEndConversion(ADC_current_WAIT_FOR_RESULT);
-		ADC_current_StopConvert();
-		//sample_full = ADC_DelSig_GetResult16();
-
-		// get current
-		// calculate SOC()
+		
+		get_current(); // TODO get current reading from sensor
+		get_soc(); // TODO calculate SOC()
 		// send to CAN()
 
 	} // main loop

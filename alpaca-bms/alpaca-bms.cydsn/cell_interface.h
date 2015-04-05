@@ -83,6 +83,8 @@ static const unsigned int crc15Table[256] =
 
 
 
+void check_chips();
+void check_cells();
 void get_cell_volt();
 void get_cell_temp();
 //void balance_cells();

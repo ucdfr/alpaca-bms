@@ -42,6 +42,8 @@
 #include <ADC_current.h>
 #include <current_aliases.h>
 #include <current.h>
+#include <OK_SIG_aliases.h>
+#include <OK_SIG.h>
 #include <LTC68_IntClock.h>
 #include <LCD_Char_1_LCDPort_aliases.h>
 #include <LCD_Char_1_LCDPort.h>

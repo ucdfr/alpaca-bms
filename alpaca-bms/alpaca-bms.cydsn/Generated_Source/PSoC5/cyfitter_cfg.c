@@ -137,14 +137,17 @@ CYPACKED typedef struct
 /* IOPINS0_0 Address: CYREG_PRT0_DM0 Size (bytes): 8 */
 #define BS_IOPINS0_0_VAL ((const uint8 CYFAR *)0x48000378u)
 
+/* IOPINS0_1 Address: CYREG_PRT1_DM0 Size (bytes): 8 */
+#define BS_IOPINS0_1_VAL ((const uint8 CYFAR *)0x48000380u)
+
 /* IOPINS0_3 Address: CYREG_PRT3_DM0 Size (bytes): 8 */
-#define BS_IOPINS0_3_VAL ((const uint8 CYFAR *)0x48000380u)
+#define BS_IOPINS0_3_VAL ((const uint8 CYFAR *)0x48000388u)
 
 /* IOPINS0_4 Address: CYREG_PRT4_DM0 Size (bytes): 8 */
-#define BS_IOPINS0_4_VAL ((const uint8 CYFAR *)0x48000388u)
+#define BS_IOPINS0_4_VAL ((const uint8 CYFAR *)0x48000390u)
 
 /* CYDEV_CLKDIST_ACFG0_CFG0 Address: CYREG_CLKDIST_ACFG0_CFG0 Size (bytes): 4 */
-#define BS_CYDEV_CLKDIST_ACFG0_CFG0_VAL ((const uint8 CYFAR *)0x48000390u)
+#define BS_CYDEV_CLKDIST_ACFG0_CFG0_VAL ((const uint8 CYFAR *)0x48000398u)
 
 
 /*******************************************************************************
@@ -419,7 +422,7 @@ void cyfitter_cfg(void)
 		static const cfg_memset_t CYCODE cfg_memset_list [] = {
 			/* address, size */
 			{(void CYFAR *)(CYREG_TMR0_CFG0), 12u},
-			{(void CYFAR *)(CYREG_PRT1_DR), 32u},
+			{(void CYFAR *)(CYREG_PRT2_DR), 16u},
 			{(void CYFAR *)(CYREG_PRT5_DR), 32u},
 			{(void CYFAR *)(CYREG_PRT12_DR), 16u},
 			{(void CYFAR *)(CYREG_PRT15_DR), 16u},
@@ -471,6 +474,7 @@ void cyfitter_cfg(void)
 
 	/* Perform second pass device configuration. These items must be configured in specific order after the regular configuration is done. */
 	CYCONFIGCPY((void CYFAR *)(CYREG_PRT0_DM0), (const void CYFAR *)(BS_IOPINS0_0_VAL), 8u);
+	CYCONFIGCPY((void CYFAR *)(CYREG_PRT1_DM0), (const void CYFAR *)(BS_IOPINS0_1_VAL), 8u);
 	CYCONFIGCPY((void CYFAR *)(CYREG_PRT3_DM0), (const void CYFAR *)(BS_IOPINS0_3_VAL), 8u);
 	CYCONFIGCPY((void CYFAR *)(CYREG_PRT4_DM0), (const void CYFAR *)(BS_IOPINS0_4_VAL), 8u);
 
