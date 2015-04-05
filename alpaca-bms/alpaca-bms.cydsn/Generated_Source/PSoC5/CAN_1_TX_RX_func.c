@@ -154,7 +154,7 @@ void CAN_1_TxCancel(uint8 bufferId)
 
 #if (CAN_1_TX0_FUNC_ENABLE)
     /*******************************************************************************
-    * FUNCTION NAME:   CAN_1_SendMsg0
+    * FUNCTION NAME:   CAN_1_SendMsgtemp
     ********************************************************************************
     *
     * Summary:
@@ -173,7 +173,7 @@ void CAN_1_TxCancel(uint8 bufferId)
     *    CAN_1_FAIL              Function failed
     *
     *******************************************************************************/
-    uint8 CAN_1_SendMsg0(void) 
+    uint8 CAN_1_SendMsgtemp(void) 
     {
         uint8 result = CYRET_SUCCESS;
         
@@ -184,7 +184,7 @@ void CAN_1_TxCancel(uint8 bufferId)
         }
         else
         {
-            /* `#START MESSAGE_0_TRASMITTED` */
+            /* `#START MESSAGE_temp_TRASMITTED` */
 
             /* `#END` */
             
@@ -198,7 +198,7 @@ void CAN_1_TxCancel(uint8 bufferId)
 
 #if (CAN_1_TX1_FUNC_ENABLE)
     /*******************************************************************************
-    * FUNCTION NAME:   CAN_1_SendMsg1
+    * FUNCTION NAME:   CAN_1_SendMsgvolt
     ********************************************************************************
     *
     * Summary:
@@ -217,7 +217,7 @@ void CAN_1_TxCancel(uint8 bufferId)
     *    CAN_1_FAIL              Function failed
     *
     *******************************************************************************/
-    uint8 CAN_1_SendMsg1(void) 
+    uint8 CAN_1_SendMsgvolt(void) 
     {
         uint8 result = CYRET_SUCCESS;
         
@@ -228,7 +228,7 @@ void CAN_1_TxCancel(uint8 bufferId)
         }
         else
         {
-            /* `#START MESSAGE_1_TRASMITTED` */
+            /* `#START MESSAGE_volt_TRASMITTED` */
 
             /* `#END` */
             
@@ -242,7 +242,7 @@ void CAN_1_TxCancel(uint8 bufferId)
 
 #if (CAN_1_TX2_FUNC_ENABLE)
     /*******************************************************************************
-    * FUNCTION NAME:   CAN_1_SendMsg2
+    * FUNCTION NAME:   CAN_1_SendMsgcurrent
     ********************************************************************************
     *
     * Summary:
@@ -261,7 +261,7 @@ void CAN_1_TxCancel(uint8 bufferId)
     *    CAN_1_FAIL              Function failed
     *
     *******************************************************************************/
-    uint8 CAN_1_SendMsg2(void) 
+    uint8 CAN_1_SendMsgcurrent(void) 
     {
         uint8 result = CYRET_SUCCESS;
         
@@ -272,7 +272,7 @@ void CAN_1_TxCancel(uint8 bufferId)
         }
         else
         {
-            /* `#START MESSAGE_2_TRASMITTED` */
+            /* `#START MESSAGE_current_TRASMITTED` */
 
             /* `#END` */
             
@@ -286,7 +286,7 @@ void CAN_1_TxCancel(uint8 bufferId)
 
 #if (CAN_1_TX3_FUNC_ENABLE)
     /*******************************************************************************
-    * FUNCTION NAME:   CAN_1_SendMsg3
+    * FUNCTION NAME:   CAN_1_SendMsgstatus
     ********************************************************************************
     *
     * Summary:
@@ -305,7 +305,7 @@ void CAN_1_TxCancel(uint8 bufferId)
     *    CAN_1_FAIL              Function failed
     *
     *******************************************************************************/
-    uint8 CAN_1_SendMsg3(void) 
+    uint8 CAN_1_SendMsgstatus(void) 
     {
         uint8 result = CYRET_SUCCESS;
         
@@ -316,7 +316,7 @@ void CAN_1_TxCancel(uint8 bufferId)
         }
         else
         {
-            /* `#START MESSAGE_3_TRASMITTED` */
+            /* `#START MESSAGE_status_TRASMITTED` */
 
             /* `#END` */
             
