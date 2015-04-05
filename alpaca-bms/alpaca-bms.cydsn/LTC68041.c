@@ -59,13 +59,13 @@ Copyright 2013 Linear Technology Corp. (LTC)
     Library for LTC6804-1 Multicell Battery Monitor
 */
 
+
 #include <stdint.h>
 #include <Arduino.h>
 #include "Linduino.h"
 #include "LT_SPI.h"
 #include "LTC68041.h"
 #include <SPI.h>
-
 
 
 /*!
