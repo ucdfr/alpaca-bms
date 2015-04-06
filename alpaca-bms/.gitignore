@@ -9,7 +9,6 @@
 *_timing.html
 *.cydsn/codegentemp
 *.cydsn/CortexM3
-Generated_Source
 
 
 ### Windows ###
