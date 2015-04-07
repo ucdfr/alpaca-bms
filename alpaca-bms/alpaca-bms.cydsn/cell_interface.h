@@ -81,6 +81,33 @@ static const unsigned int crc15Table[256] =
 	0xb10b, 0x7492, 0x5368, 0x96f1, 0x9dc3, 0x585a, 0x8ba7, 0x4e3e, 0x450c, 0x8095
 }; // crc15Table
 
+#define CELL_TOTAL_NUMBER (84u)
+#define CELL_TATAL_EACH (7u)
+
+//command and register definition from Table 34
+#define WRCFG   (0x1)
+#define RDCFG   (0x2)
+#define RDCVA   (0x4)
+#define RDCVB   (0x6)
+#define RDCVC   (0x8)
+#define RDCVD   (0xa)
+#define RDAUXA  (0xc)
+#define RDAUXB  (0xe)
+#define RDSTATA (0x10)
+#define RDSTATB (0x12)
+
+
+#define CLRCELL (0x711)
+#define CLRAUX  (0x712)
+#define CLRSTAT (0x713)
+#define PLADC   (0x714)
+#define DIAGN   (0x715)
+#define WRCOMM  (0x721)
+#define RDCOMM  (0x722)
+#define STCOMM  (0x723)
+
+//some constant
+
 
 
 void check_chips();

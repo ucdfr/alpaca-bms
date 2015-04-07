@@ -35,7 +35,7 @@
 #include <timer_clock.h>
 #include <current_timer.h>
 #include <EEPROM_1.h>
-#include <LCD_Char_1.h>
+#include <LCD.h>
 #include <SS_aliases.h>
 #include <SS.h>
 #include <poll.h>
@@ -45,8 +45,8 @@
 #include <OK_SIG_aliases.h>
 #include <OK_SIG.h>
 #include <LTC68_IntClock.h>
-#include <LCD_Char_1_LCDPort_aliases.h>
-#include <LCD_Char_1_LCDPort.h>
+#include <LCD_LCDPort_aliases.h>
+#include <LCD_LCDPort.h>
 #include <ADC_current_AMux.h>
 #include <ADC_current_Ext_CP_Clk.h>
 #include <ADC_current_IRQ.h>
