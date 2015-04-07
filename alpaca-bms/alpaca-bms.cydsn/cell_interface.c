@@ -48,9 +48,48 @@ Copyright 2013 Linear Technology Corp. (LTC)
 
 #include "cell_interface.h"
 
+uint8_t _send_byte(uint8_t msg){
+}
 
-void check_chips(){}// check_chips()
-void check_cells(){}// check_cells()
-void get_cell_volt(){}// get_cell_volt()
-void get_cell_temp(){}// get_cell_temp()
+/**
+ * @wake all BMSs up, waiting for commands
+ *
+ * @param no input parameters.
+ * @return 1 if everything is OK. 0 for hard failure.
+ */
+uint8_t  wake_up(){
+    //1. Send a dummy byte. The activity on CSB and SCK will wake up the serial interface on device S1.
+    _send_byte(DUMMY_BYTE);
+    //2. Wait for the amount of time n • tWAKE in order to power up all devices S1, S2 and S3.
+    CyDelay(CELL_TOTAL_NUMBER*tWAKE);
+    //3. Send a second dummy byte.
+    _send_byte(DUMMY_BYTE);
+    //4. Wait for the amount of time n • tREADY
+    return 1;
+}
+
+
+
+uint8_t check_chips(){
+}// check_chips()
+
+uint8_t check_cells(){
+    int i=0;
+    for (i=0;i<CELL_TOTAL_NUMBER;i++){
+        
+    }
+    LTC68_PutArray(command_array, CELL_TOTAL_NUMBER);    
+    return 1;
+}// check_cells()
+
+
+uint8_t get_cell_volt(){
+//1. Pull CSB low
+//2. Send ADCV command with MD[1:0] = 10 and DCP = 1 i.e. 0x03 0x70 and its PEC (0xAF 0x42)
+//3. Pull CSB high
+return 1;
+}// get_cell_volt()
+
+
+uint8_t get_cell_temp(){}// get_cell_temp()
 //void balance_cells(){}// balance_cells()

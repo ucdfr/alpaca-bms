@@ -18,14 +18,14 @@
 #include "LTC68_PVT.h"
 
 #if(LTC68_TX_SOFTWARE_BUF_ENABLED)
-    volatile uint8 LTC68_txBuffer[LTC68_TX_BUFFER_SIZE] = {0u};
+    volatile uint16 LTC68_txBuffer[LTC68_TX_BUFFER_SIZE] = {0u};
     volatile uint8 LTC68_txBufferFull;
     volatile uint8 LTC68_txBufferRead;
     volatile uint8 LTC68_txBufferWrite;
 #endif /* (LTC68_TX_SOFTWARE_BUF_ENABLED) */
 
 #if(LTC68_RX_SOFTWARE_BUF_ENABLED)
-    volatile uint8 LTC68_rxBuffer[LTC68_RX_BUFFER_SIZE] = {0u};
+    volatile uint16 LTC68_rxBuffer[LTC68_RX_BUFFER_SIZE] = {0u};
     volatile uint8 LTC68_rxBufferFull;
     volatile uint8 LTC68_rxBufferRead;
     volatile uint8 LTC68_rxBufferWrite;
@@ -491,7 +491,7 @@ uint8 LTC68_ReadRxStatus(void)
 *  No.
 *
 *******************************************************************************/
-void LTC68_WriteTxData(uint8 txData) 
+void LTC68_WriteTxData(uint16 txData) 
 {
     #if(LTC68_TX_SOFTWARE_BUF_ENABLED)
 
@@ -524,7 +524,7 @@ void LTC68_WriteTxData(uint8 txData)
            (0u != (LTC68_swStatusTx & LTC68_STS_TX_FIFO_NOT_FULL)))
         {
             /* Add directly to the TX FIFO */
-            CY_SET_REG8(LTC68_TXDATA_PTR, txData);
+            CY_SET_REG16(LTC68_TXDATA_PTR, txData);
         }
         else
         {
@@ -560,7 +560,7 @@ void LTC68_WriteTxData(uint8 txData)
         }
 
         /* Put byte in TX FIFO */
-        CY_SET_REG8(LTC68_TXDATA_PTR, txData);
+        CY_SET_REG16(LTC68_TXDATA_PTR, txData);
 
     #endif /* (LTC68_TX_SOFTWARE_BUF_ENABLED) */
 }
@@ -600,9 +600,9 @@ void LTC68_WriteTxData(uint8 txData)
 *  No.
 *
 *******************************************************************************/
-uint8 LTC68_ReadRxData(void) 
+uint16 LTC68_ReadRxData(void) 
 {
-    uint8 rxData;
+    uint16 rxData;
 
     #if(LTC68_RX_SOFTWARE_BUF_ENABLED)
 
@@ -631,7 +631,7 @@ uint8 LTC68_ReadRxData(void)
 
     #else
 
-        rxData = CY_GET_REG8(LTC68_RXDATA_PTR);
+        rxData = CY_GET_REG16(LTC68_RXDATA_PTR);
 
     #endif /* (LTC68_RX_SOFTWARE_BUF_ENABLED) */
 
@@ -809,7 +809,7 @@ void LTC68_ClearRxBuffer(void)
     /* Clear Hardware RX FIFO */
     while(0u !=(LTC68_RX_STATUS_REG & LTC68_STS_RX_FIFO_NOT_EMPTY))
     {
-        (void) CY_GET_REG8(LTC68_RXDATA_PTR);
+        (void) CY_GET_REG16(LTC68_RXDATA_PTR);
     }
 
     #if(LTC68_RX_SOFTWARE_BUF_ENABLED)
@@ -960,7 +960,7 @@ void LTC68_ClearTxBuffer(void)
 *  No.
 *
 *******************************************************************************/
-void LTC68_PutArray(const uint8 buffer[], uint8 byteCount)
+void LTC68_PutArray(const uint16 buffer[], uint8 byteCount)
                                                                           
 {
     uint8 bufIndex;
@@ -1000,7 +1000,7 @@ void LTC68_ClearFIFO(void)
     /* Clear Hardware RX FIFO */
     while(0u !=(LTC68_RX_STATUS_REG & LTC68_STS_RX_FIFO_NOT_EMPTY))
     {
-        (void) CY_GET_REG8(LTC68_RXDATA_PTR);
+        (void) CY_GET_REG16(LTC68_RXDATA_PTR);
     }
 
     enableInterrupts = CyEnterCriticalSection();

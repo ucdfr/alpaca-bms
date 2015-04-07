@@ -49,6 +49,8 @@ Copyright 2013 Linear Technology Corp. (LTC)
 #ifndef CELL_INTERFACE_H
 #define CELL_INTERFACE_H
 
+    #include <stdint.h>
+    #include <project.h>
 
 static const unsigned int crc15Table[256] =
 {
@@ -83,7 +85,8 @@ static const unsigned int crc15Table[256] =
 
 #define CELL_TOTAL_NUMBER (84u)
 #define CELL_TATAL_EACH (7u)
-
+#define DUMMY_BYTE  (0xcc)
+#define tWAKE       (0x1)
 //command and register definition from Table 34
 #define WRCFG   (0x1)
 #define RDCFG   (0x2)
@@ -106,14 +109,57 @@ static const unsigned int crc15Table[256] =
 #define RDCOMM  (0x722)
 #define STCOMM  (0x723)
 
+
+static uint16_t command_array[CELL_TOTAL_NUMBER];
 //some constant
 
+/**
+ * @wake all BMSs up, waiting for commands
+ *
+ * @param no input parameters.
+ * @return 1 if everything is OK. 0 for hard failure.
+ */
+uint8_t  wake_up();
+
+/**
+ * @check if chips are exist without and error
+ *
+ * @param no input parameters.
+ * @return 1 if everything is OK. 0 for hard failure.
+ */
+uint8_t check_chips();
 
 
-void check_chips();
-void check_cells();
-void get_cell_volt();
-void get_cell_temp();
+/**
+ * @check if cells are existed 
+ *
+ * @param no input parameters.
+ * @return 1 if everything is OK. 0 for hard failure.
+ */
+uint8_t check_cells();
+
+/**
+ * @check every cells if voltages are in safe range
+ *
+ * @param no input parameters.
+ * @return 1 if everything is OK. 0 for hard failure.
+ */
+uint8_t get_cell_volt();
+
+/**
+ * @check every cells if temperature are in safe range
+ *
+ * @param no input parameters.
+ * @return 1 if everything is OK. 0 for hard failure.
+ */
+uint8_t get_cell_temp();
+
+/**
+ * @balance each cell
+ *
+ * @param no input parameters.
+ * @return 1 if everything is OK. 0 for hard failure.
+ */
 //void balance_cells();
 
 #endif // CELL_INTERFACE_H

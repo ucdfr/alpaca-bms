@@ -34,14 +34,14 @@ extern volatile uint8 LTC68_swStatusTx;
 extern volatile uint8 LTC68_swStatusRx;
 
 #if(LTC68_TX_SOFTWARE_BUF_ENABLED)
-    extern volatile uint8 LTC68_txBuffer[LTC68_TX_BUFFER_SIZE];
+    extern volatile uint16 LTC68_txBuffer[LTC68_TX_BUFFER_SIZE];
     extern volatile uint8 LTC68_txBufferRead;
     extern volatile uint8 LTC68_txBufferWrite;
     extern volatile uint8 LTC68_txBufferFull;
 #endif /* (LTC68_TX_SOFTWARE_BUF_ENABLED) */
 
 #if(LTC68_RX_SOFTWARE_BUF_ENABLED)
-    extern volatile uint8 LTC68_rxBuffer[LTC68_RX_BUFFER_SIZE];
+    extern volatile uint16 LTC68_rxBuffer[LTC68_RX_BUFFER_SIZE];
     extern volatile uint8 LTC68_rxBufferRead;
     extern volatile uint8 LTC68_rxBufferWrite;
     extern volatile uint8 LTC68_rxBufferFull;
