@@ -52,7 +52,8 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #include <stdint.h>
     #include <project.h>
 
-
+#define BMS_NODE_NUM    (6)
+#define BMS_IC_NUM    (12)
 
 /**
  * @initialize. In case need to setup anything, write them in it.

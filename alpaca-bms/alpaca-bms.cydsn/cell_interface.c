@@ -47,9 +47,8 @@ Copyright 2013 Linear Technology Corp. (LTC)
 
 
 #include "cell_interface.h"
-#include "LTC68041.c"
+#include "LTC68041.h"
 
-#define BMS_NODE_NUM    (12u)
 
 
 /**
@@ -89,6 +88,9 @@ void get_cell_volt(){
 //1. Pull CSB low
 //2. Send ADCV command with MD[1:0] = 10 and DCP = 1 i.e. 0x03 0x70 and its PEC (0xAF 0x42)
 //3. Pull CSB high
+    LTC6804_adcv(); 
+ //   LTC6804_rdcv(0, BMS_IC_NUM, uint16_t cell_codes[][12]);
+
 }// get_cell_volt()
 
 
