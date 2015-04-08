@@ -17,7 +17,11 @@ int main(void)
 {
 	CyGlobalIntEnable;
 	// TODO Watchdog Timer
-
+    
+    
+    //initialize
+    bms_init();
+    
 	for(;;)
 	{
 		check_chips(); // TODO Check if chip exists

@@ -83,7 +83,7 @@ CY_ISR(LTC68_TX_ISR)
                 }
 
                 /* Move data from the Buffer to the FIFO */
-                CY_SET_REG16(LTC68_TXDATA_PTR,
+                CY_SET_REG8(LTC68_TXDATA_PTR,
                     LTC68_txBuffer[LTC68_txBufferRead]);
             }
             else
@@ -135,7 +135,7 @@ CY_ISR(LTC68_RX_ISR)
 {
     #if(LTC68_RX_SOFTWARE_BUF_ENABLED)
         uint8 tmpStatus;
-        uint16 rxData;
+        uint8 rxData;
     #endif /* (LTC68_RX_SOFTWARE_BUF_ENABLED) */
 
     /* User code required at start of ISR */
@@ -151,7 +151,7 @@ CY_ISR(LTC68_RX_ISR)
         /* Check if RX data FIFO has some data to be moved into the RX Buffer */
         while(0u != (LTC68_swStatusRx & LTC68_STS_RX_FIFO_NOT_EMPTY))
         {
-            rxData = CY_GET_REG16(LTC68_RXDATA_PTR);
+            rxData = CY_GET_REG8(LTC68_RXDATA_PTR);
 
             /* Set next pointer. */
             LTC68_rxBufferWrite++;

@@ -41,7 +41,7 @@
 #endif /* (0u != LTC68_INTERNAL_CLOCK) */
 
 #define LTC68_MODE                       (4u)
-#define LTC68_DATA_WIDTH                 (11u)
+#define LTC68_DATA_WIDTH                 (8u)
 #define LTC68_MODE_USE_ZERO              (0u)
 #define LTC68_BIDIRECTIONAL_MODE         (0u)
 
@@ -72,8 +72,8 @@ typedef struct
     uint8 enableState;
     uint8 cntrPeriod;
     #if(CY_UDB_V0)
-        uint16 saveSrTxIntMask;
-        uint16 saveSrRxIntMask;
+        uint8 saveSrTxIntMask;
+        uint8 saveSrRxIntMask;
     #endif /* (CY_UDB_V0) */
 
 } LTC68_BACKUP_STRUCT;
@@ -102,16 +102,16 @@ void  LTC68_SetTxInterruptMode(uint8 intSrc)     ;
 void  LTC68_SetRxInterruptMode(uint8 intSrc)     ;
 uint8 LTC68_ReadTxStatus(void)                   ;
 uint8 LTC68_ReadRxStatus(void)                   ;
-void  LTC68_WriteTxData(uint16 txData)  \
+void  LTC68_WriteTxData(uint8 txData)  \
                                                             ;
-uint16 LTC68_ReadRxData(void) \
+uint8 LTC68_ReadRxData(void) \
                                                             ;
 uint8 LTC68_GetRxBufferSize(void)                ;
 uint8 LTC68_GetTxBufferSize(void)                ;
 void  LTC68_ClearRxBuffer(void)                  ;
 void  LTC68_ClearTxBuffer(void)                  ;
 void  LTC68_ClearFIFO(void)                              ;
-void  LTC68_PutArray(const uint16 buffer[], uint8 byteCount) \
+void  LTC68_PutArray(const uint8 buffer[], uint8 byteCount) \
                                                             ;
 
 #if(0u != LTC68_BIDIRECTIONAL_MODE)
@@ -183,46 +183,46 @@ extern uint8 LTC68_initVar;
 ***************************************/
 
 #if(CY_PSOC3 || CY_PSOC5)
-    #define LTC68_TXDATA_REG (* (reg16 *) \
-                                                LTC68_BSPIM_sR16_Dp_u0__F0_REG)
-    #define LTC68_TXDATA_PTR (  (reg16 *) \
-                                                LTC68_BSPIM_sR16_Dp_u0__F0_REG)
-    #define LTC68_RXDATA_REG (* (reg16 *) \
-                                                LTC68_BSPIM_sR16_Dp_u0__F1_REG)
-    #define LTC68_RXDATA_PTR (  (reg16 *) \
-                                                LTC68_BSPIM_sR16_Dp_u0__F1_REG)
+    #define LTC68_TXDATA_REG (* (reg8 *) \
+                                                LTC68_BSPIM_sR8_Dp_u0__F0_REG)
+    #define LTC68_TXDATA_PTR (  (reg8 *) \
+                                                LTC68_BSPIM_sR8_Dp_u0__F0_REG)
+    #define LTC68_RXDATA_REG (* (reg8 *) \
+                                                LTC68_BSPIM_sR8_Dp_u0__F1_REG)
+    #define LTC68_RXDATA_PTR (  (reg8 *) \
+                                                LTC68_BSPIM_sR8_Dp_u0__F1_REG)
 #else   /* PSOC4 */
     #if(LTC68_USE_SECOND_DATAPATH)
         #define LTC68_TXDATA_REG (* (reg16 *) \
-                                          LTC68_BSPIM_sR16_Dp_u0__16BIT_F0_REG)
+                                          LTC68_BSPIM_sR8_Dp_u0__16BIT_F0_REG)
         #define LTC68_TXDATA_PTR (  (reg16 *) \
-                                          LTC68_BSPIM_sR16_Dp_u0__16BIT_F0_REG)
+                                          LTC68_BSPIM_sR8_Dp_u0__16BIT_F0_REG)
         #define LTC68_RXDATA_REG (* (reg16 *) \
-                                          LTC68_BSPIM_sR16_Dp_u0__16BIT_F1_REG)
+                                          LTC68_BSPIM_sR8_Dp_u0__16BIT_F1_REG)
         #define LTC68_RXDATA_PTR         (  (reg16 *) \
-                                          LTC68_BSPIM_sR16_Dp_u0__16BIT_F1_REG)
+                                          LTC68_BSPIM_sR8_Dp_u0__16BIT_F1_REG)
     #else
         #define LTC68_TXDATA_REG (* (reg8 *) \
-                                                LTC68_BSPIM_sR16_Dp_u0__F0_REG)
+                                                LTC68_BSPIM_sR8_Dp_u0__F0_REG)
         #define LTC68_TXDATA_PTR (  (reg8 *) \
-                                                LTC68_BSPIM_sR16_Dp_u0__F0_REG)
+                                                LTC68_BSPIM_sR8_Dp_u0__F0_REG)
         #define LTC68_RXDATA_REG (* (reg8 *) \
-                                                LTC68_BSPIM_sR16_Dp_u0__F1_REG)
+                                                LTC68_BSPIM_sR8_Dp_u0__F1_REG)
         #define LTC68_RXDATA_PTR (  (reg8 *) \
-                                                LTC68_BSPIM_sR16_Dp_u0__F1_REG)
+                                                LTC68_BSPIM_sR8_Dp_u0__F1_REG)
     #endif /* (LTC68_USE_SECOND_DATAPATH) */
 #endif     /* (CY_PSOC3 || CY_PSOC5) */
 
 #define LTC68_AUX_CONTROL_DP0_REG (* (reg8 *) \
-                                        LTC68_BSPIM_sR16_Dp_u0__DP_AUX_CTL_REG)
+                                        LTC68_BSPIM_sR8_Dp_u0__DP_AUX_CTL_REG)
 #define LTC68_AUX_CONTROL_DP0_PTR (  (reg8 *) \
-                                        LTC68_BSPIM_sR16_Dp_u0__DP_AUX_CTL_REG)
+                                        LTC68_BSPIM_sR8_Dp_u0__DP_AUX_CTL_REG)
 
 #if(LTC68_USE_SECOND_DATAPATH)
     #define LTC68_AUX_CONTROL_DP1_REG  (* (reg8 *) \
-                                        LTC68_BSPIM_sR16_Dp_u1__DP_AUX_CTL_REG)
+                                        LTC68_BSPIM_sR8_Dp_u1__DP_AUX_CTL_REG)
     #define LTC68_AUX_CONTROL_DP1_PTR  (  (reg8 *) \
-                                        LTC68_BSPIM_sR16_Dp_u1__DP_AUX_CTL_REG)
+                                        LTC68_BSPIM_sR8_Dp_u1__DP_AUX_CTL_REG)
 #endif /* (LTC68_USE_SECOND_DATAPATH) */
 
 #define LTC68_COUNTER_PERIOD_REG     (* (reg8 *) LTC68_BSPIM_BitCounter__PERIOD_REG)

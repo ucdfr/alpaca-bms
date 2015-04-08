@@ -60,12 +60,9 @@ Copyright 2013 Linear Technology Corp. (LTC)
 */
 
 
-#include <stdint.h>
-#include <Arduino.h>
-#include "Linduino.h"
-#include "LT_SPI.h"
+
 #include "LTC68041.h"
-#include <SPI.h>
+
 
 
 /*!
@@ -84,8 +81,6 @@ uint8_t ADAX[2]; //!< GPIO conversion command.
 */
 void LTC6804_initialize()
 {
-  quikeval_SPI_connect();
-  spi_enable(SPI_CLOCK_DIV16); // This will set the Linduino to have a 1MHz Clock
   set_adc(MD_NORMAL,DCP_DISABLED,CELL_CH_ALL,AUX_CH_ALL);
 }
 
@@ -163,9 +158,7 @@ void LTC6804_adcv()
   wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
   
   //4
-  output_low(LTC6804_CS);
-  spi_write_array(4,cmd);
-  output_high(LTC6804_CS);
+  LTC68_PutArray(cmd, 4);
 
 }
 /*
@@ -208,9 +201,7 @@ void LTC6804_adax()
   cmd[3] = (uint8_t)(cmd_pec);
  
   wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
-  output_low(LTC6804_CS);
-  spi_write_array(4,cmd);
-  output_high(LTC6804_CS);
+  LTC68_PutArray(cmd, 4);
 
 }
 /*
@@ -268,27 +259,31 @@ uint8_t LTC6804_rdcv(uint8_t reg, // Controls which cell voltage register is rea
   const uint8_t BYT_IN_REG = 6;
   const uint8_t CELL_IN_REG = 3;
   
-  uint8_t *cell_data;
+  uint8_t cell_reg=0;
+  uint8_t current_ic=0;
+  uint8_t current_cell=0;
+    
+    
+  uint8_t cell_data[NUM_RX_BYT*total_ic];
   uint8_t pec_error = 0;
   uint16_t parsed_cell;
   uint16_t received_pec;
   uint16_t data_pec;
   uint8_t data_counter=0; //data counter
-  cell_data = (uint8_t *) malloc((NUM_RX_BYT*total_ic)*sizeof(uint8_t));
   //1.a
   if (reg == 0)
   {
     //a.i
-    for(uint8_t cell_reg = 1; cell_reg<5; cell_reg++)         			 			//executes once for each of the LTC6804 cell voltage registers
+    for(cell_reg = 1; cell_reg<5; cell_reg++)         			 			//executes once for each of the LTC6804 cell voltage registers
     {
       data_counter = 0;
       LTC6804_rdcv_reg(cell_reg, total_ic,cell_data );								//Reads a single Cell voltage register
 	  
-      for (uint8_t current_ic = 0 ; current_ic < total_ic; current_ic++) 			// executes for every LTC6804 in the daisy chain
+      for (current_ic = 0 ; current_ic < total_ic; current_ic++) 			// executes for every LTC6804 in the daisy chain
       {																 	  			// current_ic is used as the IC counter
 	  
         //a.ii
-		for(uint8_t current_cell = 0; current_cell<CELL_IN_REG; current_cell++)	 	// This loop parses the read back data into cell voltages, it 
+		for(current_cell = 0; current_cell<CELL_IN_REG; current_cell++)	 	// This loop parses the read back data into cell voltages, it 
         {														   		  			// loops once for each of the 3 cell voltage codes in the register 
 		
           parsed_cell = cell_data[data_counter] + (cell_data[data_counter + 1] << 8);//Each cell code is received as two bytes and is combined to
@@ -317,10 +312,10 @@ uint8_t LTC6804_rdcv(uint8_t reg, // Controls which cell voltage register is rea
   {
 	//b.i
     LTC6804_rdcv_reg(reg, total_ic,cell_data);
-    for (uint8_t current_ic = 0 ; current_ic < total_ic; current_ic++) 				// executes for every LTC6804 in the daisy chain
+    for (current_ic = 0 ; current_ic < total_ic; current_ic++) 				// executes for every LTC6804 in the daisy chain
     {																 	  			// current_ic is used as the IC counter
 		//b.ii
-		for(uint8_t current_cell = 0; current_cell < CELL_IN_REG; current_cell++)   // This loop parses the read back data into cell voltages, it 
+		for(current_cell = 0; current_cell < CELL_IN_REG; current_cell++)   // This loop parses the read back data into cell voltages, it 
         {														   		  			// loops once for each of the 3 cell voltage codes in the register 
 		
 			parsed_cell = cell_data[data_counter] + (cell_data[data_counter+1]<<8); //Each cell code is received as two bytes and is combined to
@@ -345,7 +340,6 @@ uint8_t LTC6804_rdcv(uint8_t reg, // Controls which cell voltage register is rea
   }
 
  //2
- free(cell_data);
 return(pec_error);
 }
 /*
@@ -433,12 +427,12 @@ void LTC6804_rdcv_reg(uint8_t reg, //Determines which cell voltage register is r
   cmd[3] = (uint8_t)(cmd_pec); 
   
   //3
-  wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
+  // wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
   
   //4
-  output_low(LTC6804_CS);
+
   spi_write_read(cmd,4,data,(REG_LEN*total_ic));
-  output_high(LTC6804_CS);
+
 
 }
 /*
@@ -492,27 +486,30 @@ int8_t LTC6804_rdaux(uint8_t reg, //Determines which GPIO voltage register is re
   const uint8_t BYT_IN_REG = 6;
   const uint8_t GPIO_IN_REG = 3;
   
-  uint8_t *data;
+  uint8_t data[(NUM_RX_BYT*total_ic)];
   uint8_t data_counter = 0; 
   int8_t pec_error = 0;
   uint16_t parsed_aux;
   uint16_t received_pec;
   uint16_t data_pec;
-  data = (uint8_t *) malloc((NUM_RX_BYT*total_ic)*sizeof(uint8_t));
+    
+  uint8_t gpio_reg=0;
+  uint8_t current_ic=0;
+  uint8_t current_gpio=0;
   //1.a
   if (reg == 0)
   {
 	//a.i
-    for(uint8_t gpio_reg = 1; gpio_reg<3; gpio_reg++)		 	   		 			//executes once for each of the LTC6804 aux voltage registers
+    for(gpio_reg = 1; gpio_reg<3; gpio_reg++)		 	   		 			//executes once for each of the LTC6804 aux voltage registers
     {
       data_counter = 0;
       LTC6804_rdaux_reg(gpio_reg, total_ic,data);									//Reads the raw auxiliary register data into the data[] array
 	  
-      for (uint8_t current_ic = 0 ; current_ic < total_ic; current_ic++) 			// executes for every LTC6804 in the daisy chain
+      for (current_ic = 0 ; current_ic < total_ic; current_ic++) 			// executes for every LTC6804 in the daisy chain
       {																 	  			// current_ic is used as the IC counter
 	  
         //a.ii
-		for(uint8_t current_gpio = 0; current_gpio< GPIO_IN_REG; current_gpio++)	// This loop parses the read back data into GPIO voltages, it 
+		for(current_gpio = 0; current_gpio< GPIO_IN_REG; current_gpio++)	// This loop parses the read back data into GPIO voltages, it 
         {														   		  			// loops once for each of the 3 gpio voltage codes in the register 
           
 		  parsed_aux = data[data_counter] + (data[data_counter+1]<<8);              //Each gpio codes is received as two bytes and is combined to
@@ -545,11 +542,11 @@ int8_t LTC6804_rdaux(uint8_t reg, //Determines which GPIO voltage register is re
   {
 	//b.i
     LTC6804_rdaux_reg(reg, total_ic, data);
-    for (int current_ic = 0 ; current_ic < total_ic; current_ic++) 			  		// executes for every LTC6804 in the daisy chain
+    for (current_ic = 0 ; current_ic < total_ic; current_ic++) 			  		// executes for every LTC6804 in the daisy chain
     {							   									          		// current_ic is used as an IC counter
 	
 		//b.ii
-		for(int current_gpio = 0; current_gpio<GPIO_IN_REG; current_gpio++)  	 	// This loop parses the read back data. Loops 
+		for(current_gpio = 0; current_gpio<GPIO_IN_REG; current_gpio++)  	 	// This loop parses the read back data. Loops 
 		{						 											  		// once for each aux voltage in the register 
 		
 			parsed_aux = (data[data_counter] + (data[data_counter+1]<<8));    		//Each gpio codes is received as two bytes and is combined to
@@ -572,7 +569,6 @@ int8_t LTC6804_rdaux(uint8_t reg, //Determines which GPIO voltage register is re
 																					//must be incremented by 2 bytes to point to the next ICs gpio voltage data
 	}
   }
-  free(data);
   return (pec_error);
 }
 /*
@@ -651,11 +647,11 @@ void LTC6804_rdaux_reg(uint8_t reg, //Determines which GPIO voltage register is 
   cmd[3] = (uint8_t)(cmd_pec);
   
   //3
-  wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake, this command can be removed.
+  // wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake, this command can be removed.
   //4
-  output_low(LTC6804_CS);
+
   spi_write_read(cmd,4,data,(REG_LEN*total_ic));
-  output_high(LTC6804_CS);
+
 
 }
 /*
@@ -696,12 +692,12 @@ void LTC6804_clrcell()
   cmd[3] = (uint8_t)(cmd_pec );
   
   //3
-  wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
+  // wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
   
   //4
-  output_low(LTC6804_CS);
+
   spi_write_read(cmd,4,0,0);
-  output_high(LTC6804_CS);
+
 }
 /*
   LTC6804_clrcell Function sequence:
@@ -743,11 +739,11 @@ void LTC6804_clraux()
   cmd[3] = (uint8_t)(cmd_pec);
   
   //3
-  wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake.This command can be removed.
+  //wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake.This command can be removed.
   //4
-  output_low(LTC6804_CS);
+
   spi_write_read(cmd,4,0,0);
-  output_high(LTC6804_CS);
+
 }
 /*
   LTC6804_clraux Function sequence:
@@ -793,12 +789,11 @@ void LTC6804_wrcfg(uint8_t total_ic, //The number of ICs being written to
 {
   const uint8_t BYTES_IN_REG = 6;
   const uint8_t CMD_LEN = 4+(8*total_ic);
-  uint8_t *cmd;
+  uint8_t cmd[CMD_LEN];
   uint16_t cfg_pec;
   uint8_t cmd_index; //command counter
-  
-  cmd = (uint8_t *)malloc(CMD_LEN*sizeof(uint8_t));
-  
+  uint8_t current_ic=0;
+  uint8_t current_byte = 0;
   //1
   cmd[0] = 0x00;
   cmd[1] = 0x01;
@@ -807,11 +802,11 @@ void LTC6804_wrcfg(uint8_t total_ic, //The number of ICs being written to
   
   //2
   cmd_index = 4;
-  for (uint8_t current_ic = total_ic; current_ic > 0; current_ic--) 			// executes for each LTC6804 in daisy chain, this loops starts with
+  for (current_ic = total_ic; current_ic > 0; current_ic--) 			// executes for each LTC6804 in daisy chain, this loops starts with
   {																				// the last IC on the stack. The first configuration written is
 																				// received by the last IC in the daisy chain
 																				
-    for (uint8_t current_byte = 0; current_byte < BYTES_IN_REG; current_byte++) // executes for each of the 6 bytes in the CFGR register
+    for (current_byte = 0; current_byte < BYTES_IN_REG; current_byte++) // executes for each of the 6 bytes in the CFGR register
     {																			// current_byte is the byte counter
 	
       cmd[cmd_index] = config[current_ic-1][current_byte]; 						//adding the config data to the array to be sent 
@@ -825,12 +820,12 @@ void LTC6804_wrcfg(uint8_t total_ic, //The number of ICs being written to
   }
   
   //4
-  wakeup_idle (); 															 	//This will guarantee that the LTC6804 isoSPI port is awake.This command can be removed.
+  // wakeup_idle (); 															 	//This will guarantee that the LTC6804 isoSPI port is awake.This command can be removed.
   //5
-  output_low(LTC6804_CS);
-  spi_write_array(CMD_LEN, cmd);
-  output_high(LTC6804_CS);
-  free(cmd);
+  // output_low(LTC6804_CS);
+  // spi_write_array(CMD_LEN, cmd);
+  // output_high(LTC6804_CS);
+  LTC68_PutArray(cmd,CMD_LEN);
 }
 /*
 	WRCFG Sequence:
@@ -878,13 +873,12 @@ int8_t LTC6804_rdcfg(uint8_t total_ic, //Number of ICs in the system
   const uint8_t BYTES_IN_REG = 8;
   
   uint8_t cmd[4];
-  uint8_t *rx_data;
+  uint8_t rx_data[(8*total_ic)];
   int8_t pec_error = 0; 
   uint16_t data_pec;
   uint16_t received_pec;
-  
-  rx_data = (uint8_t *) malloc((8*total_ic)*sizeof(uint8_t));
-  
+  uint8_t current_ic=0;
+  uint8_t current_byte = 0;
   //1
   cmd[0] = 0x00;
   cmd[1] = 0x02;
@@ -892,17 +886,17 @@ int8_t LTC6804_rdcfg(uint8_t total_ic, //Number of ICs in the system
   cmd[3] = 0x0A;
  
   //2
-  wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
+  // wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
   //3
-  output_low(LTC6804_CS);
+
   spi_write_read(cmd, 4, rx_data, (BYTES_IN_REG*total_ic));         //Read the configuration data of all ICs on the daisy chain into 
-  output_high(LTC6804_CS);													//rx_data[] array			
+												//rx_data[] array			
  
-  for (uint8_t current_ic = 0; current_ic < total_ic; current_ic++) 			//executes for each LTC6804 in the daisy chain and packs the data
+  for (current_ic = 0; current_ic < total_ic; current_ic++) 			//executes for each LTC6804 in the daisy chain and packs the data
   { 																			//into the r_config array as well as check the received Config data
 																				//for any bit errors	
 	//4.a																		
-    for (uint8_t current_byte = 0; current_byte < BYTES_IN_REG; current_byte++)					
+    for (current_byte = 0; current_byte < BYTES_IN_REG; current_byte++)					
     {
       r_config[current_ic][current_byte] = rx_data[current_byte + (current_ic*BYTES_IN_REG)];
     }
@@ -915,7 +909,6 @@ int8_t LTC6804_rdcfg(uint8_t total_ic, //Number of ICs in the system
     }  
   }
   
-  free(rx_data);
   //5
   return(pec_error);
 }
@@ -938,9 +931,9 @@ int8_t LTC6804_rdcfg(uint8_t total_ic, //Number of ICs in the system
  *****************************************************/
 void wakeup_idle()
 {
-  output_low(LTC6804_CS);
-  delayMicroseconds(2); //Guarantees the isoSPI will be in ready mode
-  output_high(LTC6804_CS);
+
+  CyDelay(WAKE_IDLE_DELAY);
+
 }
 
 /*!****************************************************
@@ -950,9 +943,11 @@ void wakeup_idle()
  *****************************************************/
 void wakeup_sleep()
 {
-  output_low(LTC6804_CS);
-  delay(1); // Guarantees the LTC6804 will be in standby
-  output_high(LTC6804_CS);
+  // output_low(LTC6804_CS);
+  // delay(1); // Guarantees the LTC6804 will be in standby
+  // output_high(LTC6804_CS);
+  LTC68_WriteTxData(0x00);  //write dummy byte to wake up
+  CyDelay(WAKE_UP_DELAY);
 }
 /*!**********************************************************
  \brief calaculates  and returns the CRC15
@@ -969,9 +964,10 @@ uint16_t pec15_calc(uint8_t len, //Number of bytes that will be used to calculat
 					)
 {
 	uint16_t remainder,addr;
-	
+	uint8_t i = 0;
+    
 	remainder = 16;//initialize the PEC
-	for(uint8_t i = 0; i<len;i++) // loops for each byte in data array
+	for(i = 0; i<len;i++) // loops for each byte in data array
 	{
 		addr = ((remainder>>7)^data[i])&0xff;//calculate PEC table address 
 		remainder = (remainder<<8)^crc15Table[addr];
@@ -991,9 +987,10 @@ void spi_write_array(uint8_t len, // Option: Number of bytes to be written on th
 					 uint8_t data[] //Array of bytes to be written on the SPI port
 					 )
 {
-  for(uint8_t i = 0; i < len; i++)
+  uint8_t i = 0;
+  for(i = 0; i < len; i++)
   {
-     spi_write((int8_t)data[i]);
+     LTC68_WriteTxData((int8_t)data[i]);
   }
 }
 
@@ -1013,15 +1010,16 @@ void spi_write_read(uint8_t tx_Data[],//array of data to be written on SPI port
 					uint8_t rx_len //Option: number of bytes to be read from the SPI port
 					)
 {
-  for(uint8_t i = 0; i < tx_len; i++)
+  uint8_t i = 0;
+  for(i = 0; i < tx_len; i++)
   {
-   spi_write(tx_Data[i]);
+   LTC68_WriteTxData(tx_Data[i]);
 
   }
 
-  for(uint8_t i = 0; i < rx_len; i++)
+  for(i = 0; i < rx_len; i++)
   {
-    rx_data[i] = (uint8_t)spi_read(0xFF);
+    rx_data[i] = (uint8_t)LTC68_ReadRxData();
   }
 
 }

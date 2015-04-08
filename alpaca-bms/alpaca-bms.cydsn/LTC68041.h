@@ -47,11 +47,11 @@ Copyright 2013 Linear Technology Corp. (LTC)
 #ifndef LTC68041_H
 #define LTC68041_H
 
+    #include <stdint.h>
+    #include <project.h>
 
-#ifndef LTC6804_CS
-#define LTC6804_CS QUIKEVAL_CS
-#endif
-
+#define WAKE_UP_DELAY (10)
+#define WAKE_IDLE_DELAY (1)
 
 /*
 	Pre computed crc15 table used for the LTC6804 PEC calculation
