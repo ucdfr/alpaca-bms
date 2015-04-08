@@ -2,6 +2,8 @@ USE 6804-1 DAISY CHAINED
 
 25: GPIO ADC measurement
 41: CRC (PEC) Specification
+41: Waking up
+41: Figure 21: Wakeup sequence
 45: Frame Format
 46: SPI Command Tables
 52: Programming Examples
