@@ -50,8 +50,10 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #include <stdint.h>
     #include <project.h>
 
-#define WAKE_UP_DELAY (10)
-#define WAKE_IDLE_DELAY (1)
+#define WAKE_UP_DELAY_US (40)
+#define WAKE_IDLE_DELAY_US (1)
+    
+#define TOTAL_IC (1) //!<number of ICs in the daisy chain
 
 /*
 	Pre computed crc15 table used for the LTC6804 PEC calculation
@@ -181,8 +183,59 @@ static const unsigned int crc15Table[256] = {0x0,0xc599, 0xceab, 0xb32, 0xd8cf, 
 
 
 
+/******************************************************
+ *** Global Battery Variables received from 6804 commands
+ These variables store the results from the LTC6804
+ register reads and the array lengths must be based 
+ on the number of ICs on the stack
+ ******************************************************/
+uint16_t cell_codes[TOTAL_IC][12]; 
+/*!< 
+  The cell codes will be stored in the cell_codes[][12] array in the following format:
+  
+  |  cell_codes[0][0]| cell_codes[0][1] |  cell_codes[0][2]|    .....     |  cell_codes[0][11]|  cell_codes[1][0] | cell_codes[1][1]|  .....   |
+  |------------------|------------------|------------------|--------------|-------------------|-------------------|-----------------|----------|
+  |IC1 Cell 1        |IC1 Cell 2        |IC1 Cell 3        |    .....     |  IC1 Cell 12      |IC2 Cell 1         |IC2 Cell 2       | .....    |
+****/
+
+uint16_t aux_codes[TOTAL_IC][6];
+/*!<
+ The GPIO codes will be stored in the aux_codes[][6] array in the following format:
+ 
+ |  aux_codes[0][0]| aux_codes[0][1] |  aux_codes[0][2]|  aux_codes[0][3]|  aux_codes[0][4]|  aux_codes[0][5]| aux_codes[1][0] |aux_codes[1][1]|  .....    |
+ |-----------------|-----------------|-----------------|-----------------|-----------------|-----------------|-----------------|---------------|-----------|
+ |IC1 GPIO1        |IC1 GPIO2        |IC1 GPIO3        |IC1 GPIO4        |IC1 GPIO5        |IC1 Vref2        |IC2 GPIO1        |IC2 GPIO2      |  .....    |
+*/
+
+uint8_t tx_cfg[TOTAL_IC][6];
+/*!<
+  The tx_cfg[][6] stores the LTC6804 configuration data that is going to be written 
+  to the LTC6804 ICs on the daisy chain. The LTC6804 configuration data that will be
+  written should be stored in blocks of 6 bytes. The array should have the following format:
+  
+ |  tx_cfg[0][0]| tx_cfg[0][1] |  tx_cfg[0][2]|  tx_cfg[0][3]|  tx_cfg[0][4]|  tx_cfg[0][5]| tx_cfg[1][0] |  tx_cfg[1][1]|  tx_cfg[1][2]|  .....    |
+ |--------------|--------------|--------------|--------------|--------------|--------------|--------------|--------------|--------------|-----------|
+ |IC1 CFGR0     |IC1 CFGR1     |IC1 CFGR2     |IC1 CFGR3     |IC1 CFGR4     |IC1 CFGR5     |IC2 CFGR0     |IC2 CFGR1     | IC2 CFGR2    |  .....    |
+ 
+*/
+
+uint8_t rx_cfg[TOTAL_IC][8];
+/*!<
+  the rx_cfg[][8] array stores the data that is read back from a LTC6804-1 daisy chain. 
+  The configuration data for each IC  is stored in blocks of 8 bytes. Below is an table illustrating the array organization:
+
+|rx_config[0][0]|rx_config[0][1]|rx_config[0][2]|rx_config[0][3]|rx_config[0][4]|rx_config[0][5]|rx_config[0][6]  |rx_config[0][7] |rx_config[1][0]|rx_config[1][1]|  .....    |
+|---------------|---------------|---------------|---------------|---------------|---------------|-----------------|----------------|---------------|---------------|-----------|
+|IC1 CFGR0      |IC1 CFGR1      |IC1 CFGR2      |IC1 CFGR3      |IC1 CFGR4      |IC1 CFGR5      |IC1 PEC High     |IC1 PEC Low     |IC2 CFGR0      |IC2 CFGR1      |  .....    |
+*/
+
+
+
+
 
 void LTC6804_initialize();
+
+void LTC6804_init_cfg();
 
 void set_adc(uint8_t MD, uint8_t DCP, uint8_t CH, uint8_t CHG);
 
@@ -215,5 +268,7 @@ uint16_t pec15_calc(uint8_t len, uint8_t *data);
 void spi_write_array( uint8_t length, uint8_t *data);
 
 void spi_write_read(uint8_t *TxData, uint8_t TXlen, uint8_t *rx_data, uint8_t RXlen);
+
+void print_cells(uint16_t raw);
 
 #endif

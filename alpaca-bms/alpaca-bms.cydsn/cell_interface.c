@@ -60,7 +60,11 @@ Copyright 2013 Linear Technology Corp. (LTC)
 void  bms_init(){
     //setup SS pin
     SS_SetDriveMode(SS_DM_RES_UP);
+    LTC68_Start();
+    LTC6804_initialize();
+    LTC6804_wrcfg(TOTAL_IC,tx_cfg);
 }
+
 
 /**
  * @wake all BMSs up, waiting for commands
@@ -72,6 +76,17 @@ void  wake_up(){
     wakeup_sleep();
 }
 
+void check_cfg(){
+    int error=0;
+    int i=0;
+    wakeup_sleep();
+    error = LTC6804_rdcfg(TOTAL_IC,rx_cfg);
+    LCD_Position(1u,0u);
+    for (i=0;i<8;i++){
+        LCD_PrintHexUint8(rx_cfg[0][i]);
+        LCD_PrintString(":");
+    }
+}
 
 
 
@@ -84,15 +99,39 @@ void check_cells(){
 }// check_cells()
 
 
-void get_cell_volt(){
-//1. Pull CSB low
-//2. Send ADCV command with MD[1:0] = 10 and DCP = 1 i.e. 0x03 0x70 and its PEC (0xAF 0x42)
-//3. Pull CSB high
-    LTC6804_adcv(); 
- //   LTC6804_rdcv(0, BMS_IC_NUM, uint16_t cell_codes[][12]);
-
+uint8_t get_cell_volt(){
+    int error;
+    wakeup_sleep();
+    LTC6804_adcv();
+    CyDelay(6);
+    wakeup_sleep();
+    error = LTC6804_rdcv(0, TOTAL_IC,cell_codes); // Set to read back all cell voltage registers
+    if (error == -1)
+    {
+       LCD_Position(0u,10u);
+       LCD_PrintString("ERROR");
+       return 1;
+    }
+    print_cells(cell_codes[0][3]);
+    LCD_Position(0u,10u);
+    LCD_PrintString("OK");
+    return 0;
 }// get_cell_volt()
 
 
-void get_cell_temp(){}// get_cell_temp()
+void get_cell_temp(){
+    int error;
+    wakeup_sleep();
+    LTC6804_adax();
+    CyDelay(6);  
+    wakeup_sleep();
+    error = LTC6804_rdaux(0,TOTAL_IC,aux_codes); // Set to read back all aux registers
+    if (error == -1)
+    {
+      LCD_Position(0u,10u);
+       LCD_PrintString("ERROR");
+    }
+    LCD_Position(0u,10u);
+    LCD_PrintString("OK");
+}// get_cell_temp()
 //void balance_cells(){}// balance_cells()

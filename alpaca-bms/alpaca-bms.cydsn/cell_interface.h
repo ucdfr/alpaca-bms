@@ -52,8 +52,7 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #include <stdint.h>
     #include <project.h>
 
-#define BMS_NODE_NUM    (6)
-#define BMS_IC_NUM    (12)
+
 
 /**
  * @initialize. In case need to setup anything, write them in it.
@@ -62,6 +61,17 @@ Copyright 2013 Linear Technology Corp. (LTC)
  * @return 1 if everything is OK. 0 for hard failure.
  */
 void  bms_init();
+
+
+
+
+/**
+ * @check config register
+ *
+ * @param no input parameters.
+ * @return 1 if everything is OK. 0 for hard failure.
+ */
+void check_cfg();
 
 
 /**
@@ -95,7 +105,7 @@ void check_cells();
  * @param no input parameters.
  * @return 1 if everything is OK. 0 for hard failure.
  */
-void get_cell_volt();
+uint8_t get_cell_volt();
 
 /**
  * @check every cells if temperature are in safe range
