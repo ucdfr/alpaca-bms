@@ -1,6 +1,7 @@
 USE 6804-1 DAISY CHAINED
 
 25: GPIO ADC measurement
+30: WDT/SDT on LTC board
 41: CRC (PEC) Specification
 45: Frame Format
 46: SPI Command Tables
