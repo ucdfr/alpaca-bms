@@ -44,6 +44,7 @@
 #include <current.h>
 #include <OK_SIG_aliases.h>
 #include <OK_SIG.h>
+#include <DEBUG_UART.h>
 #include <WDT_timer.h>
 #include <WDT_timer_clock.h>
 #include <WDT_ISR.h>
@@ -59,6 +60,7 @@
 #include <ADC_current_Ext_CP_Clk.h>
 #include <ADC_current_IRQ.h>
 #include <ADC_current_theACLK.h>
+#include <DEBUG_UART_IntClock.h>
 #include <core_cm3_psoc5.h>
 #include <core_cm3.h>
 #include <CyDmac.h>

@@ -1,6 +1,6 @@
 /*******************************************************************************
 * File Name: DEBUG_UART.h
-* Version 2.30
+* Version 2.40
 *
 * Description:
 *  Contains the function prototypes and constants available to the UART
@@ -9,7 +9,7 @@
 * Note:
 *
 ********************************************************************************
-* Copyright 2008-2012, Cypress Semiconductor Corporation.  All rights reserved.
+* Copyright 2008-2015, Cypress Semiconductor Corporation.  All rights reserved.
 * You may use this file only in accordance with the license, terms, conditions,
 * disclaimers, and limitations in the end user license agreement accompanying
 * the software package with which this file was provided.
@@ -45,16 +45,16 @@
 #define DEBUG_UART_USE23POLLING                   (1u)
 #define DEBUG_UART_FLOW_CONTROL                   (0u)
 #define DEBUG_UART_CLK_FREQ                       (0u)
-#define DEBUG_UART_TXBUFFERSIZE                   (4u)
-#define DEBUG_UART_RXBUFFERSIZE                   (4u)
+#define DEBUG_UART_TX_BUFFER_SIZE                 (4u)
+#define DEBUG_UART_RX_BUFFER_SIZE                 (4u)
 
 /* Check to see if required defines such as CY_PSOC5LP are available */
 /* They are defined starting with cy_boot v3.0 */
 #if !defined (CY_PSOC5LP)
-    #error Component UART_v2_30 requires cy_boot v3.0 or later
+    #error Component UART_v2_40 requires cy_boot v3.0 or later
 #endif /* (CY_PSOC5LP) */
 
-#ifdef DEBUG_UART_BUART_sCR_SyncCtl_CtrlReg__CONTROL_REG
+#if defined(DEBUG_UART_BUART_sCR_SyncCtl_CtrlReg__CONTROL_REG)
     #define DEBUG_UART_CONTROL_REG_REMOVED            (0u)
 #else
     #define DEBUG_UART_CONTROL_REG_REMOVED            (1u)
@@ -62,7 +62,7 @@
 
 
 /***************************************
-*      Data Struct Definition
+*      Data Structure Definition
 ***************************************/
 
 /* Sleep Mode API Support */
@@ -73,30 +73,7 @@ typedef struct DEBUG_UART_backupStruct_
     #if(DEBUG_UART_CONTROL_REG_REMOVED == 0u)
         uint8 cr;
     #endif /* End DEBUG_UART_CONTROL_REG_REMOVED */
-    #if( (DEBUG_UART_RX_ENABLED) || (DEBUG_UART_HD_ENABLED) )
-        uint8 rx_period;
-        #if (CY_UDB_V0)
-            uint8 rx_mask;
-            #if (DEBUG_UART_RXHW_ADDRESS_ENABLED)
-                uint8 rx_addr1;
-                uint8 rx_addr2;
-            #endif /* End DEBUG_UART_RXHW_ADDRESS_ENABLED */
-        #endif /* End CY_UDB_V0 */
-    #endif  /* End (DEBUG_UART_RX_ENABLED) || (DEBUG_UART_HD_ENABLED)*/
 
-    #if(DEBUG_UART_TX_ENABLED)
-        #if(DEBUG_UART_TXCLKGEN_DP)
-            uint8 tx_clk_ctr;
-            #if (CY_UDB_V0)
-                uint8 tx_clk_compl;
-            #endif  /* End CY_UDB_V0 */
-        #else
-            uint8 tx_period;
-        #endif /*End DEBUG_UART_TXCLKGEN_DP */
-        #if (CY_UDB_V0)
-            uint8 tx_mask;
-        #endif  /* End CY_UDB_V0 */
-    #endif /*End DEBUG_UART_TX_ENABLED */
 } DEBUG_UART_BACKUP_STRUCT;
 
 
@@ -119,9 +96,9 @@ void DEBUG_UART_Wakeup(void) ;
 /* Only if RX is enabled */
 #if( (DEBUG_UART_RX_ENABLED) || (DEBUG_UART_HD_ENABLED) )
 
-    #if(DEBUG_UART_RX_INTERRUPT_ENABLED)
-        void  DEBUG_UART_EnableRxInt(void) ;
-        void  DEBUG_UART_DisableRxInt(void) ;
+    #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
+        #define DEBUG_UART_EnableRxInt()  CyIntEnable (DEBUG_UART_RX_VECT_NUM)
+        #define DEBUG_UART_DisableRxInt() CyIntDisable(DEBUG_UART_RX_VECT_NUM)
         CY_ISR_PROTO(DEBUG_UART_RXISR);
     #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED */
 
@@ -148,8 +125,10 @@ void DEBUG_UART_Wakeup(void) ;
 #if(DEBUG_UART_TX_ENABLED || DEBUG_UART_HD_ENABLED)
 
     #if(DEBUG_UART_TX_INTERRUPT_ENABLED)
-        void DEBUG_UART_EnableTxInt(void) ;
-        void DEBUG_UART_DisableTxInt(void) ;
+        #define DEBUG_UART_EnableTxInt()  CyIntEnable (DEBUG_UART_TX_VECT_NUM)
+        #define DEBUG_UART_DisableTxInt() CyIntDisable(DEBUG_UART_TX_VECT_NUM)
+        #define DEBUG_UART_SetPendingTxInt() CyIntSetPending(DEBUG_UART_TX_VECT_NUM)
+        #define DEBUG_UART_ClearPendingTxInt() CyIntClearPending(DEBUG_UART_TX_VECT_NUM)
         CY_ISR_PROTO(DEBUG_UART_TXISR);
     #endif /* DEBUG_UART_TX_INTERRUPT_ENABLED */
 
@@ -201,6 +180,9 @@ void DEBUG_UART_Wakeup(void) ;
 
     /* Byte to Byte time out for detecting end of block data from host */
     #define DEBUG_UART_BYTE2BYTE_TIME_OUT (25u)
+    #define DEBUG_UART_PACKET_EOP         (0x17u) /* End of packet defined by bootloader */
+    #define DEBUG_UART_WAIT_EOP_DELAY     (5u)    /* Additional 5ms to wait for End of packet */
+    #define DEBUG_UART_WAIT_1_MS          (1u)    /* Time Out quantity equal 1mS */
 
 #endif /* CYDEV_BOOTLOADER_IO_COMP */
 
@@ -209,8 +191,8 @@ void DEBUG_UART_Wakeup(void) ;
 *          API Constants
 ***************************************/
 /* Parameters for SetTxAddressMode API*/
-#define DEBUG_UART_SET_SPACE                              (0x00u)
-#define DEBUG_UART_SET_MARK                               (0x01u)
+#define DEBUG_UART_SET_SPACE      (0x00u)
+#define DEBUG_UART_SET_MARK       (0x01u)
 
 /* Status Register definitions */
 #if( (DEBUG_UART_TX_ENABLED) || (DEBUG_UART_HD_ENABLED) )
@@ -218,18 +200,16 @@ void DEBUG_UART_Wakeup(void) ;
         #define DEBUG_UART_TX_VECT_NUM            (uint8)DEBUG_UART_TXInternalInterrupt__INTC_NUMBER
         #define DEBUG_UART_TX_PRIOR_NUM           (uint8)DEBUG_UART_TXInternalInterrupt__INTC_PRIOR_NUM
     #endif /* DEBUG_UART_TX_INTERRUPT_ENABLED */
+
+    #define DEBUG_UART_TX_STS_COMPLETE_SHIFT          (0x00u)
+    #define DEBUG_UART_TX_STS_FIFO_EMPTY_SHIFT        (0x01u)
+    #define DEBUG_UART_TX_STS_FIFO_NOT_FULL_SHIFT     (0x03u)
     #if(DEBUG_UART_TX_ENABLED)
-        #define DEBUG_UART_TX_STS_COMPLETE_SHIFT          (0x00u)
-        #define DEBUG_UART_TX_STS_FIFO_EMPTY_SHIFT        (0x01u)
-        #define DEBUG_UART_TX_STS_FIFO_FULL_SHIFT         (0x02u)
-        #define DEBUG_UART_TX_STS_FIFO_NOT_FULL_SHIFT     (0x03u)
-    #endif /* DEBUG_UART_TX_ENABLED */
-    #if(DEBUG_UART_HD_ENABLED)
-        #define DEBUG_UART_TX_STS_COMPLETE_SHIFT          (0x00u)
-        #define DEBUG_UART_TX_STS_FIFO_EMPTY_SHIFT        (0x01u)
-        #define DEBUG_UART_TX_STS_FIFO_FULL_SHIFT         (0x05u)  /*needs MD=0*/
-        #define DEBUG_UART_TX_STS_FIFO_NOT_FULL_SHIFT     (0x03u)
-    #endif /* DEBUG_UART_HD_ENABLED */
+        #define DEBUG_UART_TX_STS_FIFO_FULL_SHIFT     (0x02u)
+    #else /* (DEBUG_UART_HD_ENABLED) */
+        #define DEBUG_UART_TX_STS_FIFO_FULL_SHIFT     (0x05u)  /* Needs MD=0 */
+    #endif /* (DEBUG_UART_TX_ENABLED) */
+
     #define DEBUG_UART_TX_STS_COMPLETE            (uint8)(0x01u << DEBUG_UART_TX_STS_COMPLETE_SHIFT)
     #define DEBUG_UART_TX_STS_FIFO_EMPTY          (uint8)(0x01u << DEBUG_UART_TX_STS_FIFO_EMPTY_SHIFT)
     #define DEBUG_UART_TX_STS_FIFO_FULL           (uint8)(0x01u << DEBUG_UART_TX_STS_FIFO_FULL_SHIFT)
@@ -292,15 +272,15 @@ void DEBUG_UART_Wakeup(void) ;
 #define DEBUG_UART_OVER_SAMPLE_8                      (8u)
 #define DEBUG_UART_OVER_SAMPLE_16                     (16u)
 
-#define DEBUG_UART_BIT_CENTER                         (DEBUG_UART_OVER_SAMPLE_COUNT - 1u)
+#define DEBUG_UART_BIT_CENTER                         (DEBUG_UART_OVER_SAMPLE_COUNT - 2u)
 
 #define DEBUG_UART_FIFO_LENGTH                        (4u)
 #define DEBUG_UART_NUMBER_OF_START_BIT                (1u)
 #define DEBUG_UART_MAX_BYTE_VALUE                     (0xFFu)
 
-/* 8X always for count7 implementation*/
+/* 8X always for count7 implementation */
 #define DEBUG_UART_TXBITCTR_BREAKBITS8X   ((DEBUG_UART_BREAK_BITS_TX * DEBUG_UART_OVER_SAMPLE_8) - 1u)
-/* 8X or 16X for DP implementation*/
+/* 8X or 16X for DP implementation */
 #define DEBUG_UART_TXBITCTR_BREAKBITS ((DEBUG_UART_BREAK_BITS_TX * DEBUG_UART_OVER_SAMPLE_COUNT) - 1u)
 
 #define DEBUG_UART_HALF_BIT_COUNT   \
@@ -313,13 +293,13 @@ void DEBUG_UART_Wakeup(void) ;
     #define DEBUG_UART_RXBITCTR_INIT  ((((DEBUG_UART_BREAK_BITS_RX + DEBUG_UART_NUMBER_OF_START_BIT) \
                             * DEBUG_UART_OVER_SAMPLE_COUNT) + DEBUG_UART_HALF_BIT_COUNT) - 1u)
 
-
 #else /* DEBUG_UART_OVER_SAMPLE_COUNT == DEBUG_UART_OVER_SAMPLE_16 */
     #define DEBUG_UART_HD_TXBITCTR_INIT   ((8u * DEBUG_UART_OVER_SAMPLE_COUNT) - 1u)
-    /* 7bit counter need one more bit for OverSampleCount=16 */
+    /* 7bit counter need one more bit for OverSampleCount = 16 */
     #define DEBUG_UART_RXBITCTR_INIT      (((7u * DEBUG_UART_OVER_SAMPLE_COUNT) - 1u) + \
                                                       DEBUG_UART_HALF_BIT_COUNT)
 #endif /* End DEBUG_UART_OVER_SAMPLE_COUNT */
+
 #define DEBUG_UART_HD_RXBITCTR_INIT                   DEBUG_UART_RXBITCTR_INIT
 
 
@@ -328,14 +308,14 @@ void DEBUG_UART_Wakeup(void) ;
 ***************************************/
 
 extern uint8 DEBUG_UART_initVar;
-#if( DEBUG_UART_TX_ENABLED && (DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH))
-    extern volatile uint8 DEBUG_UART_txBuffer[DEBUG_UART_TXBUFFERSIZE];
+#if (DEBUG_UART_TX_INTERRUPT_ENABLED && DEBUG_UART_TX_ENABLED)
+    extern volatile uint8 DEBUG_UART_txBuffer[DEBUG_UART_TX_BUFFER_SIZE];
     extern volatile uint8 DEBUG_UART_txBufferRead;
     extern uint8 DEBUG_UART_txBufferWrite;
-#endif /* End DEBUG_UART_TX_ENABLED */
-#if( ( DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED ) && \
-     (DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH) )
-    extern volatile uint8 DEBUG_UART_rxBuffer[DEBUG_UART_RXBUFFERSIZE];
+#endif /* (DEBUG_UART_TX_INTERRUPT_ENABLED && DEBUG_UART_TX_ENABLED) */
+#if (DEBUG_UART_RX_INTERRUPT_ENABLED && (DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED))
+    extern uint8 DEBUG_UART_errorStatus;
+    extern volatile uint8 DEBUG_UART_rxBuffer[DEBUG_UART_RX_BUFFER_SIZE];
     extern volatile uint8 DEBUG_UART_rxBufferRead;
     extern volatile uint8 DEBUG_UART_rxBufferWrite;
     extern volatile uint8 DEBUG_UART_rxBufferLoopDetect;
@@ -343,8 +323,8 @@ extern uint8 DEBUG_UART_initVar;
     #if (DEBUG_UART_RXHW_ADDRESS_ENABLED)
         extern volatile uint8 DEBUG_UART_rxAddressMode;
         extern volatile uint8 DEBUG_UART_rxAddressDetected;
-    #endif /* End EnableHWAddress */
-#endif /* End DEBUG_UART_RX_ENABLED */
+    #endif /* (DEBUG_UART_RXHW_ADDRESS_ENABLED) */
+#endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED && (DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED)) */
 
 
 /***************************************
@@ -373,12 +353,10 @@ extern uint8 DEBUG_UART_initVar;
 #define DEBUG_UART_NUMBER_OF_STOP_BITS    (1u)
 
 #if (DEBUG_UART_RXHW_ADDRESS_ENABLED)
-    #define DEBUG_UART_RXADDRESSMODE      (0u)
-    #define DEBUG_UART_RXHWADDRESS1       (0u)
-    #define DEBUG_UART_RXHWADDRESS2       (0u)
-    /* Backward compatible define */
-    #define DEBUG_UART_RXAddressMode      DEBUG_UART_RXADDRESSMODE
-#endif /* End EnableHWAddress */
+    #define DEBUG_UART_RX_ADDRESS_MODE    (0u)
+    #define DEBUG_UART_RX_HW_ADDRESS1     (0u)
+    #define DEBUG_UART_RX_HW_ADDRESS2     (0u)
+#endif /* (DEBUG_UART_RXHW_ADDRESS_ENABLED) */
 
 #define DEBUG_UART_INIT_RX_INTERRUPTS_MASK \
                                   (uint8)((1 << DEBUG_UART_RX_STS_FIFO_NOTEMPTY_SHIFT) \
@@ -515,10 +493,23 @@ extern uint8 DEBUG_UART_initVar;
 
 
 /***************************************
-* Renamed global variables or defines
-* for backward compatible
+* The following code is DEPRECATED and
+* should not be used in new projects.
 ***************************************/
 
+/* UART v2_40 obsolete definitions */
+#define DEBUG_UART_TXBUFFERSIZE   DEBUG_UART_TX_BUFFER_SIZE
+#define DEBUG_UART_RXBUFFERSIZE   DEBUG_UART_RX_BUFFER_SIZE
+
+#if (DEBUG_UART_RXHW_ADDRESS_ENABLED)
+    #define DEBUG_UART_RXADDRESSMODE  DEBUG_UART_RX_ADDRESS_MODE
+    #define DEBUG_UART_RXHWADDRESS1   DEBUG_UART_RX_HW_ADDRESS1
+    #define DEBUG_UART_RXHWADDRESS2   DEBUG_UART_RX_HW_ADDRESS2
+    /* Backward compatible define */
+    #define DEBUG_UART_RXAddressMode  DEBUG_UART_RXADDRESSMODE
+#endif /* (DEBUG_UART_RXHW_ADDRESS_ENABLED) */
+
+/* UART v2_30 obsolete definitions */
 #define DEBUG_UART_initvar                    DEBUG_UART_initVar
 
 #define DEBUG_UART_RX_Enabled                 DEBUG_UART_RX_ENABLED

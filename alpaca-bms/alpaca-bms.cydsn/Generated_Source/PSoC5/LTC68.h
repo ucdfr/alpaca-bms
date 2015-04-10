@@ -46,8 +46,8 @@
 #define LTC68_BIDIRECTIONAL_MODE         (0u)
 
 /* Internal interrupt handling */
-#define LTC68_TX_BUFFER_SIZE             (255u)
-#define LTC68_RX_BUFFER_SIZE             (255u)
+#define LTC68_TX_BUFFER_SIZE             (24u)
+#define LTC68_RX_BUFFER_SIZE             (24u)
 #define LTC68_INTERNAL_TX_INT_ENABLED    (1u)
 #define LTC68_INTERNAL_RX_INT_ENABLED    (1u)
 
