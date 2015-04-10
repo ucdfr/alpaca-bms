@@ -182,6 +182,13 @@ static const unsigned int crc15Table[256] = {0x0,0xc599, 0xceab, 0xb32, 0xd8cf, 
 #define DCP_ENABLED 1
 
 
+#define ADOW_PUP_DOWN 0
+#define ADOW_PUP_UP 1
+
+
+#define CELL_ENABLE (0x7f<<3)
+
+
 
 /******************************************************
  *** Global Battery Variables received from 6804 commands
@@ -240,6 +247,8 @@ void LTC6804_init_cfg();
 void set_adc(uint8_t MD, uint8_t DCP, uint8_t CH, uint8_t CHG);
 
 void LTC6804_adcv(); 
+
+void LTC6804_adow();
 
 void LTC6804_adax();
 

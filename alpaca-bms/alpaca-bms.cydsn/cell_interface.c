@@ -78,10 +78,9 @@ void  wake_up(){
 
 void check_cfg(){
     DEBUG_UART_PutString("Enter Check_CFG\n");
-    int error=0;
-    int i=0;
+//    int i=0;
     wakeup_sleep();
-    error = LTC6804_rdcfg(TOTAL_IC,rx_cfg);
+    LTC6804_rdcfg(TOTAL_IC,rx_cfg);
     LCD_Position(1u,0u);
  //   for (i=0;i<8;i++){
   //      LCD_PrintHexUint8(rx_cfg[0][i]);
@@ -95,8 +94,44 @@ void check_chips(){
     
 }// check_chips()
 
-void check_cells(){ 
+uint8_t check_cells(){ 
     //using ADOW
+  uint16_t cell_pu[TOTAL_IC][12];
+  uint16_t cell_pd[TOTAL_IC][12];
+  int error;
+  int i_IC=0;
+  int i_cell=0;
+
+  wakeup_sleep();
+
+  LTC6804_adow(ADOW_PUP_UP);
+  error = LTC6804_rdcv(0, TOTAL_IC,cell_pu); // Set to read back all cell voltage registers
+
+  wakeup_sleep();
+
+  LTC6804_adow(ADOW_PUP_DOWN);
+  error = LTC6804_rdcv(0, TOTAL_IC,cell_pd); // Set to read back all cell voltage registers
+
+  if (error==-1){
+    return 1;
+    }
+
+  for (i_IC=0;i_IC<TOTAL_IC;i_IC++){
+    for (i_cell=0;i_cell<12;i_cell++){
+      if ((((int16_t)cell_pu[i_IC][i_cell+1]-(int16_t)cell_pd[i_IC][i_cell+1]) < -400) && (CELL_ENABLE&(0x1<<i_cell))){
+        return 1;
+      }
+      if (cell_pu[i_IC][0]==0){
+        return 1;
+      }
+      if (cell_pd[i_IC][11]==0){
+        return 1;
+      }
+    }
+
+  }
+    return 0;
+
 }// check_cells()
 
 

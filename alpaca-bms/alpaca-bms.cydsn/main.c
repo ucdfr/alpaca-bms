@@ -36,10 +36,10 @@ int main(void)
 	{   
         
         check_cfg();
-		//check_chips(); // TODO Check if chip exists
-		//check_cells(); // TODO Check if cell exists
+		check_chips(); // TODO Check if chip exists
+		check_cells(); // TODO Check if cell exists
 		get_cell_volt(); // TODO Get voltage
-		//get_cell_temp(); // TODO Get temperature
+		get_cell_temp(); // TODO Get temperature
 
 
 		// TODO Determine if need to deassert OK pin. (emergency stop)

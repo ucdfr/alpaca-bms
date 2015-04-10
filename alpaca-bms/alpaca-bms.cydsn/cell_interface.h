@@ -97,7 +97,7 @@ void check_chips();
  * @param no input parameters.
  * @return 1 if everything is OK. 0 for hard failure.
  */
-void check_cells();
+uint8_t check_cells();
 
 /**
  * @check every cells if voltages are in safe range

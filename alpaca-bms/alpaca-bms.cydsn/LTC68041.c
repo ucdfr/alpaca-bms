@@ -69,6 +69,7 @@ Copyright 2013 Linear Technology Corp. (LTC)
   6804 conversion command variables.  
 */
 uint8_t ADCV[2]; //!< Cell Voltage conversion command.
+uint8_t ADOW[2]; //!< Open wire check conversion command.
 uint8_t ADAX[2]; //!< GPIO conversion command.
 
 
@@ -133,6 +134,11 @@ void set_adc(uint8_t MD, //ADC Mode
   ADCV[0] = md_bits + 0x02;
   md_bits = (MD & 0x01) << 7;
   ADCV[1] =  md_bits + 0x60 + (DCP<<4) + CH;
+
+  md_bits = (MD & 0x02) >> 1;
+  ADOW[0] = md_bits + 0x02;
+  md_bits = (MD & 0x01) << 7;
+  ADOW[1] =  md_bits + 0x60 + (DCP<<4) + CH + 0x08;
  
   md_bits = (MD & 0x02) >> 1;
   ADAX[0] = md_bits + 0x04;
@@ -191,6 +197,66 @@ void LTC6804_adcv()
   3. wakeup isoSPI port, this step can be removed if isoSPI status is previously guaranteed
   4. send broadcast adcv command to LTC6804 daisy chain
 */
+
+
+
+/*!*********************************************************************************************
+  \brief Starts Open_wire check
+  
+  Starts ADC conversions of the LTC6804 Cpin inputs.
+  The type of ADC conversion executed can be changed by setting the associated global variables:
+ |Variable|Function                                      | 
+ |--------|----------------------------------------------|
+ | MD     | Determines the filter corner of the ADC      |
+ | CH     | Determines which cell channels are converted |
+ | DCP    | Determines if Discharge is Permitted       |
+  
+Command Code:
+-------------
+  
+|CMD[0:1] |  15   |  14   |  13   |  12   |  11   |  10   |   9   |   8   |   7   |   6   |   5   |   4   |   3   |   2   |   1   |   0   | 
+|-----------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
+|ADOW:      |   0   |   0   |   0   |   0   |   0   |   0   |   1   | MD[1] | MD[2] |   PUP   |   1   |  DCP  |   1   | CH[2] | CH[1] | CH[0] |  
+***********************************************************************************************/
+void LTC6804_adow()
+{
+
+  uint8_t cmd[4];
+  uint16_t cmd_pec;
+  
+  //1
+  cmd[0] = ADOW[0];
+  cmd[1] = ADOW[1];
+  
+  //2
+  cmd_pec = pec15_calc(2, ADOW);
+  cmd[2] = (uint8_t)(cmd_pec >> 8);
+  cmd[3] = (uint8_t)(cmd_pec);
+  
+  //3
+  //wakeup_idle (); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
+  
+  //4
+    //spi_write_array(4,cmd);
+  LTC68_PutArray(cmd, 4);
+
+  CyDelay(6);
+
+  LTC68_PutArray(cmd, 4);
+
+  CyDelay(6);
+  
+}
+/*
+  LTC6804_adcv Function sequence:
+  
+  1. Load adcv command into cmd array
+  2. Calculate adcv cmd PEC and load pec into cmd array
+  3. wakeup isoSPI port, this step can be removed if isoSPI status is previously guaranteed
+  4. send broadcast adcv command to LTC6804 daisy chain
+*/
+
+
 
 
 /*!******************************************************************************************************
