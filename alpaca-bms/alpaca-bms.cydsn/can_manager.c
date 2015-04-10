@@ -36,7 +36,7 @@ void can_send_temp(uint16_t temp[])
 
 void can_send_volt(uint16_t cell_volt[])
 {
-	load_buffer(NUM_CELL, cell_volt);
+	load_buffer(NUM_CELLS, cell_volt);
 	CAN_1_SendMsgvolt();
 } // can_send_volt()
 
