@@ -5,10 +5,6 @@
 #include "current_sense.h"
 #include "WDT.h"
 
-#define C1_CELLS 28
-#define C2_CELLS 28
-#define C3_CELLS 28
-#define NUM_CELLS C1_CELLS + C2_CELLS + C3_CELLS
 
 uint16_t cell_volt[NUM_CELLS];
 
