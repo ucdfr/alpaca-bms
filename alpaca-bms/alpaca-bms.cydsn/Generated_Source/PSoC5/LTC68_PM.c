@@ -1,6 +1,6 @@
 /*******************************************************************************
 * File Name: LTC68_PM.c
-* Version 2.40
+* Version 2.50
 *
 * Description:
 *  This file contains the setup, control and status commands to support
@@ -9,7 +9,7 @@
 * Note:
 *
 ********************************************************************************
-* Copyright 2008-2012, Cypress Semiconductor Corporation.  All rights reserved.
+* Copyright 2008-2015, Cypress Semiconductor Corporation.  All rights reserved.
 * You may use this file only in accordance with the license, terms, conditions,
 * disclaimers, and limitations in the end user license agreement accompanying
 * the software package with which this file was provided.
@@ -21,10 +21,6 @@ static LTC68_BACKUP_STRUCT LTC68_backup =
 {
     LTC68_DISABLED,
     LTC68_BITCTR_INIT,
-    #if(CY_UDB_V0)
-        LTC68_TX_INIT_INTERRUPTS_MASK,
-        LTC68_RX_INIT_INTERRUPTS_MASK
-    #endif /* CY_UDB_V0 */
 };
 
 
@@ -33,7 +29,7 @@ static LTC68_BACKUP_STRUCT LTC68_backup =
 ********************************************************************************
 *
 * Summary:
-*  Saves SPIM configuration.
+*  Empty function. Included for consistency with other components.
 *
 * Parameters:
 *  None.
@@ -41,21 +37,10 @@ static LTC68_BACKUP_STRUCT LTC68_backup =
 * Return:
 *  None.
 *
-* Global Variables:
-*  LTC68_backup - modified when non-retention registers are saved.
-*
-* Reentrant:
-*  No.
-*
 *******************************************************************************/
 void LTC68_SaveConfig(void) 
 {
-    /* Store Status Mask registers */
-    #if(CY_UDB_V0)
-       LTC68_backup.cntrPeriod      = LTC68_COUNTER_PERIOD_REG;
-       LTC68_backup.saveSrTxIntMask = LTC68_TX_STATUS_MASK_REG;
-       LTC68_backup.saveSrRxIntMask = LTC68_RX_STATUS_MASK_REG;
-    #endif /* (CY_UDB_V0) */
+
 }
 
 
@@ -64,7 +49,7 @@ void LTC68_SaveConfig(void)
 ********************************************************************************
 *
 * Summary:
-*  Restores SPIM configuration.
+*  Empty function. Included for consistency with other components.
 *
 * Parameters:
 *  None.
@@ -72,23 +57,10 @@ void LTC68_SaveConfig(void)
 * Return:
 *  None.
 *
-* Global Variables:
-*  LTC68_backup - used when non-retention registers are restored.
-*
-* Side Effects:
-*  If this API is called without first calling SaveConfig then in the following
-*  registers will be default values from Customizer:
-*  LTC68_STATUS_MASK_REG and LTC68_COUNTER_PERIOD_REG.
-*
 *******************************************************************************/
 void LTC68_RestoreConfig(void) 
 {
-    /* Restore the data, saved by SaveConfig() function */
-    #if(CY_UDB_V0)
-        LTC68_COUNTER_PERIOD_REG = LTC68_backup.cntrPeriod;
-        LTC68_TX_STATUS_MASK_REG = ((uint8) LTC68_backup.saveSrTxIntMask);
-        LTC68_RX_STATUS_MASK_REG = ((uint8) LTC68_backup.saveSrRxIntMask);
-    #endif /* (CY_UDB_V0) */
+
 }
 
 
@@ -118,7 +90,6 @@ void LTC68_Sleep(void)
     LTC68_backup.enableState = ((uint8) LTC68_IS_ENABLED);
 
     LTC68_Stop();
-    LTC68_SaveConfig();
 }
 
 
@@ -152,8 +123,6 @@ void LTC68_Sleep(void)
 *******************************************************************************/
 void LTC68_Wakeup(void) 
 {
-    LTC68_RestoreConfig();
-
     #if(LTC68_RX_SOFTWARE_BUF_ENABLED)
         LTC68_rxBufferFull  = 0u;
         LTC68_rxBufferRead  = 0u;

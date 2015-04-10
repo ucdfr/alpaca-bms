@@ -1,6 +1,6 @@
 /*******************************************************************************
 * File Name: LTC68.h
-* Version 2.40
+* Version 2.50
 *
 * Description:
 *  Contains the function prototypes, constants and register definition
@@ -10,7 +10,7 @@
 *  None
 *
 ********************************************************************************
-* Copyright 2008-2012, Cypress Semiconductor Corporation.  All rights reserved.
+* Copyright 2008-2015, Cypress Semiconductor Corporation.  All rights reserved.
 * You may use this file only in accordance with the license, terms, conditions,
 * disclaimers, and limitations in the end user license agreement accompanying
 * the software package with which this file was provided.
@@ -26,7 +26,7 @@
 /* Check to see if required defines such as CY_PSOC5A are available */
 /* They are defined starting with cy_boot v3.0 */
 #if !defined (CY_PSOC5A)
-    #error Component SPI_Master_v2_40 requires cy_boot v3.0 or later
+    #error Component SPI_Master_v2_50 requires cy_boot v3.0 or later
 #endif /* (CY_PSOC5A) */
 
 
@@ -46,8 +46,8 @@
 #define LTC68_BIDIRECTIONAL_MODE         (0u)
 
 /* Internal interrupt handling */
-#define LTC68_TX_BUFFER_SIZE             (24u)
-#define LTC68_RX_BUFFER_SIZE             (24u)
+#define LTC68_TX_BUFFER_SIZE             (255u)
+#define LTC68_RX_BUFFER_SIZE             (255u)
 #define LTC68_INTERNAL_TX_INT_ENABLED    (1u)
 #define LTC68_INTERNAL_RX_INT_ENABLED    (1u)
 
@@ -71,11 +71,6 @@ typedef struct
 {
     uint8 enableState;
     uint8 cntrPeriod;
-    #if(CY_UDB_V0)
-        uint8 saveSrTxIntMask;
-        uint8 saveSrRxIntMask;
-    #endif /* (CY_UDB_V0) */
-
 } LTC68_BACKUP_STRUCT;
 
 
@@ -123,9 +118,9 @@ CY_ISR_PROTO(LTC68_TX_ISR);
 CY_ISR_PROTO(LTC68_RX_ISR);
 
 
-/**********************************
+/***************************************
 *   Variable with external linkage
-**********************************/
+***************************************/
 
 extern uint8 LTC68_initVar;
 
@@ -181,7 +176,6 @@ extern uint8 LTC68_initVar;
 /***************************************
 *             Registers
 ***************************************/
-
 #if(CY_PSOC3 || CY_PSOC5)
     #define LTC68_TXDATA_REG (* (reg8 *) \
                                                 LTC68_BSPIM_sR8_Dp_u0__F0_REG)
@@ -199,7 +193,7 @@ extern uint8 LTC68_initVar;
                                           LTC68_BSPIM_sR8_Dp_u0__16BIT_F0_REG)
         #define LTC68_RXDATA_REG (* (reg16 *) \
                                           LTC68_BSPIM_sR8_Dp_u0__16BIT_F1_REG)
-        #define LTC68_RXDATA_PTR         (  (reg16 *) \
+        #define LTC68_RXDATA_PTR (  (reg16 *) \
                                           LTC68_BSPIM_sR8_Dp_u0__16BIT_F1_REG)
     #else
         #define LTC68_TXDATA_REG (* (reg8 *) \
@@ -236,9 +230,9 @@ extern uint8 LTC68_initVar;
 #define LTC68_RX_STATUS_PTR          (  (reg8 *) LTC68_BSPIM_RxStsReg__STATUS_REG)
 
 #define LTC68_CONTROL_REG            (* (reg8 *) \
-                                      LTC68_BSPIM_BidirMode_SyncCtl_CtrlReg__CONTROL_REG)
+                                      LTC68_BSPIM_BidirMode_CtrlReg__CONTROL_REG)
 #define LTC68_CONTROL_PTR            (  (reg8 *) \
-                                      LTC68_BSPIM_BidirMode_SyncCtl_CtrlReg__CONTROL_REG)
+                                      LTC68_BSPIM_BidirMode_CtrlReg__CONTROL_REG)
 
 #define LTC68_TX_STATUS_MASK_REG     (* (reg8 *) LTC68_BSPIM_TxStsReg__MASK_REG)
 #define LTC68_TX_STATUS_MASK_PTR     (  (reg8 *) LTC68_BSPIM_TxStsReg__MASK_REG)
@@ -323,13 +317,9 @@ extern uint8 LTC68_initVar;
 
 
 /***************************************
-*       Obsolete definitions
+* The following code is DEPRECATED and 
+* should not be used in new projects.
 ***************************************/
-
-/* Following definitions are for version compatibility.
-*  They are obsolete in SPIM v2_30.
-*  Please do not use it in new projects
-*/
 
 #define LTC68_WriteByte   LTC68_WriteTxData
 #define LTC68_ReadByte    LTC68_ReadRxData
@@ -338,7 +328,6 @@ uint8 LTC68_ReadStatus(void)                     ;
 void  LTC68_EnableInt(void)                      ;
 void  LTC68_DisableInt(void)                     ;
 
-/* Obsolete register names. Not to be used in new designs */
 #define LTC68_TXDATA                 (LTC68_TXDATA_REG)
 #define LTC68_RXDATA                 (LTC68_RXDATA_REG)
 #define LTC68_AUX_CONTROLDP0         (LTC68_AUX_CONTROL_DP0_REG)
@@ -362,11 +351,6 @@ void  LTC68_DisableInt(void)                     ;
                                                 LTC68_INT_ON_RX_OVER      | \
                                                 LTC68_INT_ON_BYTE_COMP)
                                                 
-/* Following definitions are for version Compatibility.
-*  They are obsolete in SPIM v2_40.
-*  Please do not use it in new projects
-*/
-
 #define LTC68_DataWidth                  (LTC68_DATA_WIDTH)
 #define LTC68_InternalClockUsed          (LTC68_INTERNAL_CLOCK)
 #define LTC68_InternalTxInterruptEnabled (LTC68_INTERNAL_TX_INT_ENABLED)
