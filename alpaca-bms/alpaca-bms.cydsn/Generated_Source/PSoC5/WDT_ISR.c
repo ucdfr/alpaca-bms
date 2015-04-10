@@ -1,5 +1,5 @@
 /*******************************************************************************
-* File Name: ADC_current_IRQ.c  
+* File Name: WDT_ISR.c  
 * Version 1.70
 *
 *  Description:
@@ -18,14 +18,14 @@
 
 #include <cydevice_trm.h>
 #include <CyLib.h>
-#include <ADC_current_IRQ.h>
+#include <WDT_ISR.h>
 
-#if !defined(ADC_current_IRQ__REMOVED) /* Check for removal by optimization */
+#if !defined(WDT_ISR__REMOVED) /* Check for removal by optimization */
 
 /*******************************************************************************
 *  Place your includes, defines and code here 
 ********************************************************************************/
-/* `#START ADC_current_IRQ_intc` */
+/* `#START WDT_ISR_intc` */
 
 /* `#END` */
 
@@ -41,7 +41,7 @@ CY_ISR_PROTO(IntDefaultHandler);
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_Start
+* Function Name: WDT_ISR_Start
 ********************************************************************************
 *
 * Summary:
@@ -57,24 +57,24 @@ CY_ISR_PROTO(IntDefaultHandler);
 *   None
 *
 *******************************************************************************/
-void ADC_current_IRQ_Start(void)
+void WDT_ISR_Start(void)
 {
     /* For all we know the interrupt is active. */
-    ADC_current_IRQ_Disable();
+    WDT_ISR_Disable();
 
-    /* Set the ISR to point to the ADC_current_IRQ Interrupt. */
-    ADC_current_IRQ_SetVector(&ADC_current_IRQ_Interrupt);
+    /* Set the ISR to point to the WDT_ISR Interrupt. */
+    WDT_ISR_SetVector(&WDT_ISR_Interrupt);
 
     /* Set the priority. */
-    ADC_current_IRQ_SetPriority((uint8)ADC_current_IRQ_INTC_PRIOR_NUMBER);
+    WDT_ISR_SetPriority((uint8)WDT_ISR_INTC_PRIOR_NUMBER);
 
     /* Enable it. */
-    ADC_current_IRQ_Enable();
+    WDT_ISR_Enable();
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_StartEx
+* Function Name: WDT_ISR_StartEx
 ********************************************************************************
 *
 * Summary:
@@ -100,24 +100,24 @@ void ADC_current_IRQ_Start(void)
 *   None
 *
 *******************************************************************************/
-void ADC_current_IRQ_StartEx(cyisraddress address)
+void WDT_ISR_StartEx(cyisraddress address)
 {
     /* For all we know the interrupt is active. */
-    ADC_current_IRQ_Disable();
+    WDT_ISR_Disable();
 
-    /* Set the ISR to point to the ADC_current_IRQ Interrupt. */
-    ADC_current_IRQ_SetVector(address);
+    /* Set the ISR to point to the WDT_ISR Interrupt. */
+    WDT_ISR_SetVector(address);
 
     /* Set the priority. */
-    ADC_current_IRQ_SetPriority((uint8)ADC_current_IRQ_INTC_PRIOR_NUMBER);
+    WDT_ISR_SetPriority((uint8)WDT_ISR_INTC_PRIOR_NUMBER);
 
     /* Enable it. */
-    ADC_current_IRQ_Enable();
+    WDT_ISR_Enable();
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_Stop
+* Function Name: WDT_ISR_Stop
 ********************************************************************************
 *
 * Summary:
@@ -130,22 +130,22 @@ void ADC_current_IRQ_StartEx(cyisraddress address)
 *   None
 *
 *******************************************************************************/
-void ADC_current_IRQ_Stop(void)
+void WDT_ISR_Stop(void)
 {
     /* Disable this interrupt. */
-    ADC_current_IRQ_Disable();
+    WDT_ISR_Disable();
 
     /* Set the ISR to point to the passive one. */
-    ADC_current_IRQ_SetVector(&IntDefaultHandler);
+    WDT_ISR_SetVector(&IntDefaultHandler);
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_Interrupt
+* Function Name: WDT_ISR_Interrupt
 ********************************************************************************
 *
 * Summary:
-*   The default Interrupt Service Routine for ADC_current_IRQ.
+*   The default Interrupt Service Routine for WDT_ISR.
 *
 *   Add custom code between the coments to keep the next version of this file
 *   from over writting your code.
@@ -156,23 +156,23 @@ void ADC_current_IRQ_Stop(void)
 *   None
 *
 *******************************************************************************/
-CY_ISR(ADC_current_IRQ_Interrupt)
+CY_ISR(WDT_ISR_Interrupt)
 {
     /*  Place your Interrupt code here. */
-    /* `#START ADC_current_IRQ_Interrupt` */
+    /* `#START WDT_ISR_Interrupt` */
 
     /* `#END` */
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_SetVector
+* Function Name: WDT_ISR_SetVector
 ********************************************************************************
 *
 * Summary:
-*   Change the ISR vector for the Interrupt. Note calling ADC_current_IRQ_Start
+*   Change the ISR vector for the Interrupt. Note calling WDT_ISR_Start
 *   will override any effect this method would have had. To set the vector 
-*   before the component has been started use ADC_current_IRQ_StartEx instead.
+*   before the component has been started use WDT_ISR_StartEx instead.
 * 
 *   When defining ISR functions, the CY_ISR and CY_ISR_PROTO macros should be 
 *   used to provide consistent definition across compilers:
@@ -192,18 +192,18 @@ CY_ISR(ADC_current_IRQ_Interrupt)
 *   None
 *
 *******************************************************************************/
-void ADC_current_IRQ_SetVector(cyisraddress address)
+void WDT_ISR_SetVector(cyisraddress address)
 {
     cyisraddress * ramVectorTable;
 
     ramVectorTable = (cyisraddress *) *CYINT_VECT_TABLE;
 
-    ramVectorTable[CYINT_IRQ_BASE + (uint32)ADC_current_IRQ__INTC_NUMBER] = address;
+    ramVectorTable[CYINT_IRQ_BASE + (uint32)WDT_ISR__INTC_NUMBER] = address;
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_GetVector
+* Function Name: WDT_ISR_GetVector
 ********************************************************************************
 *
 * Summary:
@@ -216,26 +216,26 @@ void ADC_current_IRQ_SetVector(cyisraddress address)
 *   Address of the ISR in the interrupt vector table.
 *
 *******************************************************************************/
-cyisraddress ADC_current_IRQ_GetVector(void)
+cyisraddress WDT_ISR_GetVector(void)
 {
     cyisraddress * ramVectorTable;
 
     ramVectorTable = (cyisraddress *) *CYINT_VECT_TABLE;
 
-    return ramVectorTable[CYINT_IRQ_BASE + (uint32)ADC_current_IRQ__INTC_NUMBER];
+    return ramVectorTable[CYINT_IRQ_BASE + (uint32)WDT_ISR__INTC_NUMBER];
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_SetPriority
+* Function Name: WDT_ISR_SetPriority
 ********************************************************************************
 *
 * Summary:
 *   Sets the Priority of the Interrupt. 
 *
-*   Note calling ADC_current_IRQ_Start or ADC_current_IRQ_StartEx will 
+*   Note calling WDT_ISR_Start or WDT_ISR_StartEx will 
 *   override any effect this API would have had. This API should only be called
-*   after ADC_current_IRQ_Start or ADC_current_IRQ_StartEx has been called. 
+*   after WDT_ISR_Start or WDT_ISR_StartEx has been called. 
 *   To set the initial priority for the component, use the Design-Wide Resources
 *   Interrupt Editor.
 *
@@ -250,14 +250,14 @@ cyisraddress ADC_current_IRQ_GetVector(void)
 *   None
 *
 *******************************************************************************/
-void ADC_current_IRQ_SetPriority(uint8 priority)
+void WDT_ISR_SetPriority(uint8 priority)
 {
-    *ADC_current_IRQ_INTC_PRIOR = priority << 5;
+    *WDT_ISR_INTC_PRIOR = priority << 5;
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_GetPriority
+* Function Name: WDT_ISR_GetPriority
 ********************************************************************************
 *
 * Summary:
@@ -272,19 +272,19 @@ void ADC_current_IRQ_SetPriority(uint8 priority)
 *    PSoC 4: Priority is from 0 to 3.
 *
 *******************************************************************************/
-uint8 ADC_current_IRQ_GetPriority(void)
+uint8 WDT_ISR_GetPriority(void)
 {
     uint8 priority;
 
 
-    priority = *ADC_current_IRQ_INTC_PRIOR >> 5;
+    priority = *WDT_ISR_INTC_PRIOR >> 5;
 
     return priority;
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_Enable
+* Function Name: WDT_ISR_Enable
 ********************************************************************************
 *
 * Summary:
@@ -299,15 +299,15 @@ uint8 ADC_current_IRQ_GetPriority(void)
 *   None
 *
 *******************************************************************************/
-void ADC_current_IRQ_Enable(void)
+void WDT_ISR_Enable(void)
 {
     /* Enable the general interrupt. */
-    *ADC_current_IRQ_INTC_SET_EN = ADC_current_IRQ__INTC_MASK;
+    *WDT_ISR_INTC_SET_EN = WDT_ISR__INTC_MASK;
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_GetState
+* Function Name: WDT_ISR_GetState
 ********************************************************************************
 *
 * Summary:
@@ -320,15 +320,15 @@ void ADC_current_IRQ_Enable(void)
 *   1 if enabled, 0 if disabled.
 *
 *******************************************************************************/
-uint8 ADC_current_IRQ_GetState(void)
+uint8 WDT_ISR_GetState(void)
 {
     /* Get the state of the general interrupt. */
-    return ((*ADC_current_IRQ_INTC_SET_EN & (uint32)ADC_current_IRQ__INTC_MASK) != 0u) ? 1u:0u;
+    return ((*WDT_ISR_INTC_SET_EN & (uint32)WDT_ISR__INTC_MASK) != 0u) ? 1u:0u;
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_Disable
+* Function Name: WDT_ISR_Disable
 ********************************************************************************
 *
 * Summary:
@@ -341,15 +341,15 @@ uint8 ADC_current_IRQ_GetState(void)
 *   None
 *
 *******************************************************************************/
-void ADC_current_IRQ_Disable(void)
+void WDT_ISR_Disable(void)
 {
     /* Disable the general interrupt. */
-    *ADC_current_IRQ_INTC_CLR_EN = ADC_current_IRQ__INTC_MASK;
+    *WDT_ISR_INTC_CLR_EN = WDT_ISR__INTC_MASK;
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_SetPending
+* Function Name: WDT_ISR_SetPending
 ********************************************************************************
 *
 * Summary:
@@ -368,14 +368,14 @@ void ADC_current_IRQ_Disable(void)
 *   interrupts).
 *
 *******************************************************************************/
-void ADC_current_IRQ_SetPending(void)
+void WDT_ISR_SetPending(void)
 {
-    *ADC_current_IRQ_INTC_SET_PD = ADC_current_IRQ__INTC_MASK;
+    *WDT_ISR_INTC_SET_PD = WDT_ISR__INTC_MASK;
 }
 
 
 /*******************************************************************************
-* Function Name: ADC_current_IRQ_ClearPending
+* Function Name: WDT_ISR_ClearPending
 ********************************************************************************
 *
 * Summary:
@@ -393,9 +393,9 @@ void ADC_current_IRQ_SetPending(void)
 *   None
 *
 *******************************************************************************/
-void ADC_current_IRQ_ClearPending(void)
+void WDT_ISR_ClearPending(void)
 {
-    *ADC_current_IRQ_INTC_CLR_PD = ADC_current_IRQ__INTC_MASK;
+    *WDT_ISR_INTC_CLR_PD = WDT_ISR__INTC_MASK;
 }
 
 #endif /* End check for removal by optimization */

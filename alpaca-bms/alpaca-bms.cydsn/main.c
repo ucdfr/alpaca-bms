@@ -3,6 +3,7 @@
 
 #include "cell_interface.h"
 #include "current_sense.h"
+#include "WDT.h"
 
 #define C1_CELLS 28
 #define C2_CELLS 28
@@ -15,6 +16,15 @@ uint16_t cell_volt[NUM_CELLS];
 
 int main(void)
 {
+    CyGlobalIntEnable;
+    WDT_init();
+	red_led_1_Write(1);
+	CyDelay(100);
+	red_led_1_Write(0);
+	CyDelay(100);
+	red_led_1_Write(1);
+	CyDelay(100);
+	red_led_1_Write(0);
     LCD_Start();
     DEBUG_UART_Start();
 	CyGlobalIntEnable;
@@ -34,7 +44,7 @@ int main(void)
     
 	for(;;)
 	{   
-        
+        WDT_clear();
         check_cfg();
 		check_chips(); // TODO Check if chip exists
 		check_cells(); // TODO Check if cell exists
