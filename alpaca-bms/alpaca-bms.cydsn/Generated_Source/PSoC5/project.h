@@ -45,14 +45,6 @@
 #include <OK_SIG_aliases.h>
 #include <OK_SIG.h>
 #include <DEBUG_UART.h>
-#include <WDT_timer.h>
-#include <WDT_timer_clock.h>
-#include <WDT_ISR.h>
-#include <JAM_pin_aliases.h>
-#include <JAM_pin.h>
-#include <isr_JAM.h>
-#include <red_led_1_aliases.h>
-#include <red_led_1.h>
 #include <LTC68_IntClock.h>
 #include <LCD_LCDPort_aliases.h>
 #include <LCD_LCDPort.h>

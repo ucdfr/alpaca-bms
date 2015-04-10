@@ -5,16 +5,9 @@
 #include "data.h"
 
 
-typedef struct
-{
-	uint16_t status_code;
-} Status;
-
-
-void can_send_temp();
-void can_send_volt();
-void can_send_current();
-void can_send_status();
-
+void can_send_temp(uint16_t temp[]);
+void can_send_volt(uint16_t cell_volt[]);
+void can_send_current(uint16_t battery_current);
+void can_send_status(uint8_t battery_status);
 
 #endif // CAN_MANAGER_H
