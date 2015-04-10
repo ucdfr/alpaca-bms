@@ -1,6 +1,6 @@
 /*******************************************************************************
 * File Name: DEBUG_UART.c
-* Version 2.30
+* Version 2.40
 *
 * Description:
 *  This file provides all API functionality of the UART component
@@ -8,15 +8,14 @@
 * Note:
 *
 ********************************************************************************
-* Copyright 2008-2012, Cypress Semiconductor Corporation.  All rights reserved.
+* Copyright 2008-2015, Cypress Semiconductor Corporation.  All rights reserved.
 * You may use this file only in accordance with the license, terms, conditions,
 * disclaimers, and limitations in the end user license agreement accompanying
 * the software package with which this file was provided.
 *******************************************************************************/
 
 #include "DEBUG_UART.h"
-#include "CyLib.h"
-#if(DEBUG_UART_INTERNAL_CLOCK_USED)
+#if (DEBUG_UART_INTERNAL_CLOCK_USED)
     #include "DEBUG_UART_IntClock.h"
 #endif /* End DEBUG_UART_INTERNAL_CLOCK_USED */
 
@@ -26,23 +25,25 @@
 ***************************************/
 
 uint8 DEBUG_UART_initVar = 0u;
-#if( DEBUG_UART_TX_ENABLED && (DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH))
-    volatile uint8 DEBUG_UART_txBuffer[DEBUG_UART_TXBUFFERSIZE];
+
+#if (DEBUG_UART_TX_INTERRUPT_ENABLED && DEBUG_UART_TX_ENABLED)
+    volatile uint8 DEBUG_UART_txBuffer[DEBUG_UART_TX_BUFFER_SIZE];
     volatile uint8 DEBUG_UART_txBufferRead = 0u;
     uint8 DEBUG_UART_txBufferWrite = 0u;
-#endif /* End DEBUG_UART_TX_ENABLED */
-#if( ( DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED ) && \
-     (DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH) )
-    volatile uint8 DEBUG_UART_rxBuffer[DEBUG_UART_RXBUFFERSIZE];
-    volatile uint8 DEBUG_UART_rxBufferRead = 0u;
+#endif /* (DEBUG_UART_TX_INTERRUPT_ENABLED && DEBUG_UART_TX_ENABLED) */
+
+#if (DEBUG_UART_RX_INTERRUPT_ENABLED && (DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED))
+    uint8 DEBUG_UART_errorStatus = 0u;
+    volatile uint8 DEBUG_UART_rxBuffer[DEBUG_UART_RX_BUFFER_SIZE];
+    volatile uint8 DEBUG_UART_rxBufferRead  = 0u;
     volatile uint8 DEBUG_UART_rxBufferWrite = 0u;
     volatile uint8 DEBUG_UART_rxBufferLoopDetect = 0u;
-    volatile uint8 DEBUG_UART_rxBufferOverflow = 0u;
+    volatile uint8 DEBUG_UART_rxBufferOverflow   = 0u;
     #if (DEBUG_UART_RXHW_ADDRESS_ENABLED)
-        volatile uint8 DEBUG_UART_rxAddressMode = DEBUG_UART_RXADDRESSMODE;
+        volatile uint8 DEBUG_UART_rxAddressMode = DEBUG_UART_RX_ADDRESS_MODE;
         volatile uint8 DEBUG_UART_rxAddressDetected = 0u;
-    #endif /* End EnableHWAddress */
-#endif /* End DEBUG_UART_RX_ENABLED */
+    #endif /* (DEBUG_UART_RXHW_ADDRESS_ENABLED) */
+#endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED && (DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED)) */
 
 
 /*******************************************************************************
@@ -50,8 +51,10 @@ uint8 DEBUG_UART_initVar = 0u;
 ********************************************************************************
 *
 * Summary:
-*  Initialize and Enable the UART component.
-*  Enable the clock input to enable operation.
+*  This is the preferred method to begin component operation.
+*  DEBUG_UART_Start() sets the initVar variable, calls the
+*  DEBUG_UART_Init() function, and then calls the
+*  DEBUG_UART_Enable() function.
 *
 * Parameters:
 *  None.
@@ -62,9 +65,9 @@ uint8 DEBUG_UART_initVar = 0u;
 * Global variables:
 *  The DEBUG_UART_intiVar variable is used to indicate initial
 *  configuration of this component. The variable is initialized to zero (0u)
-*  and set to one (1u) the first time UART_Start() is called. This allows for
-*  component initialization without re-initialization in all subsequent calls
-*  to the DEBUG_UART_Start() routine.
+*  and set to one (1u) the first time DEBUG_UART_Start() is called. This
+*  allows for component initialization without re-initialization in all
+*  subsequent calls to the DEBUG_UART_Start() routine.
 *
 * Reentrant:
 *  No.
@@ -72,12 +75,13 @@ uint8 DEBUG_UART_initVar = 0u;
 *******************************************************************************/
 void DEBUG_UART_Start(void) 
 {
-    /* If not Initialized then initialize all required hardware and software */
+    /* If not initialized then initialize all required hardware and software */
     if(DEBUG_UART_initVar == 0u)
     {
         DEBUG_UART_Init();
         DEBUG_UART_initVar = 1u;
     }
+
     DEBUG_UART_Enable();
 }
 
@@ -87,9 +91,10 @@ void DEBUG_UART_Start(void)
 ********************************************************************************
 *
 * Summary:
-*  Initialize component's parameters to the parameters set by user in the
-*  customizer of the component placed onto schematic. Usually called in
-*  DEBUG_UART_Start().
+*  Initializes or restores the component according to the customizer Configure
+*  dialog settings. It is not necessary to call DEBUG_UART_Init() because
+*  the DEBUG_UART_Start() API calls this function and is the preferred
+*  method to begin component operation.
 *
 * Parameters:
 *  None.
@@ -102,16 +107,17 @@ void DEBUG_UART_Init(void)
 {
     #if(DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED)
 
-        #if(DEBUG_UART_RX_INTERRUPT_ENABLED && (DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH))
-            /* Set the RX Interrupt. */
-            (void)CyIntSetVector(DEBUG_UART_RX_VECT_NUM, &DEBUG_UART_RXISR);
+        #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
+            /* Set RX interrupt vector and priority */
+            (void) CyIntSetVector(DEBUG_UART_RX_VECT_NUM, &DEBUG_UART_RXISR);
             CyIntSetPriority(DEBUG_UART_RX_VECT_NUM, DEBUG_UART_RX_PRIOR_NUM);
-        #endif /* End DEBUG_UART_RX_INTERRUPT_ENABLED */
+            DEBUG_UART_errorStatus = 0u;
+        #endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED) */
 
         #if (DEBUG_UART_RXHW_ADDRESS_ENABLED)
-            DEBUG_UART_SetRxAddressMode(DEBUG_UART_RXAddressMode);
-            DEBUG_UART_SetRxAddress1(DEBUG_UART_RXHWADDRESS1);
-            DEBUG_UART_SetRxAddress2(DEBUG_UART_RXHWADDRESS2);
+            DEBUG_UART_SetRxAddressMode(DEBUG_UART_RX_ADDRESS_MODE);
+            DEBUG_UART_SetRxAddress1(DEBUG_UART_RX_HW_ADDRESS1);
+            DEBUG_UART_SetRxAddress2(DEBUG_UART_RX_HW_ADDRESS2);
         #endif /* End DEBUG_UART_RXHW_ADDRESS_ENABLED */
 
         /* Init Count7 period */
@@ -121,24 +127,24 @@ void DEBUG_UART_Init(void)
     #endif /* End DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED*/
 
     #if(DEBUG_UART_TX_ENABLED)
-        #if(DEBUG_UART_TX_INTERRUPT_ENABLED && (DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH))
-            /* Set the TX Interrupt. */
-            (void)CyIntSetVector(DEBUG_UART_TX_VECT_NUM, &DEBUG_UART_TXISR);
+        #if (DEBUG_UART_TX_INTERRUPT_ENABLED)
+            /* Set TX interrupt vector and priority */
+            (void) CyIntSetVector(DEBUG_UART_TX_VECT_NUM, &DEBUG_UART_TXISR);
             CyIntSetPriority(DEBUG_UART_TX_VECT_NUM, DEBUG_UART_TX_PRIOR_NUM);
-        #endif /* End DEBUG_UART_TX_INTERRUPT_ENABLED */
+        #endif /* (DEBUG_UART_TX_INTERRUPT_ENABLED) */
 
         /* Write Counter Value for TX Bit Clk Generator*/
-        #if(DEBUG_UART_TXCLKGEN_DP)
+        #if (DEBUG_UART_TXCLKGEN_DP)
             DEBUG_UART_TXBITCLKGEN_CTR_REG = DEBUG_UART_BIT_CENTER;
-            DEBUG_UART_TXBITCLKTX_COMPLETE_REG = (DEBUG_UART_NUMBER_OF_DATA_BITS +
-                        DEBUG_UART_NUMBER_OF_START_BIT) * DEBUG_UART_OVER_SAMPLE_COUNT;
+            DEBUG_UART_TXBITCLKTX_COMPLETE_REG = ((DEBUG_UART_NUMBER_OF_DATA_BITS +
+                        DEBUG_UART_NUMBER_OF_START_BIT) * DEBUG_UART_OVER_SAMPLE_COUNT) - 1u;
         #else
             DEBUG_UART_TXBITCTR_PERIOD_REG = ((DEBUG_UART_NUMBER_OF_DATA_BITS +
                         DEBUG_UART_NUMBER_OF_START_BIT) * DEBUG_UART_OVER_SAMPLE_8) - 1u;
         #endif /* End DEBUG_UART_TXCLKGEN_DP */
 
         /* Configure the Initial TX interrupt mask */
-        #if(DEBUG_UART_TX_INTERRUPT_ENABLED && (DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH))
+        #if (DEBUG_UART_TX_INTERRUPT_ENABLED)
             DEBUG_UART_TXSTATUS_MASK_REG = DEBUG_UART_TX_STS_FIFO_EMPTY;
         #else
             DEBUG_UART_TXSTATUS_MASK_REG = DEBUG_UART_INIT_TX_INTERRUPTS_MASK;
@@ -159,8 +165,11 @@ void DEBUG_UART_Init(void)
 ********************************************************************************
 *
 * Summary:
-*  Enables the UART block operation
-*
+*  Activates the hardware and begins component operation. It is not necessary
+*  to call DEBUG_UART_Enable() because the DEBUG_UART_Start() API
+*  calls this function, which is the preferred method to begin component
+*  operation.
+
 * Parameters:
 *  None.
 *
@@ -176,35 +185,39 @@ void DEBUG_UART_Enable(void)
     uint8 enableInterrupts;
     enableInterrupts = CyEnterCriticalSection();
 
-    #if(DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED)
-        /*RX Counter (Count7) Enable */
+    #if (DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED)
+        /* RX Counter (Count7) Enable */
         DEBUG_UART_RXBITCTR_CONTROL_REG |= DEBUG_UART_CNTR_ENABLE;
-        /* Enable the RX Interrupt. */
+
+        /* Enable the RX Interrupt */
         DEBUG_UART_RXSTATUS_ACTL_REG  |= DEBUG_UART_INT_ENABLE;
-        #if(DEBUG_UART_RX_INTERRUPT_ENABLED && (DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH))
-            CyIntEnable(DEBUG_UART_RX_VECT_NUM);
+
+        #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
+            DEBUG_UART_EnableRxInt();
+
             #if (DEBUG_UART_RXHW_ADDRESS_ENABLED)
                 DEBUG_UART_rxAddressDetected = 0u;
-            #endif /* End DEBUG_UART_RXHW_ADDRESS_ENABLED */
-        #endif /* End DEBUG_UART_RX_INTERRUPT_ENABLED */
-    #endif /* End DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED*/
+            #endif /* (DEBUG_UART_RXHW_ADDRESS_ENABLED) */
+        #endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED) */
+    #endif /* (DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED) */
 
     #if(DEBUG_UART_TX_ENABLED)
-        /*TX Counter (DP/Count7) Enable */
+        /* TX Counter (DP/Count7) Enable */
         #if(!DEBUG_UART_TXCLKGEN_DP)
             DEBUG_UART_TXBITCTR_CONTROL_REG |= DEBUG_UART_CNTR_ENABLE;
         #endif /* End DEBUG_UART_TXCLKGEN_DP */
-        /* Enable the TX Interrupt. */
-        DEBUG_UART_TXSTATUS_ACTL_REG |= DEBUG_UART_INT_ENABLE;
-        #if(DEBUG_UART_TX_INTERRUPT_ENABLED && (DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH))
-            CyIntEnable(DEBUG_UART_TX_VECT_NUM);
-        #endif /* End DEBUG_UART_TX_INTERRUPT_ENABLED*/
-     #endif /* End DEBUG_UART_TX_ENABLED */
 
-    #if(DEBUG_UART_INTERNAL_CLOCK_USED)
-        /* Enable the clock. */
-        DEBUG_UART_IntClock_Start();
-    #endif /* End DEBUG_UART_INTERNAL_CLOCK_USED */
+        /* Enable the TX Interrupt */
+        DEBUG_UART_TXSTATUS_ACTL_REG |= DEBUG_UART_INT_ENABLE;
+        #if (DEBUG_UART_TX_INTERRUPT_ENABLED)
+            DEBUG_UART_ClearPendingTxInt(); /* Clear history of TX_NOT_EMPTY */
+            DEBUG_UART_EnableTxInt();
+        #endif /* (DEBUG_UART_TX_INTERRUPT_ENABLED) */
+     #endif /* (DEBUG_UART_TX_INTERRUPT_ENABLED) */
+
+    #if (DEBUG_UART_INTERNAL_CLOCK_USED)
+        DEBUG_UART_IntClock_Start();  /* Enable the clock */
+    #endif /* (DEBUG_UART_INTERNAL_CLOCK_USED) */
 
     CyExitCriticalSection(enableInterrupts);
 }
@@ -215,7 +228,7 @@ void DEBUG_UART_Enable(void)
 ********************************************************************************
 *
 * Summary:
-*  Disable the UART component
+*  Disables the UART operation.
 *
 * Parameters:
 *  None.
@@ -230,35 +243,36 @@ void DEBUG_UART_Stop(void)
     enableInterrupts = CyEnterCriticalSection();
 
     /* Write Bit Counter Disable */
-    #if(DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED)
-        DEBUG_UART_RXBITCTR_CONTROL_REG &= (uint8)~DEBUG_UART_CNTR_ENABLE;
-    #endif /* End DEBUG_UART_RX_ENABLED */
+    #if (DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED)
+        DEBUG_UART_RXBITCTR_CONTROL_REG &= (uint8) ~DEBUG_UART_CNTR_ENABLE;
+    #endif /* (DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED) */
 
-    #if(DEBUG_UART_TX_ENABLED)
+    #if (DEBUG_UART_TX_ENABLED)
         #if(!DEBUG_UART_TXCLKGEN_DP)
-            DEBUG_UART_TXBITCTR_CONTROL_REG &= (uint8)~DEBUG_UART_CNTR_ENABLE;
-        #endif /* End DEBUG_UART_TXCLKGEN_DP */
-    #endif /* DEBUG_UART_TX_ENABLED */
+            DEBUG_UART_TXBITCTR_CONTROL_REG &= (uint8) ~DEBUG_UART_CNTR_ENABLE;
+        #endif /* (!DEBUG_UART_TXCLKGEN_DP) */
+    #endif /* (DEBUG_UART_TX_ENABLED) */
 
-    #if(DEBUG_UART_INTERNAL_CLOCK_USED)
-        /* Disable the clock. */
-        DEBUG_UART_IntClock_Stop();
-    #endif /* End DEBUG_UART_INTERNAL_CLOCK_USED */
+    #if (DEBUG_UART_INTERNAL_CLOCK_USED)
+        DEBUG_UART_IntClock_Stop();   /* Disable the clock */
+    #endif /* (DEBUG_UART_INTERNAL_CLOCK_USED) */
 
     /* Disable internal interrupt component */
-    #if(DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED)
-        DEBUG_UART_RXSTATUS_ACTL_REG  &= (uint8)~DEBUG_UART_INT_ENABLE;
-        #if(DEBUG_UART_RX_INTERRUPT_ENABLED && (DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH))
-            DEBUG_UART_DisableRxInt();
-        #endif /* End DEBUG_UART_RX_INTERRUPT_ENABLED */
-    #endif /* End DEBUG_UART_RX_ENABLED */
+    #if (DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED)
+        DEBUG_UART_RXSTATUS_ACTL_REG  &= (uint8) ~DEBUG_UART_INT_ENABLE;
 
-    #if(DEBUG_UART_TX_ENABLED)
-        DEBUG_UART_TXSTATUS_ACTL_REG &= (uint8)~DEBUG_UART_INT_ENABLE;
-        #if(DEBUG_UART_TX_INTERRUPT_ENABLED && (DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH))
+        #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
+            DEBUG_UART_DisableRxInt();
+        #endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED) */
+    #endif /* (DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED) */
+
+    #if (DEBUG_UART_TX_ENABLED)
+        DEBUG_UART_TXSTATUS_ACTL_REG &= (uint8) ~DEBUG_UART_INT_ENABLE;
+
+        #if (DEBUG_UART_TX_INTERRUPT_ENABLED)
             DEBUG_UART_DisableTxInt();
-        #endif /* End DEBUG_UART_TX_INTERRUPT_ENABLED */
-    #endif /* End DEBUG_UART_TX_ENABLED */
+        #endif /* (DEBUG_UART_TX_INTERRUPT_ENABLED) */
+    #endif /* (DEBUG_UART_TX_ENABLED) */
 
     CyExitCriticalSection(enableInterrupts);
 }
@@ -269,22 +283,22 @@ void DEBUG_UART_Stop(void)
 ********************************************************************************
 *
 * Summary:
-*  Read the current state of the control register
+*  Returns the current value of the control register.
 *
 * Parameters:
 *  None.
 *
 * Return:
-*  Current state of the control register.
+*  Contents of the control register.
 *
 *******************************************************************************/
 uint8 DEBUG_UART_ReadControlRegister(void) 
 {
-    #if( DEBUG_UART_CONTROL_REG_REMOVED )
+    #if (DEBUG_UART_CONTROL_REG_REMOVED)
         return(0u);
     #else
         return(DEBUG_UART_CONTROL_REG);
-    #endif /* End DEBUG_UART_CONTROL_REG_REMOVED */
+    #endif /* (DEBUG_UART_CONTROL_REG_REMOVED) */
 }
 
 
@@ -304,76 +318,36 @@ uint8 DEBUG_UART_ReadControlRegister(void)
 *******************************************************************************/
 void  DEBUG_UART_WriteControlRegister(uint8 control) 
 {
-    #if( DEBUG_UART_CONTROL_REG_REMOVED )
-        if(control != 0u) { }      /* release compiler warning */
+    #if (DEBUG_UART_CONTROL_REG_REMOVED)
+        if(0u != control)
+        {
+            /* Suppress compiler warning */
+        }
     #else
        DEBUG_UART_CONTROL_REG = control;
-    #endif /* End DEBUG_UART_CONTROL_REG_REMOVED */
+    #endif /* (DEBUG_UART_CONTROL_REG_REMOVED) */
 }
 
 
 #if(DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED)
-
-    #if(DEBUG_UART_RX_INTERRUPT_ENABLED)
-
-        /*******************************************************************************
-        * Function Name: DEBUG_UART_EnableRxInt
-        ********************************************************************************
-        *
-        * Summary:
-        *  Enable RX interrupt generation
-        *
-        * Parameters:
-        *  None.
-        *
-        * Return:
-        *  None.
-        *
-        * Theory:
-        *  Enable the interrupt output -or- the interrupt component itself
-        *
-        *******************************************************************************/
-        void DEBUG_UART_EnableRxInt(void) 
-        {
-            CyIntEnable(DEBUG_UART_RX_VECT_NUM);
-        }
-
-
-        /*******************************************************************************
-        * Function Name: DEBUG_UART_DisableRxInt
-        ********************************************************************************
-        *
-        * Summary:
-        *  Disable RX interrupt generation
-        *
-        * Parameters:
-        *  None.
-        *
-        * Return:
-        *  None.
-        *
-        * Theory:
-        *  Disable the interrupt output -or- the interrupt component itself
-        *
-        *******************************************************************************/
-        void DEBUG_UART_DisableRxInt(void) 
-        {
-            CyIntDisable(DEBUG_UART_RX_VECT_NUM);
-        }
-
-    #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED */
-
-
     /*******************************************************************************
     * Function Name: DEBUG_UART_SetRxInterruptMode
     ********************************************************************************
     *
     * Summary:
-    *  Configure which status bits trigger an interrupt event
+    *  Configures the RX interrupt sources enabled.
     *
     * Parameters:
-    *  IntSrc:  An or'd combination of the desired status bit masks (defined in
-    *           the header file)
+    *  IntSrc:  Bit field containing the RX interrupts to enable. Based on the 
+    *  bit-field arrangement of the status register. This value must be a 
+    *  combination of status register bit-masks shown below:
+    *      DEBUG_UART_RX_STS_FIFO_NOTEMPTY    Interrupt on byte received.
+    *      DEBUG_UART_RX_STS_PAR_ERROR        Interrupt on parity error.
+    *      DEBUG_UART_RX_STS_STOP_ERROR       Interrupt on stop error.
+    *      DEBUG_UART_RX_STS_BREAK            Interrupt on break.
+    *      DEBUG_UART_RX_STS_OVERRUN          Interrupt on overrun error.
+    *      DEBUG_UART_RX_STS_ADDR_MATCH       Interrupt on address match.
+    *      DEBUG_UART_RX_STS_MRKSPC           Interrupt on address detect.
     *
     * Return:
     *  None.
@@ -393,8 +367,8 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Returns data in RX Data register without checking status register to
-    *  determine if data is valid
+    *  Returns the next byte of received data. This function returns data without
+    *  checking the status. You must check the status separately.
     *
     * Parameters:
     *  None.
@@ -408,7 +382,7 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     *     checked to identify new data.
     *  DEBUG_UART_rxBufferRead - cyclic index for read from rxBuffer,
     *     incremented after each byte has been read from buffer.
-    *  DEBUG_UART_rxBufferLoopDetect - creared if loop condition was detected
+    *  DEBUG_UART_rxBufferLoopDetect - cleared if loop condition was detected
     *     in RX ISR.
     *
     * Reentrant:
@@ -419,65 +393,61 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     {
         uint8 rxData;
 
-        #if(DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH)
-            uint8 loc_rxBufferRead;
-            uint8 loc_rxBufferWrite;
-            /* Protect variables that could change on interrupt. */
-            /* Disable Rx interrupt. */
-            #if(DEBUG_UART_RX_INTERRUPT_ENABLED)
-                DEBUG_UART_DisableRxInt();
-            #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED */
-            loc_rxBufferRead = DEBUG_UART_rxBufferRead;
-            loc_rxBufferWrite = DEBUG_UART_rxBufferWrite;
+    #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
 
-            if( (DEBUG_UART_rxBufferLoopDetect != 0u) || (loc_rxBufferRead != loc_rxBufferWrite) )
+        uint8 locRxBufferRead;
+        uint8 locRxBufferWrite;
+
+        /* Protect variables that could change on interrupt */
+        DEBUG_UART_DisableRxInt();
+
+        locRxBufferRead  = DEBUG_UART_rxBufferRead;
+        locRxBufferWrite = DEBUG_UART_rxBufferWrite;
+
+        if( (DEBUG_UART_rxBufferLoopDetect != 0u) || (locRxBufferRead != locRxBufferWrite) )
+        {
+            rxData = DEBUG_UART_rxBuffer[locRxBufferRead];
+            locRxBufferRead++;
+
+            if(locRxBufferRead >= DEBUG_UART_RX_BUFFER_SIZE)
             {
-                rxData = DEBUG_UART_rxBuffer[loc_rxBufferRead];
-                loc_rxBufferRead++;
+                locRxBufferRead = 0u;
+            }
+            /* Update the real pointer */
+            DEBUG_UART_rxBufferRead = locRxBufferRead;
 
-                if(loc_rxBufferRead >= DEBUG_UART_RXBUFFERSIZE)
-                {
-                    loc_rxBufferRead = 0u;
-                }
-                /* Update the real pointer */
-                DEBUG_UART_rxBufferRead = loc_rxBufferRead;
-
-                if(DEBUG_UART_rxBufferLoopDetect != 0u )
-                {
-                    DEBUG_UART_rxBufferLoopDetect = 0u;
-                    #if( (DEBUG_UART_RX_INTERRUPT_ENABLED) && (DEBUG_UART_FLOW_CONTROL != 0u) && \
-                         (DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH) )
-                        /* When Hardware Flow Control selected - return RX mask */
-                        #if( DEBUG_UART_HD_ENABLED )
-                            if((DEBUG_UART_CONTROL_REG & DEBUG_UART_CTRL_HD_SEND) == 0u)
-                            {   /* In Half duplex mode return RX mask only in RX
-                                *  configuration set, otherwise
-                                *  mask will be returned in LoadRxConfig() API.
-                                */
-                                DEBUG_UART_RXSTATUS_MASK_REG  |= DEBUG_UART_RX_STS_FIFO_NOTEMPTY;
-                            }
-                        #else
+            if(DEBUG_UART_rxBufferLoopDetect != 0u)
+            {
+                DEBUG_UART_rxBufferLoopDetect = 0u;
+                #if ((DEBUG_UART_RX_INTERRUPT_ENABLED) && (DEBUG_UART_FLOW_CONTROL != 0u))
+                    /* When Hardware Flow Control selected - return RX mask */
+                    #if( DEBUG_UART_HD_ENABLED )
+                        if((DEBUG_UART_CONTROL_REG & DEBUG_UART_CTRL_HD_SEND) == 0u)
+                        {   /* In Half duplex mode return RX mask only in RX
+                            *  configuration set, otherwise
+                            *  mask will be returned in LoadRxConfig() API.
+                            */
                             DEBUG_UART_RXSTATUS_MASK_REG  |= DEBUG_UART_RX_STS_FIFO_NOTEMPTY;
-                        #endif /* end DEBUG_UART_HD_ENABLED */
-                    #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED and Hardware flow control*/
-                }
+                        }
+                    #else
+                        DEBUG_UART_RXSTATUS_MASK_REG  |= DEBUG_UART_RX_STS_FIFO_NOTEMPTY;
+                    #endif /* end DEBUG_UART_HD_ENABLED */
+                #endif /* ((DEBUG_UART_RX_INTERRUPT_ENABLED) && (DEBUG_UART_FLOW_CONTROL != 0u)) */
             }
-            else
-            {   /* Needs to check status for RX_STS_FIFO_NOTEMPTY bit*/
-                rxData = DEBUG_UART_RXDATA_REG;
-            }
-
-            /* Enable Rx interrupt. */
-            #if(DEBUG_UART_RX_INTERRUPT_ENABLED)
-                DEBUG_UART_EnableRxInt();
-            #endif /* End DEBUG_UART_RX_INTERRUPT_ENABLED */
-
-        #else /* DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
-
-            /* Needs to check status for RX_STS_FIFO_NOTEMPTY bit*/
+        }
+        else
+        {   /* Needs to check status for RX_STS_FIFO_NOTEMPTY bit */
             rxData = DEBUG_UART_RXDATA_REG;
+        }
 
-        #endif /* DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
+        DEBUG_UART_EnableRxInt();
+
+    #else
+
+        /* Needs to check status for RX_STS_FIFO_NOTEMPTY bit */
+        rxData = DEBUG_UART_RXDATA_REG;
+
+    #endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED) */
 
         return(rxData);
     }
@@ -488,8 +458,8 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Read the current state of the status register
-    *  And detect software buffer overflow.
+    *  Returns the current state of the receiver status register and the software
+    *  buffer overflow status.
     *
     * Parameters:
     *  None.
@@ -497,9 +467,15 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     * Return:
     *  Current state of the status register.
     *
+    * Side Effect:
+    *  All status register bits are clear-on-read except
+    *  DEBUG_UART_RX_STS_FIFO_NOTEMPTY.
+    *  DEBUG_UART_RX_STS_FIFO_NOTEMPTY clears immediately after RX data
+    *  register read.
+    *
     * Global Variables:
     *  DEBUG_UART_rxBufferOverflow - used to indicate overload condition.
-    *   It set to one in RX interrupt when there isn?t free space in
+    *   It set to one in RX interrupt when there isn't free space in
     *   DEBUG_UART_rxBufferRead to write new data. This condition returned
     *   and cleared to zero by this API as an
     *   DEBUG_UART_RX_STS_SOFT_BUFF_OVER bit along with RX Status register
@@ -512,13 +488,13 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
 
         status = DEBUG_UART_RXSTATUS_REG & DEBUG_UART_RX_HW_MASK;
 
-        #if(DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH)
-            if( DEBUG_UART_rxBufferOverflow != 0u )
-            {
-                status |= DEBUG_UART_RX_STS_SOFT_BUFF_OVER;
-                DEBUG_UART_rxBufferOverflow = 0u;
-            }
-        #endif /* DEBUG_UART_RXBUFFERSIZE */
+    #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
+        if(DEBUG_UART_rxBufferOverflow != 0u)
+        {
+            status |= DEBUG_UART_RX_STS_SOFT_BUFF_OVER;
+            DEBUG_UART_rxBufferOverflow = 0u;
+        }
+    #endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED) */
 
         return(status);
     }
@@ -529,9 +505,9 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Reads UART RX buffer immediately, if data is not available or an error
-    *  condition exists, zero is returned; otherwise, character is read and
-    *  returned.
+    *  Returns the last received byte of data. DEBUG_UART_GetChar() is
+    *  designed for ASCII characters and returns a uint8 where 1 to 255 are values
+    *  for valid characters and 0 indicates an error occurred or no data is present.
     *
     * Parameters:
     *  None.
@@ -546,7 +522,7 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     *     checked to identify new data.
     *  DEBUG_UART_rxBufferRead - cyclic index for read from rxBuffer,
     *     incremented after each byte has been read from buffer.
-    *  DEBUG_UART_rxBufferLoopDetect - creared if loop condition was detected
+    *  DEBUG_UART_rxBufferLoopDetect - cleared if loop condition was detected
     *     in RX ISR.
     *
     * Reentrant:
@@ -558,81 +534,79 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
         uint8 rxData = 0u;
         uint8 rxStatus;
 
-        #if(DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH)
-            uint8 loc_rxBufferRead;
-            uint8 loc_rxBufferWrite;
-            /* Protect variables that could change on interrupt. */
-            /* Disable Rx interrupt. */
-            #if(DEBUG_UART_RX_INTERRUPT_ENABLED)
-                DEBUG_UART_DisableRxInt();
-            #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED */
-            loc_rxBufferRead = DEBUG_UART_rxBufferRead;
-            loc_rxBufferWrite = DEBUG_UART_rxBufferWrite;
+    #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
+        uint8 locRxBufferRead;
+        uint8 locRxBufferWrite;
 
-            if( (DEBUG_UART_rxBufferLoopDetect != 0u) || (loc_rxBufferRead != loc_rxBufferWrite) )
+        /* Protect variables that could change on interrupt */
+        DEBUG_UART_DisableRxInt();
+
+        locRxBufferRead  = DEBUG_UART_rxBufferRead;
+        locRxBufferWrite = DEBUG_UART_rxBufferWrite;
+
+        if( (DEBUG_UART_rxBufferLoopDetect != 0u) || (locRxBufferRead != locRxBufferWrite) )
+        {
+            rxData = DEBUG_UART_rxBuffer[locRxBufferRead];
+            locRxBufferRead++;
+            if(locRxBufferRead >= DEBUG_UART_RX_BUFFER_SIZE)
             {
-                rxData = DEBUG_UART_rxBuffer[loc_rxBufferRead];
-                loc_rxBufferRead++;
-                if(loc_rxBufferRead >= DEBUG_UART_RXBUFFERSIZE)
-                {
-                    loc_rxBufferRead = 0u;
-                }
-                /* Update the real pointer */
-                DEBUG_UART_rxBufferRead = loc_rxBufferRead;
-
-                if(DEBUG_UART_rxBufferLoopDetect > 0u )
-                {
-                    DEBUG_UART_rxBufferLoopDetect = 0u;
-                    #if( (DEBUG_UART_RX_INTERRUPT_ENABLED) && (DEBUG_UART_FLOW_CONTROL != 0u) )
-                        /* When Hardware Flow Control selected - return RX mask */
-                        #if( DEBUG_UART_HD_ENABLED )
-                            if((DEBUG_UART_CONTROL_REG & DEBUG_UART_CTRL_HD_SEND) == 0u)
-                            {   /* In Half duplex mode return RX mask only if
-                                *  RX configuration set, otherwise
-                                *  mask will be returned in LoadRxConfig() API.
-                                */
-                                DEBUG_UART_RXSTATUS_MASK_REG  |= DEBUG_UART_RX_STS_FIFO_NOTEMPTY;
-                            }
-                        #else
-                            DEBUG_UART_RXSTATUS_MASK_REG  |= DEBUG_UART_RX_STS_FIFO_NOTEMPTY;
-                        #endif /* end DEBUG_UART_HD_ENABLED */
-                    #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED and Hardware flow control*/
-                }
-
+                locRxBufferRead = 0u;
             }
-            else
-            {   rxStatus = DEBUG_UART_RXSTATUS_REG;
-                if((rxStatus & DEBUG_UART_RX_STS_FIFO_NOTEMPTY) != 0u)
-                {   /* Read received data from FIFO*/
-                    rxData = DEBUG_UART_RXDATA_REG;
-                    /*Check status on error*/
-                    if((rxStatus & (DEBUG_UART_RX_STS_BREAK | DEBUG_UART_RX_STS_PAR_ERROR |
-                                   DEBUG_UART_RX_STS_STOP_ERROR | DEBUG_UART_RX_STS_OVERRUN)) != 0u)
-                    {
-                        rxData = 0u;
-                    }
-                }
+            /* Update the real pointer */
+            DEBUG_UART_rxBufferRead = locRxBufferRead;
+
+            if(DEBUG_UART_rxBufferLoopDetect != 0u)
+            {
+                DEBUG_UART_rxBufferLoopDetect = 0u;
+                #if( (DEBUG_UART_RX_INTERRUPT_ENABLED) && (DEBUG_UART_FLOW_CONTROL != 0u) )
+                    /* When Hardware Flow Control selected - return RX mask */
+                    #if( DEBUG_UART_HD_ENABLED )
+                        if((DEBUG_UART_CONTROL_REG & DEBUG_UART_CTRL_HD_SEND) == 0u)
+                        {   /* In Half duplex mode return RX mask only if
+                            *  RX configuration set, otherwise
+                            *  mask will be returned in LoadRxConfig() API.
+                            */
+                            DEBUG_UART_RXSTATUS_MASK_REG |= DEBUG_UART_RX_STS_FIFO_NOTEMPTY;
+                        }
+                    #else
+                        DEBUG_UART_RXSTATUS_MASK_REG |= DEBUG_UART_RX_STS_FIFO_NOTEMPTY;
+                    #endif /* end DEBUG_UART_HD_ENABLED */
+                #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED and Hardware flow control*/
             }
 
-            /* Enable Rx interrupt. */
-            #if(DEBUG_UART_RX_INTERRUPT_ENABLED)
-                DEBUG_UART_EnableRxInt();
-            #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED */
-
-        #else /* DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
-
-            rxStatus =DEBUG_UART_RXSTATUS_REG;
+        }
+        else
+        {   rxStatus = DEBUG_UART_RXSTATUS_REG;
             if((rxStatus & DEBUG_UART_RX_STS_FIFO_NOTEMPTY) != 0u)
-            {   /* Read received data from FIFO*/
+            {   /* Read received data from FIFO */
                 rxData = DEBUG_UART_RXDATA_REG;
                 /*Check status on error*/
                 if((rxStatus & (DEBUG_UART_RX_STS_BREAK | DEBUG_UART_RX_STS_PAR_ERROR |
-                               DEBUG_UART_RX_STS_STOP_ERROR | DEBUG_UART_RX_STS_OVERRUN)) != 0u)
+                                DEBUG_UART_RX_STS_STOP_ERROR | DEBUG_UART_RX_STS_OVERRUN)) != 0u)
                 {
                     rxData = 0u;
                 }
             }
-        #endif /* DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
+        }
+
+        DEBUG_UART_EnableRxInt();
+
+    #else
+
+        rxStatus =DEBUG_UART_RXSTATUS_REG;
+        if((rxStatus & DEBUG_UART_RX_STS_FIFO_NOTEMPTY) != 0u)
+        {
+            /* Read received data from FIFO */
+            rxData = DEBUG_UART_RXDATA_REG;
+
+            /*Check status on error*/
+            if((rxStatus & (DEBUG_UART_RX_STS_BREAK | DEBUG_UART_RX_STS_PAR_ERROR |
+                            DEBUG_UART_RX_STS_STOP_ERROR | DEBUG_UART_RX_STS_OVERRUN)) != 0u)
+            {
+                rxData = 0u;
+            }
+        }
+    #endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED) */
 
         return(rxData);
     }
@@ -643,13 +617,15 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Grab the next available byte of data from the recieve FIFO
+    *  Reads UART RX buffer immediately, returns received character and error
+    *  condition.
     *
     * Parameters:
     *  None.
     *
     * Return:
-    *  MSB contains Status Register and LSB contains UART RX data
+    *  MSB contains status and LSB contains UART RX data. If the MSB is nonzero,
+    *  an error has occurred.
     *
     * Reentrant:
     *  No.
@@ -657,7 +633,19 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     *******************************************************************************/
     uint16 DEBUG_UART_GetByte(void) 
     {
+        
+    #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
+        uint16 locErrorStatus;
+        /* Protect variables that could change on interrupt */
+        DEBUG_UART_DisableRxInt();
+        locErrorStatus = (uint16)DEBUG_UART_errorStatus;
+        DEBUG_UART_errorStatus = 0u;
+        DEBUG_UART_EnableRxInt();
+        return ( (uint16)(locErrorStatus << 8u) | DEBUG_UART_ReadRxData() );
+    #else
         return ( ((uint16)DEBUG_UART_ReadRxStatus() << 8u) | DEBUG_UART_ReadRxData() );
+    #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED */
+        
     }
 
 
@@ -666,15 +654,19 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Determine the amount of bytes left in the RX buffer and return the count in
-    *  bytes
+    *  Returns the number of received bytes available in the RX buffer.
+    *  * RX software buffer is disabled (RX Buffer Size parameter is equal to 4): 
+    *    returns 0 for empty RX FIFO or 1 for not empty RX FIFO.
+    *  * RX software buffer is enabled: returns the number of bytes available in 
+    *    the RX software buffer. Bytes available in the RX FIFO do not take to 
+    *    account.
     *
     * Parameters:
     *  None.
     *
     * Return:
-    *  uint8: Integer count of the number of bytes left
-    *  in the RX buffer
+    *  uint8: Number of bytes in the RX buffer. 
+    *    Return value type depends on RX Buffer Size parameter.
     *
     * Global Variables:
     *  DEBUG_UART_rxBufferWrite - used to calculate left bytes.
@@ -693,45 +685,39 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     {
         uint8 size;
 
-        #if(DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH)
+    #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
 
-            /* Disable Rx interrupt. */
-            /* Protect variables that could change on interrupt. */
-            #if(DEBUG_UART_RX_INTERRUPT_ENABLED)
-                DEBUG_UART_DisableRxInt();
-            #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED */
+        /* Protect variables that could change on interrupt */
+        DEBUG_UART_DisableRxInt();
 
-            if(DEBUG_UART_rxBufferRead == DEBUG_UART_rxBufferWrite)
+        if(DEBUG_UART_rxBufferRead == DEBUG_UART_rxBufferWrite)
+        {
+            if(DEBUG_UART_rxBufferLoopDetect != 0u)
             {
-                if(DEBUG_UART_rxBufferLoopDetect > 0u)
-                {
-                    size = DEBUG_UART_RXBUFFERSIZE;
-                }
-                else
-                {
-                    size = 0u;
-                }
-            }
-            else if(DEBUG_UART_rxBufferRead < DEBUG_UART_rxBufferWrite)
-            {
-                size = (DEBUG_UART_rxBufferWrite - DEBUG_UART_rxBufferRead);
+                size = DEBUG_UART_RX_BUFFER_SIZE;
             }
             else
             {
-                size = (DEBUG_UART_RXBUFFERSIZE - DEBUG_UART_rxBufferRead) + DEBUG_UART_rxBufferWrite;
+                size = 0u;
             }
+        }
+        else if(DEBUG_UART_rxBufferRead < DEBUG_UART_rxBufferWrite)
+        {
+            size = (DEBUG_UART_rxBufferWrite - DEBUG_UART_rxBufferRead);
+        }
+        else
+        {
+            size = (DEBUG_UART_RX_BUFFER_SIZE - DEBUG_UART_rxBufferRead) + DEBUG_UART_rxBufferWrite;
+        }
 
-            /* Enable Rx interrupt. */
-            #if(DEBUG_UART_RX_INTERRUPT_ENABLED)
-                DEBUG_UART_EnableRxInt();
-            #endif /* End DEBUG_UART_RX_INTERRUPT_ENABLED */
+        DEBUG_UART_EnableRxInt();
 
-        #else /* DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
+    #else
 
-            /* We can only know if there is data in the fifo. */
-            size = ((DEBUG_UART_RXSTATUS_REG & DEBUG_UART_RX_STS_FIFO_NOTEMPTY) != 0u) ? 1u : 0u;
+        /* We can only know if there is data in the fifo. */
+        size = ((DEBUG_UART_RXSTATUS_REG & DEBUG_UART_RX_STS_FIFO_NOTEMPTY) != 0u) ? 1u : 0u;
 
-        #endif /* End DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
+    #endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED) */
 
         return(size);
     }
@@ -742,8 +728,7 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Clears the RX RAM buffer by setting the read and write pointers both to zero.
-    *  Clears hardware RX FIFO.
+    *  Clears the receiver memory buffer and hardware RX FIFO of all received data.
     *
     * Parameters:
     *  None.
@@ -767,36 +752,31 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     *
     * Side Effects:
     *  Any received data not read from the RAM or FIFO buffer will be lost.
+    *
     *******************************************************************************/
     void DEBUG_UART_ClearRxBuffer(void) 
     {
         uint8 enableInterrupts;
 
-        /* clear the HW FIFO */
-        /* Enter critical section */
+        /* Clear the HW FIFO */
         enableInterrupts = CyEnterCriticalSection();
-        DEBUG_UART_RXDATA_AUX_CTL_REG |=  DEBUG_UART_RX_FIFO_CLR;
-        DEBUG_UART_RXDATA_AUX_CTL_REG &= (uint8)~DEBUG_UART_RX_FIFO_CLR;
-        /* Exit critical section */
+        DEBUG_UART_RXDATA_AUX_CTL_REG |= (uint8)  DEBUG_UART_RX_FIFO_CLR;
+        DEBUG_UART_RXDATA_AUX_CTL_REG &= (uint8) ~DEBUG_UART_RX_FIFO_CLR;
         CyExitCriticalSection(enableInterrupts);
 
-        #if(DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH)
-            /* Disable Rx interrupt. */
-            /* Protect variables that could change on interrupt. */
-            #if(DEBUG_UART_RX_INTERRUPT_ENABLED)
-                DEBUG_UART_DisableRxInt();
-            #endif /* End DEBUG_UART_RX_INTERRUPT_ENABLED */
+    #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
 
-            DEBUG_UART_rxBufferRead = 0u;
-            DEBUG_UART_rxBufferWrite = 0u;
-            DEBUG_UART_rxBufferLoopDetect = 0u;
-            DEBUG_UART_rxBufferOverflow = 0u;
+        /* Protect variables that could change on interrupt. */
+        DEBUG_UART_DisableRxInt();
 
-            /* Enable Rx interrupt. */
-            #if(DEBUG_UART_RX_INTERRUPT_ENABLED)
-                DEBUG_UART_EnableRxInt();
-            #endif /* End DEBUG_UART_RX_INTERRUPT_ENABLED */
-        #endif /* End DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
+        DEBUG_UART_rxBufferRead = 0u;
+        DEBUG_UART_rxBufferWrite = 0u;
+        DEBUG_UART_rxBufferLoopDetect = 0u;
+        DEBUG_UART_rxBufferOverflow = 0u;
+
+        DEBUG_UART_EnableRxInt();
+
+    #endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED) */
 
     }
 
@@ -806,7 +786,8 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Set the receive addressing mode
+    *  Sets the software controlled Addressing mode used by the RX portion of the
+    *  UART.
     *
     * Parameters:
     *  addressMode: Enumerated value indicating the mode of RX addressing
@@ -834,12 +815,16 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     {
         #if(DEBUG_UART_RXHW_ADDRESS_ENABLED)
             #if(DEBUG_UART_CONTROL_REG_REMOVED)
-                if(addressMode != 0u) { }     /* release compiler warning */
+                if(0u != addressMode)
+                {
+                    /* Suppress compiler warning */
+                }
             #else /* DEBUG_UART_CONTROL_REG_REMOVED */
                 uint8 tmpCtrl;
                 tmpCtrl = DEBUG_UART_CONTROL_REG & (uint8)~DEBUG_UART_CTRL_RXADDR_MODE_MASK;
                 tmpCtrl |= (uint8)(addressMode << DEBUG_UART_CTRL_RXADDR_MODE0_SHIFT);
                 DEBUG_UART_CONTROL_REG = tmpCtrl;
+
                 #if(DEBUG_UART_RX_INTERRUPT_ENABLED && \
                    (DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH) )
                     DEBUG_UART_rxAddressMode = addressMode;
@@ -847,7 +832,10 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
                 #endif /* End DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH*/
             #endif /* End DEBUG_UART_CONTROL_REG_REMOVED */
         #else /* DEBUG_UART_RXHW_ADDRESS_ENABLED */
-            if(addressMode != 0u) { }     /* release compiler warning */
+            if(0u != addressMode)
+            {
+                /* Suppress compiler warning */
+            }
         #endif /* End DEBUG_UART_RXHW_ADDRESS_ENABLED */
     }
 
@@ -857,17 +845,16 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Set the first hardware address compare value
+    *  Sets the first of two hardware-detectable receiver addresses.
     *
     * Parameters:
-    *  address
+    *  address: Address #1 for hardware address detection.
     *
     * Return:
     *  None.
     *
     *******************************************************************************/
     void DEBUG_UART_SetRxAddress1(uint8 address) 
-
     {
         DEBUG_UART_RXADDRESS1_REG = address;
     }
@@ -878,10 +865,10 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Set the second hardware address compare value
+    *  Sets the second of two hardware-detectable receiver addresses.
     *
     * Parameters:
-    *  address
+    *  address: Address #2 for hardware address detection.
     *
     * Return:
     *  None.
@@ -896,67 +883,20 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
 
 
 #if( (DEBUG_UART_TX_ENABLED) || (DEBUG_UART_HD_ENABLED) )
-
-    #if(DEBUG_UART_TX_INTERRUPT_ENABLED)
-
-        /*******************************************************************************
-        * Function Name: DEBUG_UART_EnableTxInt
-        ********************************************************************************
-        *
-        * Summary:
-        *  Enable TX interrupt generation
-        *
-        * Parameters:
-        *  None.
-        *
-        * Return:
-        *  None.
-        *
-        * Theory:
-        *  Enable the interrupt output -or- the interrupt component itself
-        *
-        *******************************************************************************/
-        void DEBUG_UART_EnableTxInt(void) 
-        {
-            CyIntEnable(DEBUG_UART_TX_VECT_NUM);
-        }
-
-
-        /*******************************************************************************
-        * Function Name: DEBUG_UART_DisableTxInt
-        ********************************************************************************
-        *
-        * Summary:
-        *  Disable TX interrupt generation
-        *
-        * Parameters:
-        *  None.
-        *
-        * Return:
-        *  None.
-        *
-        * Theory:
-        *  Disable the interrupt output -or- the interrupt component itself
-        *
-        *******************************************************************************/
-        void DEBUG_UART_DisableTxInt(void) 
-        {
-            CyIntDisable(DEBUG_UART_TX_VECT_NUM);
-        }
-
-    #endif /* DEBUG_UART_TX_INTERRUPT_ENABLED */
-
-
     /*******************************************************************************
     * Function Name: DEBUG_UART_SetTxInterruptMode
     ********************************************************************************
     *
     * Summary:
-    *  Configure which status bits trigger an interrupt event
+    *  Configures the TX interrupt sources to be enabled, but does not enable the
+    *  interrupt.
     *
     * Parameters:
-    *  intSrc: An or'd combination of the desired status bit masks (defined in
-    *          the header file)
+    *  intSrc: Bit field containing the TX interrupt sources to enable
+    *   DEBUG_UART_TX_STS_COMPLETE        Interrupt on TX byte complete
+    *   DEBUG_UART_TX_STS_FIFO_EMPTY      Interrupt when TX FIFO is empty
+    *   DEBUG_UART_TX_STS_FIFO_FULL       Interrupt when TX FIFO is full
+    *   DEBUG_UART_TX_STS_FIFO_NOT_FULL   Interrupt when TX FIFO is not full
     *
     * Return:
     *  None.
@@ -976,15 +916,15 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Write a byte of data to the Transmit FIFO or TX buffer to be sent when the
-    *  bus is available. WriteTxData sends a byte without checking for buffer room
-    *  or status. It is up to the user to separately check status.
+    *  Places a byte of data into the transmit buffer to be sent when the bus is
+    *  available without checking the TX status register. You must check status
+    *  separately.
     *
     * Parameters:
-    *  TXDataByte: byte of data to place in the transmit FIFO
+    *  txDataByte: data byte
     *
     * Return:
-    * void
+    * None.
     *
     * Global Variables:
     *  DEBUG_UART_txBuffer - RAM buffer pointer for save data for transmission
@@ -1004,45 +944,38 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
         /* If not Initialized then skip this function*/
         if(DEBUG_UART_initVar != 0u)
         {
-            #if(DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH)
+        #if (DEBUG_UART_TX_INTERRUPT_ENABLED)
 
-                /* Disable Tx interrupt. */
-                /* Protect variables that could change on interrupt. */
-                #if(DEBUG_UART_TX_INTERRUPT_ENABLED)
-                    DEBUG_UART_DisableTxInt();
-                #endif /* End DEBUG_UART_TX_INTERRUPT_ENABLED */
+            /* Protect variables that could change on interrupt. */
+            DEBUG_UART_DisableTxInt();
 
-                if( (DEBUG_UART_txBufferRead == DEBUG_UART_txBufferWrite) &&
-                    ((DEBUG_UART_TXSTATUS_REG & DEBUG_UART_TX_STS_FIFO_FULL) == 0u) )
-                {
-                    /* Add directly to the FIFO. */
-                    DEBUG_UART_TXDATA_REG = txDataByte;
-                }
-                else
-                {
-                    if(DEBUG_UART_txBufferWrite >= DEBUG_UART_TXBUFFERSIZE)
-                    {
-                        DEBUG_UART_txBufferWrite = 0u;
-                    }
-
-                    DEBUG_UART_txBuffer[DEBUG_UART_txBufferWrite] = txDataByte;
-
-                    /* Add to the software buffer. */
-                    DEBUG_UART_txBufferWrite++;
-
-                }
-
-                /* Enable Tx interrupt. */
-                #if(DEBUG_UART_TX_INTERRUPT_ENABLED)
-                    DEBUG_UART_EnableTxInt();
-                #endif /* End DEBUG_UART_TX_INTERRUPT_ENABLED */
-
-            #else /* DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
-
+            if( (DEBUG_UART_txBufferRead == DEBUG_UART_txBufferWrite) &&
+                ((DEBUG_UART_TXSTATUS_REG & DEBUG_UART_TX_STS_FIFO_FULL) == 0u) )
+            {
                 /* Add directly to the FIFO. */
                 DEBUG_UART_TXDATA_REG = txDataByte;
+            }
+            else
+            {
+                if(DEBUG_UART_txBufferWrite >= DEBUG_UART_TX_BUFFER_SIZE)
+                {
+                    DEBUG_UART_txBufferWrite = 0u;
+                }
 
-            #endif /* End DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
+                DEBUG_UART_txBuffer[DEBUG_UART_txBufferWrite] = txDataByte;
+
+                /* Add to the software buffer. */
+                DEBUG_UART_txBufferWrite++;
+            }
+
+            DEBUG_UART_EnableTxInt();
+
+        #else
+
+            /* Add directly to the FIFO. */
+            DEBUG_UART_TXDATA_REG = txDataByte;
+
+        #endif /*(DEBUG_UART_TX_INTERRUPT_ENABLED) */
         }
     }
 
@@ -1052,7 +985,7 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Read the status register for the component
+    *  Reads the status register for the TX portion of the UART.
     *
     * Parameters:
     *  None.
@@ -1061,10 +994,10 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     *  Contents of the status register
     *
     * Theory:
-    *  This function reads the status register which is clear on read. It is up to
-    *  the user to handle all bits in this return value accordingly, even if the bit
-    *  was not enabled as an interrupt source the event happened and must be handled
-    *  accordingly.
+    *  This function reads the TX status register, which is cleared on read.
+    *  It is up to the user to handle all bits in this return value accordingly,
+    *  even if the bit was not enabled as an interrupt source the event happened
+    *  and must be handled accordingly.
     *
     *******************************************************************************/
     uint8 DEBUG_UART_ReadTxStatus(void) 
@@ -1078,10 +1011,12 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Wait to send byte until TX register or buffer has room.
+    *  Puts a byte of data into the transmit buffer to be sent when the bus is
+    *  available. This is a blocking API that waits until the TX buffer has room to
+    *  hold the data.
     *
     * Parameters:
-    *  txDataByte: The 8-bit data value to send across the UART.
+    *  txDataByte: Byte containing the data to transmit
     *
     * Return:
     *  None.
@@ -1105,67 +1040,79 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     *******************************************************************************/
     void DEBUG_UART_PutChar(uint8 txDataByte) 
     {
-            #if(DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH)
-                /* The temporary output pointer is used since it takes two instructions
-                *  to increment with a wrap, and we can't risk doing that with the real
-                *  pointer and getting an interrupt in between instructions.
-                */
-                uint8 loc_txBufferWrite;
-                uint8 loc_txBufferRead;
+    #if (DEBUG_UART_TX_INTERRUPT_ENABLED)
+        /* The temporary output pointer is used since it takes two instructions
+        *  to increment with a wrap, and we can't risk doing that with the real
+        *  pointer and getting an interrupt in between instructions.
+        */
+        uint8 locTxBufferWrite;
+        uint8 locTxBufferRead;
 
-                do{
-                    /* Block if software buffer is full, so we don't overwrite. */
-                    #if ((DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_MAX_BYTE_VALUE) && (CY_PSOC3))
-                        /* Disable TX interrupt to protect variables that could change on interrupt */
-                        CyIntDisable(DEBUG_UART_TX_VECT_NUM);
-                    #endif /* End TXBUFFERSIZE > 255 */
-                    loc_txBufferWrite = DEBUG_UART_txBufferWrite;
-                    loc_txBufferRead = DEBUG_UART_txBufferRead;
-                    #if ((DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_MAX_BYTE_VALUE) && (CY_PSOC3))
-                        /* Enable interrupt to continue transmission */
-                        CyIntEnable(DEBUG_UART_TX_VECT_NUM);
-                    #endif /* End TXBUFFERSIZE > 255 */
-                }while( (loc_txBufferWrite < loc_txBufferRead) ? (loc_txBufferWrite == (loc_txBufferRead - 1u)) :
-                                        ((loc_txBufferWrite - loc_txBufferRead) ==
-                                        (uint8)(DEBUG_UART_TXBUFFERSIZE - 1u)) );
+        do
+        { /* Block if software buffer is full, so we don't overwrite. */
 
-                if( (loc_txBufferRead == loc_txBufferWrite) &&
-                    ((DEBUG_UART_TXSTATUS_REG & DEBUG_UART_TX_STS_FIFO_FULL) == 0u) )
-                {
-                    /* Add directly to the FIFO. */
-                    DEBUG_UART_TXDATA_REG = txDataByte;
-                }
-                else
-                {
-                    if(loc_txBufferWrite >= DEBUG_UART_TXBUFFERSIZE)
-                    {
-                        loc_txBufferWrite = 0u;
-                    }
-                    /* Add to the software buffer. */
-                    DEBUG_UART_txBuffer[loc_txBufferWrite] = txDataByte;
-                    loc_txBufferWrite++;
+        #if ((DEBUG_UART_TX_BUFFER_SIZE > DEBUG_UART_MAX_BYTE_VALUE) && (CY_PSOC3))
+            /* Disable TX interrupt to protect variables from modification */
+            DEBUG_UART_DisableTxInt();
+        #endif /* (DEBUG_UART_TX_BUFFER_SIZE > 255) */
 
-                    /* Finally, update the real output pointer */
-                    #if ((DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_MAX_BYTE_VALUE) && (CY_PSOC3))
-                        CyIntDisable(DEBUG_UART_TX_VECT_NUM);
-                    #endif /* End TXBUFFERSIZE > 255 */
-                    DEBUG_UART_txBufferWrite = loc_txBufferWrite;
-                    #if ((DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_MAX_BYTE_VALUE) && (CY_PSOC3))
-                        CyIntEnable(DEBUG_UART_TX_VECT_NUM);
-                    #endif /* End TXBUFFERSIZE > 255 */
-                }
+            locTxBufferWrite = DEBUG_UART_txBufferWrite;
+            locTxBufferRead  = DEBUG_UART_txBufferRead;
 
-            #else /* DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
+        #if ((DEBUG_UART_TX_BUFFER_SIZE > DEBUG_UART_MAX_BYTE_VALUE) && (CY_PSOC3))
+            /* Enable interrupt to continue transmission */
+            DEBUG_UART_EnableTxInt();
+        #endif /* (DEBUG_UART_TX_BUFFER_SIZE > 255) */
+        }
+        while( (locTxBufferWrite < locTxBufferRead) ? (locTxBufferWrite == (locTxBufferRead - 1u)) :
+                                ((locTxBufferWrite - locTxBufferRead) ==
+                                (uint8)(DEBUG_UART_TX_BUFFER_SIZE - 1u)) );
 
-                while((DEBUG_UART_TXSTATUS_REG & DEBUG_UART_TX_STS_FIFO_FULL) != 0u)
-                {
-                    ; /* Wait for room in the FIFO. */
-                }
+        if( (locTxBufferRead == locTxBufferWrite) &&
+            ((DEBUG_UART_TXSTATUS_REG & DEBUG_UART_TX_STS_FIFO_FULL) == 0u) )
+        {
+            /* Add directly to the FIFO */
+            DEBUG_UART_TXDATA_REG = txDataByte;
+        }
+        else
+        {
+            if(locTxBufferWrite >= DEBUG_UART_TX_BUFFER_SIZE)
+            {
+                locTxBufferWrite = 0u;
+            }
+            /* Add to the software buffer. */
+            DEBUG_UART_txBuffer[locTxBufferWrite] = txDataByte;
+            locTxBufferWrite++;
 
-                /* Add directly to the FIFO. */
-                DEBUG_UART_TXDATA_REG = txDataByte;
+            /* Finally, update the real output pointer */
+        #if ((DEBUG_UART_TX_BUFFER_SIZE > DEBUG_UART_MAX_BYTE_VALUE) && (CY_PSOC3))
+            DEBUG_UART_DisableTxInt();
+        #endif /* (DEBUG_UART_TX_BUFFER_SIZE > 255) */
 
-            #endif /* End DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
+            DEBUG_UART_txBufferWrite = locTxBufferWrite;
+
+        #if ((DEBUG_UART_TX_BUFFER_SIZE > DEBUG_UART_MAX_BYTE_VALUE) && (CY_PSOC3))
+            DEBUG_UART_EnableTxInt();
+        #endif /* (DEBUG_UART_TX_BUFFER_SIZE > 255) */
+
+            if(0u != (DEBUG_UART_TXSTATUS_REG & DEBUG_UART_TX_STS_FIFO_EMPTY))
+            {
+                /* Trigger TX interrupt to send software buffer */
+                DEBUG_UART_SetPendingTxInt();
+            }
+        }
+
+    #else
+
+        while((DEBUG_UART_TXSTATUS_REG & DEBUG_UART_TX_STS_FIFO_FULL) != 0u)
+        {
+            /* Wait for room in the FIFO */
+        }
+
+        /* Add directly to the FIFO */
+        DEBUG_UART_TXDATA_REG = txDataByte;
+
+    #endif /* End (DEBUG_UART_TX_INTERRUPT_ENABLED) */
     }
 
 
@@ -1174,10 +1121,10 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Write a Sequence of bytes on the Transmit line. Data comes from RAM or ROM.
+    *  Sends a NULL terminated string to the TX buffer for transmission.
     *
     * Parameters:
-    *  string: char pointer to character string of Data to Send.
+    *  string[]: Pointer to the null terminated string array residing in RAM or ROM
     *
     * Return:
     *  None.
@@ -1190,22 +1137,23 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     *  No.
     *
     * Theory:
-    *  This function will block if there is not enough memory to place the whole
-    *  string, it will block until the entire string has been written to the
-    *  transmit buffer.
+    *  If there is not enough memory in the TX buffer for the entire string, this
+    *  function blocks until the last character of the string is loaded into the
+    *  TX buffer.
     *
     *******************************************************************************/
     void DEBUG_UART_PutString(const char8 string[]) 
     {
-        uint16 buf_index = 0u;
-        /* If not Initialized then skip this function*/
+        uint16 bufIndex = 0u;
+
+        /* If not Initialized then skip this function */
         if(DEBUG_UART_initVar != 0u)
         {
-            /* This is a blocking function, it will not exit until all data is sent*/
-            while(string[buf_index] != (char8)0)
+            /* This is a blocking function, it will not exit until all data is sent */
+            while(string[bufIndex] != (char8) 0)
             {
-                DEBUG_UART_PutChar((uint8)string[buf_index]);
-                buf_index++;
+                DEBUG_UART_PutChar((uint8)string[bufIndex]);
+                bufIndex++;
             }
         }
     }
@@ -1216,11 +1164,13 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Write a Sequence of bytes on the Transmit line. Data comes from RAM or ROM.
+    *  Places N bytes of data from a memory array into the TX buffer for
+    *  transmission.
     *
     * Parameters:
-    *  string: Address of the memory array residing in RAM or ROM.
-    *  byteCount: Number of Bytes to be transmitted.
+    *  string[]: Address of the memory array residing in RAM or ROM.
+    *  byteCount: Number of bytes to be transmitted. The type depends on TX Buffer
+    *             Size parameter.
     *
     * Return:
     *  None.
@@ -1232,19 +1182,25 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     * Reentrant:
     *  No.
     *
+    * Theory:
+    *  If there is not enough memory in the TX buffer for the entire string, this
+    *  function blocks until the last character of the string is loaded into the
+    *  TX buffer.
+    *
     *******************************************************************************/
     void DEBUG_UART_PutArray(const uint8 string[], uint8 byteCount)
                                                                     
     {
-        uint8 buf_index = 0u;
-        /* If not Initialized then skip this function*/
+        uint8 bufIndex = 0u;
+
+        /* If not Initialized then skip this function */
         if(DEBUG_UART_initVar != 0u)
         {
-            do
+            while(bufIndex < byteCount)
             {
-                DEBUG_UART_PutChar(string[buf_index]);
-                buf_index++;
-            }while(buf_index < byteCount);
+                DEBUG_UART_PutChar(string[bufIndex]);
+                bufIndex++;
+            }
         }
     }
 
@@ -1254,10 +1210,11 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Write a character and then carriage return and line feed.
+    *  Writes a byte of data followed by a carriage return (0x0D) and line feed
+    *  (0x0A) to the transmit buffer.
     *
     * Parameters:
-    *  txDataByte: uint8 Character to send.
+    *  txDataByte: Data byte to transmit before the carriage return and line feed.
     *
     * Return:
     *  None.
@@ -1272,7 +1229,7 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     *******************************************************************************/
     void DEBUG_UART_PutCRLF(uint8 txDataByte) 
     {
-        /* If not Initialized then skip this function*/
+        /* If not Initialized then skip this function */
         if(DEBUG_UART_initVar != 0u)
         {
             DEBUG_UART_PutChar(txDataByte);
@@ -1287,14 +1244,20 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Determine the amount of space left in the TX buffer and return the count in
-    *  bytes
+    *  Returns the number of bytes in the TX buffer which are waiting to be 
+    *  transmitted.
+    *  * TX software buffer is disabled (TX Buffer Size parameter is equal to 4): 
+    *    returns 0 for empty TX FIFO, 1 for not full TX FIFO or 4 for full TX FIFO.
+    *  * TX software buffer is enabled: returns the number of bytes in the TX 
+    *    software buffer which are waiting to be transmitted. Bytes available in the
+    *    TX FIFO do not take to account.
     *
     * Parameters:
     *  None.
     *
     * Return:
-    *  Integer count of the number of bytes left in the TX buffer
+    *  Number of bytes used in the TX buffer. Return value type depends on the TX 
+    *  Buffer Size parameter.
     *
     * Global Variables:
     *  DEBUG_UART_txBufferWrite - used to calculate left space.
@@ -1312,54 +1275,49 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     {
         uint8 size;
 
-        #if(DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH)
+    #if (DEBUG_UART_TX_INTERRUPT_ENABLED)
 
-            /* Disable Tx interrupt. */
-            /* Protect variables that could change on interrupt. */
-            #if(DEBUG_UART_TX_INTERRUPT_ENABLED)
-                DEBUG_UART_DisableTxInt();
-            #endif /* End DEBUG_UART_TX_INTERRUPT_ENABLED */
+        /* Protect variables that could change on interrupt. */
+        DEBUG_UART_DisableTxInt();
 
-            if(DEBUG_UART_txBufferRead == DEBUG_UART_txBufferWrite)
-            {
-                size = 0u;
-            }
-            else if(DEBUG_UART_txBufferRead < DEBUG_UART_txBufferWrite)
-            {
-                size = (DEBUG_UART_txBufferWrite - DEBUG_UART_txBufferRead);
-            }
-            else
-            {
-                size = (DEBUG_UART_TXBUFFERSIZE - DEBUG_UART_txBufferRead) + DEBUG_UART_txBufferWrite;
-            }
+        if(DEBUG_UART_txBufferRead == DEBUG_UART_txBufferWrite)
+        {
+            size = 0u;
+        }
+        else if(DEBUG_UART_txBufferRead < DEBUG_UART_txBufferWrite)
+        {
+            size = (DEBUG_UART_txBufferWrite - DEBUG_UART_txBufferRead);
+        }
+        else
+        {
+            size = (DEBUG_UART_TX_BUFFER_SIZE - DEBUG_UART_txBufferRead) +
+                    DEBUG_UART_txBufferWrite;
+        }
 
-            /* Enable Tx interrupt. */
-            #if(DEBUG_UART_TX_INTERRUPT_ENABLED)
-                DEBUG_UART_EnableTxInt();
-            #endif /* End DEBUG_UART_TX_INTERRUPT_ENABLED */
+        DEBUG_UART_EnableTxInt();
 
-        #else /* DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
+    #else
 
-            size = DEBUG_UART_TXSTATUS_REG;
+        size = DEBUG_UART_TXSTATUS_REG;
 
-            /* Is the fifo is full. */
-            if((size & DEBUG_UART_TX_STS_FIFO_FULL) != 0u)
-            {
-                size = DEBUG_UART_FIFO_LENGTH;
-            }
-            else if((size & DEBUG_UART_TX_STS_FIFO_EMPTY) != 0u)
-            {
-                size = 0u;
-            }
-            else
-            {
-                /* We only know there is data in the fifo. */
-                size = 1u;
-            }
+        /* Is the fifo is full. */
+        if((size & DEBUG_UART_TX_STS_FIFO_FULL) != 0u)
+        {
+            size = DEBUG_UART_FIFO_LENGTH;
+        }
+        else if((size & DEBUG_UART_TX_STS_FIFO_EMPTY) != 0u)
+        {
+            size = 0u;
+        }
+        else
+        {
+            /* We only know there is data in the fifo. */
+            size = 1u;
+        }
 
-        #endif /* End DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
+    #endif /* (DEBUG_UART_TX_INTERRUPT_ENABLED) */
 
-        return(size);
+    return(size);
     }
 
 
@@ -1368,8 +1326,7 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Clears the TX RAM buffer by setting the read and write pointers both to zero.
-    *  Clears the hardware TX FIFO.  Any data present in the FIFO will not be sent.
+    *  Clears all data from the TX buffer and hardware TX FIFO.
     *
     * Parameters:
     *  None.
@@ -1390,38 +1347,32 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     *  remained in the RAM.
     *
     * Side Effects:
-    *  Any received data not read from the RAM buffer will be lost when overwritten.
+    *  Data waiting in the transmit buffer is not sent; a byte that is currently
+    *  transmitting finishes transmitting.
     *
     *******************************************************************************/
     void DEBUG_UART_ClearTxBuffer(void) 
     {
         uint8 enableInterrupts;
 
-        /* Enter critical section */
         enableInterrupts = CyEnterCriticalSection();
-        /* clear the HW FIFO */
-        DEBUG_UART_TXDATA_AUX_CTL_REG |=  DEBUG_UART_TX_FIFO_CLR;
-        DEBUG_UART_TXDATA_AUX_CTL_REG &= (uint8)~DEBUG_UART_TX_FIFO_CLR;
-        /* Exit critical section */
+        /* Clear the HW FIFO */
+        DEBUG_UART_TXDATA_AUX_CTL_REG |= (uint8)  DEBUG_UART_TX_FIFO_CLR;
+        DEBUG_UART_TXDATA_AUX_CTL_REG &= (uint8) ~DEBUG_UART_TX_FIFO_CLR;
         CyExitCriticalSection(enableInterrupts);
 
-        #if(DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH)
+    #if (DEBUG_UART_TX_INTERRUPT_ENABLED)
 
-            /* Disable Tx interrupt. */
-            /* Protect variables that could change on interrupt. */
-            #if(DEBUG_UART_TX_INTERRUPT_ENABLED)
-                DEBUG_UART_DisableTxInt();
-            #endif /* End DEBUG_UART_TX_INTERRUPT_ENABLED */
+        /* Protect variables that could change on interrupt. */
+        DEBUG_UART_DisableTxInt();
 
-            DEBUG_UART_txBufferRead = 0u;
-            DEBUG_UART_txBufferWrite = 0u;
+        DEBUG_UART_txBufferRead = 0u;
+        DEBUG_UART_txBufferWrite = 0u;
 
-            /* Enable Tx interrupt. */
-            #if(DEBUG_UART_TX_INTERRUPT_ENABLED)
-                DEBUG_UART_EnableTxInt();
-            #endif /* End DEBUG_UART_TX_INTERRUPT_ENABLED */
+        /* Enable Tx interrupt. */
+        DEBUG_UART_EnableTxInt();
 
-        #endif /* End DEBUG_UART_TXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH */
+    #endif /* (DEBUG_UART_TX_INTERRUPT_ENABLED) */
     }
 
 
@@ -1430,19 +1381,19 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Write a Break command to the UART
+    *  Transmits a break signal on the bus.
     *
     * Parameters:
-    *  uint8 retMode:  Wait mode,
-    *   0 - Initialize registers for Break, sends the Break signal and return
-    *       imediately.
-    *   1 - Wait until Break sending is complete, reinitialize registers to normal
-    *       transmission mode then return.
-    *   2 - Reinitialize registers to normal transmission mode then return.
-    *   3 - both steps: 0 and 1
-    *       init registers for Break, send Break signal
-    *       wait until Break sending is complete, reinit registers to normal
-    *       transmission mode then return.
+    *  uint8 retMode:  Send Break return mode. See the following table for options.
+    *   DEBUG_UART_SEND_BREAK - Initialize registers for break, send the Break
+    *       signal and return immediately.
+    *   DEBUG_UART_WAIT_FOR_COMPLETE_REINIT - Wait until break transmission is
+    *       complete, reinitialize registers to normal transmission mode then return
+    *   DEBUG_UART_REINIT - Reinitialize registers to normal transmission mode
+    *       then return.
+    *   DEBUG_UART_SEND_WAIT_REINIT - Performs both options: 
+    *      DEBUG_UART_SEND_BREAK and DEBUG_UART_WAIT_FOR_COMPLETE_REINIT.
+    *      This option is recommended for most cases.
     *
     * Return:
     *  None.
@@ -1450,7 +1401,7 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     * Global Variables:
     *  DEBUG_UART_initVar - checked to identify that the component has been
     *     initialized.
-    *  tx_period - static variable, used for keeping TX period configuration.
+    *  txPeriod - static variable, used for keeping TX period configuration.
     *
     * Reentrant:
     *  No.
@@ -1459,27 +1410,31 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     *  SendBreak function initializes registers to send 13-bit break signal. It is
     *  important to return the registers configuration to normal for continue 8-bit
     *  operation.
-    *  Trere are 3 variants for this API usage:
+    *  There are 3 variants for this API usage:
     *  1) SendBreak(3) - function will send the Break signal and take care on the
-    *     configuration returning. Funcition will block CPU untill transmition
+    *     configuration returning. Function will block CPU until transmission
     *     complete.
-    *  2) User may want to use bloking time if UART configured to the low speed
+    *  2) User may want to use blocking time if UART configured to the low speed
     *     operation
-    *     Emample for this case:
-    *     SendBreak(0);     - init Break signal transmition
+    *     Example for this case:
+    *     SendBreak(0);     - initialize Break signal transmission
     *         Add your code here to use CPU time
     *     SendBreak(1);     - complete Break operation
-    *  3) Same to 2) but user may want to init and use the interrupt for complete
-    *     break operation.
+    *  3) Same to 2) but user may want to initialize and use the interrupt to
+    *     complete break operation.
     *     Example for this case:
-    *     Init TX interrupt whith "TX - On TX Complete" parameter
-    *     SendBreak(0);     - init Break signal transmition
+    *     Initialize TX interrupt with "TX - On TX Complete" parameter
+    *     SendBreak(0);     - initialize Break signal transmission
     *         Add your code here to use CPU time
-    *     When interrupt appear with UART_TX_STS_COMPLETE status:
+    *     When interrupt appear with DEBUG_UART_TX_STS_COMPLETE status:
     *     SendBreak(2);     - complete Break operation
     *
     * Side Effects:
-    *   Uses static variable to keep registers configuration.
+    *  The DEBUG_UART_SendBreak() function initializes registers to send a
+    *  break signal.
+    *  Break signal length depends on the break signal bits configuration.
+    *  The register configuration should be reinitialized before normal 8-bit
+    *  communication can continue.
     *
     *******************************************************************************/
     void DEBUG_UART_SendBreak(uint8 retMode) 
@@ -1488,102 +1443,106 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
         /* If not Initialized then skip this function*/
         if(DEBUG_UART_initVar != 0u)
         {
-            /*Set the Counter to 13-bits and transmit a 00 byte*/
-            /*When that is done then reset the counter value back*/
+            /* Set the Counter to 13-bits and transmit a 00 byte */
+            /* When that is done then reset the counter value back */
             uint8 tmpStat;
 
-            #if(DEBUG_UART_HD_ENABLED) /* Half Duplex mode*/
+        #if(DEBUG_UART_HD_ENABLED) /* Half Duplex mode*/
 
-                if( (retMode == DEBUG_UART_SEND_BREAK) ||
-                    (retMode == DEBUG_UART_SEND_WAIT_REINIT ) )
+            if( (retMode == DEBUG_UART_SEND_BREAK) ||
+                (retMode == DEBUG_UART_SEND_WAIT_REINIT ) )
+            {
+                /* CTRL_HD_SEND_BREAK - sends break bits in HD mode */
+                DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() |
+                                                      DEBUG_UART_CTRL_HD_SEND_BREAK);
+                /* Send zeros */
+                DEBUG_UART_TXDATA_REG = 0u;
+
+                do /* Wait until transmit starts */
                 {
-                    /* CTRL_HD_SEND_BREAK - sends break bits in HD mode*/
+                    tmpStat = DEBUG_UART_TXSTATUS_REG;
+                }
+                while((tmpStat & DEBUG_UART_TX_STS_FIFO_EMPTY) != 0u);
+            }
+
+            if( (retMode == DEBUG_UART_WAIT_FOR_COMPLETE_REINIT) ||
+                (retMode == DEBUG_UART_SEND_WAIT_REINIT) )
+            {
+                do /* Wait until transmit complete */
+                {
+                    tmpStat = DEBUG_UART_TXSTATUS_REG;
+                }
+                while(((uint8)~tmpStat & DEBUG_UART_TX_STS_COMPLETE) != 0u);
+            }
+
+            if( (retMode == DEBUG_UART_WAIT_FOR_COMPLETE_REINIT) ||
+                (retMode == DEBUG_UART_REINIT) ||
+                (retMode == DEBUG_UART_SEND_WAIT_REINIT) )
+            {
+                DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() &
+                                              (uint8)~DEBUG_UART_CTRL_HD_SEND_BREAK);
+            }
+
+        #else /* DEBUG_UART_HD_ENABLED Full Duplex mode */
+
+            static uint8 txPeriod;
+
+            if( (retMode == DEBUG_UART_SEND_BREAK) ||
+                (retMode == DEBUG_UART_SEND_WAIT_REINIT) )
+            {
+                /* CTRL_HD_SEND_BREAK - skip to send parity bit at Break signal in Full Duplex mode */
+                #if( (DEBUG_UART_PARITY_TYPE != DEBUG_UART__B_UART__NONE_REVB) || \
+                                    (DEBUG_UART_PARITY_TYPE_SW != 0u) )
                     DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() |
                                                           DEBUG_UART_CTRL_HD_SEND_BREAK);
-                    /* Send zeros*/
-                    DEBUG_UART_TXDATA_REG = 0u;
+                #endif /* End DEBUG_UART_PARITY_TYPE != DEBUG_UART__B_UART__NONE_REVB  */
 
-                    do /*wait until transmit starts*/
-                    {
-                        tmpStat = DEBUG_UART_TXSTATUS_REG;
-                    }while((tmpStat & DEBUG_UART_TX_STS_FIFO_EMPTY) != 0u);
-                }
+                #if(DEBUG_UART_TXCLKGEN_DP)
+                    txPeriod = DEBUG_UART_TXBITCLKTX_COMPLETE_REG;
+                    DEBUG_UART_TXBITCLKTX_COMPLETE_REG = DEBUG_UART_TXBITCTR_BREAKBITS;
+                #else
+                    txPeriod = DEBUG_UART_TXBITCTR_PERIOD_REG;
+                    DEBUG_UART_TXBITCTR_PERIOD_REG = DEBUG_UART_TXBITCTR_BREAKBITS8X;
+                #endif /* End DEBUG_UART_TXCLKGEN_DP */
 
-                if( (retMode == DEBUG_UART_WAIT_FOR_COMPLETE_REINIT) ||
-                    (retMode == DEBUG_UART_SEND_WAIT_REINIT) )
+                /* Send zeros */
+                DEBUG_UART_TXDATA_REG = 0u;
+
+                do /* Wait until transmit starts */
                 {
-                    do /*wait until transmit complete*/
-                    {
-                        tmpStat = DEBUG_UART_TXSTATUS_REG;
-                    }while(((uint8)~tmpStat & DEBUG_UART_TX_STS_COMPLETE) != 0u);
+                    tmpStat = DEBUG_UART_TXSTATUS_REG;
                 }
+                while((tmpStat & DEBUG_UART_TX_STS_FIFO_EMPTY) != 0u);
+            }
 
-                if( (retMode == DEBUG_UART_WAIT_FOR_COMPLETE_REINIT) ||
-                    (retMode == DEBUG_UART_REINIT) ||
-                    (retMode == DEBUG_UART_SEND_WAIT_REINIT) )
+            if( (retMode == DEBUG_UART_WAIT_FOR_COMPLETE_REINIT) ||
+                (retMode == DEBUG_UART_SEND_WAIT_REINIT) )
+            {
+                do /* Wait until transmit complete */
                 {
-                    DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() &
-                                                  (uint8)~DEBUG_UART_CTRL_HD_SEND_BREAK);
+                    tmpStat = DEBUG_UART_TXSTATUS_REG;
                 }
+                while(((uint8)~tmpStat & DEBUG_UART_TX_STS_COMPLETE) != 0u);
+            }
 
-            #else /* DEBUG_UART_HD_ENABLED Full Duplex mode */
+            if( (retMode == DEBUG_UART_WAIT_FOR_COMPLETE_REINIT) ||
+                (retMode == DEBUG_UART_REINIT) ||
+                (retMode == DEBUG_UART_SEND_WAIT_REINIT) )
+            {
 
-                static uint8 tx_period;
+            #if(DEBUG_UART_TXCLKGEN_DP)
+                DEBUG_UART_TXBITCLKTX_COMPLETE_REG = txPeriod;
+            #else
+                DEBUG_UART_TXBITCTR_PERIOD_REG = txPeriod;
+            #endif /* End DEBUG_UART_TXCLKGEN_DP */
 
-                if( (retMode == DEBUG_UART_SEND_BREAK) ||
-                    (retMode == DEBUG_UART_SEND_WAIT_REINIT) )
-                {
-                    /* CTRL_HD_SEND_BREAK - skip to send parity bit at Break signal in Full Duplex mode*/
-                    #if( (DEBUG_UART_PARITY_TYPE != DEBUG_UART__B_UART__NONE_REVB) || \
-                                        (DEBUG_UART_PARITY_TYPE_SW != 0u) )
-                        DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() |
-                                                              DEBUG_UART_CTRL_HD_SEND_BREAK);
-                    #endif /* End DEBUG_UART_PARITY_TYPE != DEBUG_UART__B_UART__NONE_REVB  */
-
-                    #if(DEBUG_UART_TXCLKGEN_DP)
-                        tx_period = DEBUG_UART_TXBITCLKTX_COMPLETE_REG;
-                        DEBUG_UART_TXBITCLKTX_COMPLETE_REG = DEBUG_UART_TXBITCTR_BREAKBITS;
-                    #else
-                        tx_period = DEBUG_UART_TXBITCTR_PERIOD_REG;
-                        DEBUG_UART_TXBITCTR_PERIOD_REG = DEBUG_UART_TXBITCTR_BREAKBITS8X;
-                    #endif /* End DEBUG_UART_TXCLKGEN_DP */
-
-                    /* Send zeros*/
-                    DEBUG_UART_TXDATA_REG = 0u;
-
-                    do /* wait until transmit starts */
-                    {
-                        tmpStat = DEBUG_UART_TXSTATUS_REG;
-                    }while((tmpStat & DEBUG_UART_TX_STS_FIFO_EMPTY) != 0u);
-                }
-
-                if( (retMode == DEBUG_UART_WAIT_FOR_COMPLETE_REINIT) ||
-                    (retMode == DEBUG_UART_SEND_WAIT_REINIT) )
-                {
-                    do /*wait until transmit complete*/
-                    {
-                        tmpStat = DEBUG_UART_TXSTATUS_REG;
-                    }while(((uint8)~tmpStat & DEBUG_UART_TX_STS_COMPLETE) != 0u);
-                }
-
-                if( (retMode == DEBUG_UART_WAIT_FOR_COMPLETE_REINIT) ||
-                    (retMode == DEBUG_UART_REINIT) ||
-                    (retMode == DEBUG_UART_SEND_WAIT_REINIT) )
-                {
-
-                    #if(DEBUG_UART_TXCLKGEN_DP)
-                        DEBUG_UART_TXBITCLKTX_COMPLETE_REG = tx_period;
-                    #else
-                        DEBUG_UART_TXBITCTR_PERIOD_REG = tx_period;
-                    #endif /* End DEBUG_UART_TXCLKGEN_DP */
-
-                    #if( (DEBUG_UART_PARITY_TYPE != DEBUG_UART__B_UART__NONE_REVB) || \
-                         (DEBUG_UART_PARITY_TYPE_SW != 0u) )
-                        DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() &
-                                                      (uint8)~DEBUG_UART_CTRL_HD_SEND_BREAK);
-                    #endif /* End DEBUG_UART_PARITY_TYPE != NONE */
-                }
-            #endif    /* End DEBUG_UART_HD_ENABLED */
+            #if( (DEBUG_UART_PARITY_TYPE != DEBUG_UART__B_UART__NONE_REVB) || \
+                 (DEBUG_UART_PARITY_TYPE_SW != 0u) )
+                DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() &
+                                                      (uint8) ~DEBUG_UART_CTRL_HD_SEND_BREAK);
+            #endif /* End DEBUG_UART_PARITY_TYPE != NONE */
+            }
+        #endif    /* End DEBUG_UART_HD_ENABLED */
         }
     }
 
@@ -1593,32 +1552,39 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     ********************************************************************************
     *
     * Summary:
-    *  Set the transmit addressing mode
+    *  Configures the transmitter to signal the next bytes is address or data.
     *
     * Parameters:
-    *  addressMode: 0 -> Space
-    *               1 -> Mark
+    *  addressMode: 
+    *       DEBUG_UART_SET_SPACE - Configure the transmitter to send the next
+    *                                    byte as a data.
+    *       DEBUG_UART_SET_MARK  - Configure the transmitter to send the next
+    *                                    byte as an address.
     *
     * Return:
     *  None.
     *
+    * Side Effects:
+    *  This function sets and clears DEBUG_UART_CTRL_MARK bit in the Control
+    *  register.
+    *
     *******************************************************************************/
     void DEBUG_UART_SetTxAddressMode(uint8 addressMode) 
     {
-        /* Mark/Space sending enable*/
+        /* Mark/Space sending enable */
         if(addressMode != 0u)
         {
-            #if( DEBUG_UART_CONTROL_REG_REMOVED == 0u )
-                DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() |
-                                                      DEBUG_UART_CTRL_MARK);
-            #endif /* End DEBUG_UART_CONTROL_REG_REMOVED == 0u */
+        #if( DEBUG_UART_CONTROL_REG_REMOVED == 0u )
+            DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() |
+                                                  DEBUG_UART_CTRL_MARK);
+        #endif /* End DEBUG_UART_CONTROL_REG_REMOVED == 0u */
         }
         else
         {
-            #if( DEBUG_UART_CONTROL_REG_REMOVED == 0u )
-                DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() &
-                                                    (uint8)~DEBUG_UART_CTRL_MARK);
-            #endif /* End DEBUG_UART_CONTROL_REG_REMOVED == 0u */
+        #if( DEBUG_UART_CONTROL_REG_REMOVED == 0u )
+            DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() &
+                                                  (uint8) ~DEBUG_UART_CTRL_MARK);
+        #endif /* End DEBUG_UART_CONTROL_REG_REMOVED == 0u */
         }
     }
 
@@ -1628,53 +1594,12 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
 
 
     /*******************************************************************************
-    * Function Name: DEBUG_UART_LoadTxConfig
-    ********************************************************************************
-    *
-    * Summary:
-    *  Unloads the Rx configuration if required and loads the
-    *  Tx configuration. It is the users responsibility to ensure that any
-    *  transaction is complete and it is safe to unload the Tx
-    *  configuration.
-    *
-    * Parameters:
-    *  None.
-    *
-    * Return:
-    *  None.
-    *
-    * Theory:
-    *  Valid only for half duplex UART.
-    *
-    * Side Effects:
-    *  Disable RX interrupt mask, when software buffer has been used.
-    *
-    *******************************************************************************/
-    void DEBUG_UART_LoadTxConfig(void) 
-    {
-        #if((DEBUG_UART_RX_INTERRUPT_ENABLED) && (DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH))
-            /* Disable RX interrupts before set TX configuration */
-            DEBUG_UART_SetRxInterruptMode(0u);
-        #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED */
-
-        DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() | DEBUG_UART_CTRL_HD_SEND);
-        DEBUG_UART_RXBITCTR_PERIOD_REG = DEBUG_UART_HD_TXBITCTR_INIT;
-        #if(CY_UDB_V0) /* Manually clear status register when mode has been changed */
-            /* Clear status register */
-            CY_GET_REG8(DEBUG_UART_RXSTATUS_PTR);
-        #endif /* CY_UDB_V0 */
-    }
-
-
-    /*******************************************************************************
     * Function Name: DEBUG_UART_LoadRxConfig
     ********************************************************************************
     *
     * Summary:
-    *  Unloads the Tx configuration if required and loads the
-    *  Rx configuration. It is the users responsibility to ensure that any
-    *  transaction is complete and it is safe to unload the Rx
-    *  configuration.
+    *  Loads the receiver configuration in half duplex mode. After calling this
+    *  function, the UART is ready to receive data.
     *
     * Parameters:
     *  None.
@@ -1682,12 +1607,10 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
     * Return:
     *  None.
     *
-    * Theory:
-    *  Valid only for half duplex UART
-    *
     * Side Effects:
-    *  Set RX interrupt mask based on customizer settings, when software buffer
-    *  has been used.
+    *  Valid only in half duplex mode. You must make sure that the previous
+    *  transaction is complete and it is safe to unload the transmitter
+    *  configuration.
     *
     *******************************************************************************/
     void DEBUG_UART_LoadRxConfig(void) 
@@ -1695,15 +1618,42 @@ void  DEBUG_UART_WriteControlRegister(uint8 control)
         DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() &
                                                 (uint8)~DEBUG_UART_CTRL_HD_SEND);
         DEBUG_UART_RXBITCTR_PERIOD_REG = DEBUG_UART_HD_RXBITCTR_INIT;
-        #if(CY_UDB_V0) /* Manually clear status register when mode has been changed */
-            /* Clear status register */
-            CY_GET_REG8(DEBUG_UART_RXSTATUS_PTR);
-        #endif /* CY_UDB_V0 */
 
-        #if((DEBUG_UART_RX_INTERRUPT_ENABLED) && (DEBUG_UART_RXBUFFERSIZE > DEBUG_UART_FIFO_LENGTH))
-            /* Enable RX interrupt after set RX configuration */
-            DEBUG_UART_SetRxInterruptMode(DEBUG_UART_INIT_RX_INTERRUPTS_MASK);
-        #endif /* DEBUG_UART_RX_INTERRUPT_ENABLED */
+    #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
+        /* Enable RX interrupt after set RX configuration */
+        DEBUG_UART_SetRxInterruptMode(DEBUG_UART_INIT_RX_INTERRUPTS_MASK);
+    #endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED) */
+    }
+
+
+    /*******************************************************************************
+    * Function Name: DEBUG_UART_LoadTxConfig
+    ********************************************************************************
+    *
+    * Summary:
+    *  Loads the transmitter configuration in half duplex mode. After calling this
+    *  function, the UART is ready to transmit data.
+    *
+    * Parameters:
+    *  None.
+    *
+    * Return:
+    *  None.
+    *
+    * Side Effects:
+    *  Valid only in half duplex mode. You must make sure that the previous
+    *  transaction is complete and it is safe to unload the receiver configuration.
+    *
+    *******************************************************************************/
+    void DEBUG_UART_LoadTxConfig(void) 
+    {
+    #if (DEBUG_UART_RX_INTERRUPT_ENABLED)
+        /* Disable RX interrupts before set TX configuration */
+        DEBUG_UART_SetRxInterruptMode(0u);
+    #endif /* (DEBUG_UART_RX_INTERRUPT_ENABLED) */
+
+        DEBUG_UART_WriteControlRegister(DEBUG_UART_ReadControlRegister() | DEBUG_UART_CTRL_HD_SEND);
+        DEBUG_UART_RXBITCTR_PERIOD_REG = DEBUG_UART_HD_TXBITCTR_INIT;
     }
 
 #endif  /* DEBUG_UART_HD_ENABLED */

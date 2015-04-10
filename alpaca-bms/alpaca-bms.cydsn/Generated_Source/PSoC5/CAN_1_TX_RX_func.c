@@ -25,6 +25,8 @@
 
 /* `#START TX_RX_FUNCTION` */
 
+extern uint8_t can_buffer_status[];
+
 /* `#END` */
 
 

@@ -1,6 +1,6 @@
 /*******************************************************************************
 * File Name: DEBUG_UART_PM.c
-* Version 2.30
+* Version 2.40
 *
 * Description:
 *  This file provides Sleep/WakeUp APIs functionality.
@@ -8,7 +8,7 @@
 * Note:
 *
 ********************************************************************************
-* Copyright 2008-2012, Cypress Semiconductor Corporation.  All rights reserved.
+* Copyright 2008-2015, Cypress Semiconductor Corporation.  All rights reserved.
 * You may use this file only in accordance with the license, terms, conditions,
 * disclaimers, and limitations in the end user license agreement accompanying
 * the software package with which this file was provided.
@@ -34,7 +34,10 @@ static DEBUG_UART_BACKUP_STRUCT  DEBUG_UART_backup =
 ********************************************************************************
 *
 * Summary:
-*  Saves the current user configuration.
+*  This function saves the component configuration and nonretention registers.
+*  It also saves the current component parameter values, as defined in the
+*  Configure dialog or as modified by appropriate APIs. This function is called
+*  by the DEBUG_UART_Sleep() function.
 *
 * Parameters:
 *  None.
@@ -48,42 +51,15 @@ static DEBUG_UART_BACKUP_STRUCT  DEBUG_UART_backup =
 * Reentrant:
 *  No.
 *
+* Side Effects:
+*  All nonretention registers except FIFO are saved to RAM
+*
 *******************************************************************************/
 void DEBUG_UART_SaveConfig(void)
 {
-    #if (CY_UDB_V0)
-
-        #if(DEBUG_UART_CONTROL_REG_REMOVED == 0u)
-            DEBUG_UART_backup.cr = DEBUG_UART_CONTROL_REG;
-        #endif /* End DEBUG_UART_CONTROL_REG_REMOVED */
-
-        #if( (DEBUG_UART_RX_ENABLED) || (DEBUG_UART_HD_ENABLED) )
-            DEBUG_UART_backup.rx_period = DEBUG_UART_RXBITCTR_PERIOD_REG;
-            DEBUG_UART_backup.rx_mask = DEBUG_UART_RXSTATUS_MASK_REG;
-            #if (DEBUG_UART_RXHW_ADDRESS_ENABLED)
-                DEBUG_UART_backup.rx_addr1 = DEBUG_UART_RXADDRESS1_REG;
-                DEBUG_UART_backup.rx_addr2 = DEBUG_UART_RXADDRESS2_REG;
-            #endif /* End DEBUG_UART_RXHW_ADDRESS_ENABLED */
-        #endif /* End DEBUG_UART_RX_ENABLED | DEBUG_UART_HD_ENABLED*/
-
-        #if(DEBUG_UART_TX_ENABLED)
-            #if(DEBUG_UART_TXCLKGEN_DP)
-                DEBUG_UART_backup.tx_clk_ctr = DEBUG_UART_TXBITCLKGEN_CTR_REG;
-                DEBUG_UART_backup.tx_clk_compl = DEBUG_UART_TXBITCLKTX_COMPLETE_REG;
-            #else
-                DEBUG_UART_backup.tx_period = DEBUG_UART_TXBITCTR_PERIOD_REG;
-            #endif /*End DEBUG_UART_TXCLKGEN_DP */
-            DEBUG_UART_backup.tx_mask = DEBUG_UART_TXSTATUS_MASK_REG;
-        #endif /*End DEBUG_UART_TX_ENABLED */
-
-
-    #else /* CY_UDB_V1 */
-
-        #if(DEBUG_UART_CONTROL_REG_REMOVED == 0u)
-            DEBUG_UART_backup.cr = DEBUG_UART_CONTROL_REG;
-        #endif /* End DEBUG_UART_CONTROL_REG_REMOVED */
-
-    #endif  /* End CY_UDB_V0 */
+    #if(DEBUG_UART_CONTROL_REG_REMOVED == 0u)
+        DEBUG_UART_backup.cr = DEBUG_UART_CONTROL_REG;
+    #endif /* End DEBUG_UART_CONTROL_REG_REMOVED */
 }
 
 
@@ -92,7 +68,7 @@ void DEBUG_UART_SaveConfig(void)
 ********************************************************************************
 *
 * Summary:
-*  Restores the current user configuration.
+*  Restores the user configuration of nonretention registers.
 *
 * Parameters:
 *  None.
@@ -106,42 +82,17 @@ void DEBUG_UART_SaveConfig(void)
 * Reentrant:
 *  No.
 *
+* Side Effects:
+*  All nonretention registers except FIFO loaded from RAM. This function should
+*  be called only after DEBUG_UART_SaveConfig() is called, otherwise
+*  incorrect data will be loaded into the registers.
+*
 *******************************************************************************/
 void DEBUG_UART_RestoreConfig(void)
 {
-
-    #if (CY_UDB_V0)
-
-        #if(DEBUG_UART_CONTROL_REG_REMOVED == 0u)
-            DEBUG_UART_CONTROL_REG = DEBUG_UART_backup.cr;
-        #endif /* End DEBUG_UART_CONTROL_REG_REMOVED */
-
-        #if( (DEBUG_UART_RX_ENABLED) || (DEBUG_UART_HD_ENABLED) )
-            DEBUG_UART_RXBITCTR_PERIOD_REG = DEBUG_UART_backup.rx_period;
-            DEBUG_UART_RXSTATUS_MASK_REG = DEBUG_UART_backup.rx_mask;
-            #if (DEBUG_UART_RXHW_ADDRESS_ENABLED)
-                DEBUG_UART_RXADDRESS1_REG = DEBUG_UART_backup.rx_addr1;
-                DEBUG_UART_RXADDRESS2_REG = DEBUG_UART_backup.rx_addr2;
-            #endif /* End DEBUG_UART_RXHW_ADDRESS_ENABLED */
-        #endif  /* End (DEBUG_UART_RX_ENABLED) || (DEBUG_UART_HD_ENABLED) */
-
-        #if(DEBUG_UART_TX_ENABLED)
-            #if(DEBUG_UART_TXCLKGEN_DP)
-                DEBUG_UART_TXBITCLKGEN_CTR_REG = DEBUG_UART_backup.tx_clk_ctr;
-                DEBUG_UART_TXBITCLKTX_COMPLETE_REG = DEBUG_UART_backup.tx_clk_compl;
-            #else
-                DEBUG_UART_TXBITCTR_PERIOD_REG = DEBUG_UART_backup.tx_period;
-            #endif /*End DEBUG_UART_TXCLKGEN_DP */
-            DEBUG_UART_TXSTATUS_MASK_REG = DEBUG_UART_backup.tx_mask;
-        #endif /*End DEBUG_UART_TX_ENABLED */
-
-    #else /* CY_UDB_V1 */
-
-        #if(DEBUG_UART_CONTROL_REG_REMOVED == 0u)
-            DEBUG_UART_CONTROL_REG = DEBUG_UART_backup.cr;
-        #endif /* End DEBUG_UART_CONTROL_REG_REMOVED */
-
-    #endif  /* End CY_UDB_V0 */
+    #if(DEBUG_UART_CONTROL_REG_REMOVED == 0u)
+        DEBUG_UART_CONTROL_REG = DEBUG_UART_backup.cr;
+    #endif /* End DEBUG_UART_CONTROL_REG_REMOVED */
 }
 
 
@@ -150,9 +101,12 @@ void DEBUG_UART_RestoreConfig(void)
 ********************************************************************************
 *
 * Summary:
-*  Stops and saves the user configuration. Should be called
-*  just prior to entering sleep.
-*
+*  This is the preferred API to prepare the component for sleep. 
+*  The DEBUG_UART_Sleep() API saves the current component state. Then it
+*  calls the DEBUG_UART_Stop() function and calls 
+*  DEBUG_UART_SaveConfig() to save the hardware configuration.
+*  Call the DEBUG_UART_Sleep() function before calling the CyPmSleep() 
+*  or the CyPmHibernate() function. 
 *
 * Parameters:
 *  None.
@@ -169,7 +123,6 @@ void DEBUG_UART_RestoreConfig(void)
 *******************************************************************************/
 void DEBUG_UART_Sleep(void)
 {
-
     #if(DEBUG_UART_RX_ENABLED || DEBUG_UART_HD_ENABLED)
         if((DEBUG_UART_RXSTATUS_ACTL_REG  & DEBUG_UART_INT_ENABLE) != 0u)
         {
@@ -200,8 +153,12 @@ void DEBUG_UART_Sleep(void)
 ********************************************************************************
 *
 * Summary:
-*  Restores and enables the user configuration. Should be called
-*  just after awaking from sleep.
+*  This is the preferred API to restore the component to the state when 
+*  DEBUG_UART_Sleep() was called. The DEBUG_UART_Wakeup() function
+*  calls the DEBUG_UART_RestoreConfig() function to restore the 
+*  configuration. If the component was enabled before the 
+*  DEBUG_UART_Sleep() function was called, the DEBUG_UART_Wakeup()
+*  function will also re-enable the component.
 *
 * Parameters:
 *  None.
