@@ -254,10 +254,10 @@
 /* poll */
 #define poll__INTC_CLR_EN_REG CYREG_NVIC_CLRENA0
 #define poll__INTC_CLR_PD_REG CYREG_NVIC_CLRPEND0
-#define poll__INTC_MASK 0x04u
-#define poll__INTC_NUMBER 2u
+#define poll__INTC_MASK 0x08u
+#define poll__INTC_NUMBER 3u
 #define poll__INTC_PRIOR_NUM 7u
-#define poll__INTC_PRIOR_REG CYREG_NVIC_PRI_2
+#define poll__INTC_PRIOR_REG CYREG_NVIC_PRI_3
 #define poll__INTC_SET_EN_REG CYREG_NVIC_SETENA0
 #define poll__INTC_SET_PD_REG CYREG_NVIC_SETPEND0
 
@@ -530,20 +530,20 @@
 /* LTC68_RxInternalInterrupt */
 #define LTC68_RxInternalInterrupt__INTC_CLR_EN_REG CYREG_NVIC_CLRENA0
 #define LTC68_RxInternalInterrupt__INTC_CLR_PD_REG CYREG_NVIC_CLRPEND0
-#define LTC68_RxInternalInterrupt__INTC_MASK 0x01u
-#define LTC68_RxInternalInterrupt__INTC_NUMBER 0u
+#define LTC68_RxInternalInterrupt__INTC_MASK 0x02u
+#define LTC68_RxInternalInterrupt__INTC_NUMBER 1u
 #define LTC68_RxInternalInterrupt__INTC_PRIOR_NUM 7u
-#define LTC68_RxInternalInterrupt__INTC_PRIOR_REG CYREG_NVIC_PRI_0
+#define LTC68_RxInternalInterrupt__INTC_PRIOR_REG CYREG_NVIC_PRI_1
 #define LTC68_RxInternalInterrupt__INTC_SET_EN_REG CYREG_NVIC_SETENA0
 #define LTC68_RxInternalInterrupt__INTC_SET_PD_REG CYREG_NVIC_SETPEND0
 
 /* LTC68_TxInternalInterrupt */
 #define LTC68_TxInternalInterrupt__INTC_CLR_EN_REG CYREG_NVIC_CLRENA0
 #define LTC68_TxInternalInterrupt__INTC_CLR_PD_REG CYREG_NVIC_CLRPEND0
-#define LTC68_TxInternalInterrupt__INTC_MASK 0x02u
-#define LTC68_TxInternalInterrupt__INTC_NUMBER 1u
+#define LTC68_TxInternalInterrupt__INTC_MASK 0x04u
+#define LTC68_TxInternalInterrupt__INTC_NUMBER 2u
 #define LTC68_TxInternalInterrupt__INTC_PRIOR_NUM 7u
-#define LTC68_TxInternalInterrupt__INTC_PRIOR_REG CYREG_NVIC_PRI_1
+#define LTC68_TxInternalInterrupt__INTC_PRIOR_REG CYREG_NVIC_PRI_2
 #define LTC68_TxInternalInterrupt__INTC_SET_EN_REG CYREG_NVIC_SETENA0
 #define LTC68_TxInternalInterrupt__INTC_SET_PD_REG CYREG_NVIC_SETPEND0
 
@@ -616,10 +616,10 @@
 /* WDT_ISR */
 #define WDT_ISR__INTC_CLR_EN_REG CYREG_NVIC_CLRENA0
 #define WDT_ISR__INTC_CLR_PD_REG CYREG_NVIC_CLRPEND0
-#define WDT_ISR__INTC_MASK 0x20000u
-#define WDT_ISR__INTC_NUMBER 17u
+#define WDT_ISR__INTC_MASK 0x01u
+#define WDT_ISR__INTC_NUMBER 0u
 #define WDT_ISR__INTC_PRIOR_NUM 7u
-#define WDT_ISR__INTC_PRIOR_REG CYREG_NVIC_PRI_17
+#define WDT_ISR__INTC_PRIOR_REG CYREG_NVIC_PRI_0
 #define WDT_ISR__INTC_SET_EN_REG CYREG_NVIC_SETENA0
 #define WDT_ISR__INTC_SET_PD_REG CYREG_NVIC_SETPEND0
 
@@ -1123,7 +1123,7 @@
 #define CYDEV_ECC_ENABLE 0
 #define CYDEV_HEAP_SIZE 0x80
 #define CYDEV_INSTRUCT_CACHE_ENABLED 1
-#define CYDEV_INTR_RISING 0x00000003u
+#define CYDEV_INTR_RISING 0x00000006u
 #define CYDEV_PROJ_TYPE 0
 #define CYDEV_PROJ_TYPE_BOOTLOADER 1
 #define CYDEV_PROJ_TYPE_LOADABLE 2

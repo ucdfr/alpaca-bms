@@ -44,7 +44,9 @@ int main(void)
     
 	for(;;)
 	{   
-        WDT_clear();
+        if (WDT_should_clear()) {
+            WDT_clear();
+        }
         check_cfg();
 		check_chips(); // TODO Check if chip exists
 		check_cells(); // TODO Check if cell exists
@@ -58,7 +60,7 @@ int main(void)
 		//get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
 		// send to CAN()
-        CyDelay(10000);
+        //CyDelay(10000);
 
 	} // main loop
     

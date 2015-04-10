@@ -10,7 +10,15 @@
  * ========================================
 */
 
+#ifndef WDT_H
+#define WDT_H
+    
+#include <stdbool.h>
+
 void WDT_init();
 void WDT_clear();
+bool WDT_should_clear();
+
+#endif
 
 /* [] END OF FILE */

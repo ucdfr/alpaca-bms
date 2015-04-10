@@ -12,7 +12,7 @@
 
 #include <project.h>
 #include <stdio.h>
-#include <stdbool.h>
+#include "WDT.h"
 
 static volatile bool WDT_flag = false;
 
@@ -32,6 +32,10 @@ void WDT_init() {
 void WDT_clear() {
     WDT_flag = false;
 	CyWdtClear();
+}
+
+bool WDT_should_clear() {
+    return WDT_flag;
 }
 
 /* [] END OF FILE */
