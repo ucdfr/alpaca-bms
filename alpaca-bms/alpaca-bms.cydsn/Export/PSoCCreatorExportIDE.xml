@@ -147,6 +147,13 @@
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_LCDPort_aliases.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_LCDPort.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_LCDPort.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART_PM.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART_INT.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART_BOOT.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART_IntClock.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART_IntClock.h</File>
         </Files>
       </Folder>
       <Folder BuildType="STRICT" Path="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn\Export\ARM_GCC_Generic">

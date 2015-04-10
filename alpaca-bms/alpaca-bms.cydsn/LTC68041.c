@@ -1038,18 +1038,36 @@ void spi_write_read(uint8_t tx_Data[],//array of data to be written on SPI port
 					)
 {
   uint8_t i = 0;
-  for(i = 0; i < tx_len; i++)
+    for(i = 0; i < tx_len; i++)
   {
 
    LTC68_WriteTxData(tx_Data[i]);
-
-  }
-
+    }
+    
+    
   for(i = 0; i < rx_len; i++)
   {
+    
     LTC68_WriteTxData(0xff);
     rx_data[i] = (uint8_t)LTC68_ReadRxData();
+}
+
+
+    
+    
+  for(i = 0; i < rx_len; i++)
+  {
+    
+    
+    if (rx_data[i]<='9'){
+        DEBUG_UART_PutChar(rx_data[i]+'0');
+    }else{
+        DEBUG_UART_PutChar(rx_data[i]+'A'-10);
+    }
+    DEBUG_UART_PutChar(' ');
+    
   }
+    DEBUG_UART_PutChar('\n');
    CyDelayUs(200);
 }
 
@@ -1059,7 +1077,7 @@ void spi_write_read(uint8_t tx_Data[],//array of data to be written on SPI port
 void print_cells(uint16_t raw)
 {
     LCD_Position(1u,0u);
-    LCD_PrintNumber(raw);
+    LCD_PrintHexUint16(raw);
 
 }
 

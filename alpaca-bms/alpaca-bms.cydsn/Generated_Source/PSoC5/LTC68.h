@@ -46,9 +46,9 @@
 #define LTC68_BIDIRECTIONAL_MODE         (0u)
 
 /* Internal interrupt handling */
-#define LTC68_TX_BUFFER_SIZE             (4u)
-#define LTC68_RX_BUFFER_SIZE             (10u)
-#define LTC68_INTERNAL_TX_INT_ENABLED    (0u)
+#define LTC68_TX_BUFFER_SIZE             (24u)
+#define LTC68_RX_BUFFER_SIZE             (24u)
+#define LTC68_INTERNAL_TX_INT_ENABLED    (1u)
 #define LTC68_INTERNAL_RX_INT_ENABLED    (1u)
 
 #define LTC68_SINGLE_REG_SIZE            (8u)
@@ -147,7 +147,7 @@ extern uint8 LTC68_initVar;
 
 #define LTC68_INT_ON_SPI_DONE    ((uint8) (0u   << LTC68_STS_SPI_DONE_SHIFT))
 #define LTC68_INT_ON_TX_EMPTY    ((uint8) (0u   << LTC68_STS_TX_FIFO_EMPTY_SHIFT))
-#define LTC68_INT_ON_TX_NOT_FULL ((uint8) (0u << \
+#define LTC68_INT_ON_TX_NOT_FULL ((uint8) (1u << \
                                                                            LTC68_STS_TX_FIFO_NOT_FULL_SHIFT))
 #define LTC68_INT_ON_BYTE_COMP   ((uint8) (0u  << LTC68_STS_BYTE_COMPLETE_SHIFT))
 #define LTC68_INT_ON_SPI_IDLE    ((uint8) (0u   << LTC68_STS_SPI_IDLE_SHIFT))

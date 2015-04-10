@@ -16,11 +16,13 @@ uint16_t cell_volt[NUM_CELLS];
 int main(void)
 {
     LCD_Start();
+    DEBUG_UART_Start();
 	CyGlobalIntEnable;
     
     LCD_ClearDisplay();
     LCD_Position(0u, 0u);
     LCD_PrintString("BMS DEMO");
+    DEBUG_UART_PutString("BMS DEMO START\n");
     CyDelay(2000);
 	// TODO Watchdog Timer
     
@@ -33,7 +35,7 @@ int main(void)
 	for(;;)
 	{   
         
-        //check_cfg();
+        check_cfg();
 		//check_chips(); // TODO Check if chip exists
 		//check_cells(); // TODO Check if cell exists
 		get_cell_volt(); // TODO Get voltage
@@ -46,7 +48,7 @@ int main(void)
 		//get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
 		// send to CAN()
-        CyDelay(1000);
+        CyDelay(10000);
 
 	} // main loop
     

@@ -44,6 +44,7 @@
 #include <current.h>
 #include <OK_SIG_aliases.h>
 #include <OK_SIG.h>
+#include <DEBUG_UART.h>
 #include <LTC68_IntClock.h>
 #include <LCD_LCDPort_aliases.h>
 #include <LCD_LCDPort.h>
@@ -51,6 +52,7 @@
 #include <ADC_current_Ext_CP_Clk.h>
 #include <ADC_current_IRQ.h>
 #include <ADC_current_theACLK.h>
+#include <DEBUG_UART_IntClock.h>
 #include <core_cm3_psoc5.h>
 #include <core_cm3.h>
 #include <CyDmac.h>

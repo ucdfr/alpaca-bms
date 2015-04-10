@@ -77,15 +77,16 @@ void  wake_up(){
 }
 
 void check_cfg(){
+    DEBUG_UART_PutString("Enter Check_CFG\n");
     int error=0;
     int i=0;
     wakeup_sleep();
     error = LTC6804_rdcfg(TOTAL_IC,rx_cfg);
     LCD_Position(1u,0u);
-    for (i=0;i<8;i++){
-        LCD_PrintHexUint8(rx_cfg[0][i]);
-        LCD_PrintString(":");
-    }
+ //   for (i=0;i<8;i++){
+  //      LCD_PrintHexUint8(rx_cfg[0][i]);
+   //     LCD_PrintString(":");
+   // }
 }
 
 
@@ -100,6 +101,7 @@ void check_cells(){
 
 
 uint8_t get_cell_volt(){
+    DEBUG_UART_PutString("Enter GET_CELL_VOLT\n");
     int error;
     wakeup_sleep();
     LTC6804_adcv();
