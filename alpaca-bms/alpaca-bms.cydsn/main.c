@@ -49,9 +49,9 @@ int main(void)
 		if (WDT_should_clear()) {
 			WDT_clear();
 		}
-	//	check_cfg();
+		//check_cfg();
 	//	check_chips(); // TODO Check if chip exists
-	//	check_cells(); // TODO Check if cell exists
+		check_cells(); // TODO Check if cell exists
 		get_cell_volt(); // TODO Get voltage
 	//	get_cell_temp(); // TODO Get temperature
 
@@ -62,7 +62,7 @@ int main(void)
 		//get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
 		// send to CAN()
-		CyDelay(10000);
+		CyDelay(500);
 
 	} // main loop
     

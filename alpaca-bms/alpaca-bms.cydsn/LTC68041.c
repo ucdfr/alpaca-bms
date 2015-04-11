@@ -1103,15 +1103,15 @@ void spi_write_read(uint8_t tx_Data[],//array of data to be written on SPI port
 					uint8_t rx_len //Option: number of bytes to be read from the SPI port
 					)
 {
-  uint8_t i = 0;
+    LTC68_ClearRxBuffer();
+    uint8_t i = 0;
     uint8_t dummy_read=0;
     for(i = 0; i < tx_len; i++)
   {
 
    LTC68_WriteTxData(tx_Data[i]);
     }
-    
-    LTC68_ClearRxBuffer();
+   
 
    for(i = 0; i < rx_len; i++)
   {
@@ -1119,19 +1119,27 @@ void spi_write_read(uint8_t tx_Data[],//array of data to be written on SPI port
   LTC68_WriteTxData(0x00);
     }
      
- while(dummy_read!=rx_len){
-    dummy_read=(uint8_t)LTC68_GetRxBufferSize();
-    };
 
-    
-  for(i = 0; i < rx_len; i++)
-  {
-    rx_data[i] = (uint8_t)LTC68_ReadRxData();
-    
-    
-}
+    CyDelay(1);
+//    while(dummy_read!=rx_len+tx_len){
+//    dummy_read=(uint8_t)LTC68_GetRxBufferSize();
+//    };
+    while(! (LTC68_ReadTxStatus() & LTC68_STS_SPI_DONE)){
+    }
 
-    LTC68_ClearRxBuffer();
+
+    for(i = 0; i < tx_len; i++)
+    {
+        dummy_read = (uint8_t)LTC68_ReadRxData();
+    }
+
+    for(i = 0; i < rx_len; i++)
+    {
+        rx_data[i] = (uint8_t)LTC68_ReadRxData();
+
+    }
+
+
 
    CyDelayUs(200);
 }
@@ -1142,7 +1150,8 @@ void spi_write_read(uint8_t tx_Data[],//array of data to be written on SPI port
 void print_cells(uint16_t raw)
 {
     LCD_Position(1u,0u);
-    LCD_PrintHexUint16(raw);
+    LCD_PrintDecUint16(raw);
+    
 
 }
 
