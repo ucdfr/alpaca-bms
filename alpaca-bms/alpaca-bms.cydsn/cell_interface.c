@@ -49,7 +49,8 @@ Copyright 2013 Linear Technology Corp. (LTC)
 #include "cell_interface.h"
 #include "LTC68041.h"
 
-
+#define OVER_VOLTAGE (20000)
+#define UNDER_VOLTAGE (10000)
 
 /**
  * @initialize. In case need to setup anything, write them in it.
@@ -138,6 +139,7 @@ uint8_t check_cells(){
 uint8_t get_cell_volt(){
     DEBUG_UART_PutString("Enter GET_CELL_VOLT\n");
     int error;
+    int i=0;
     wakeup_sleep();
     LTC6804_adcv();
     CyDelay(6);
@@ -148,6 +150,13 @@ uint8_t get_cell_volt(){
        LCD_Position(0u,10u);
        LCD_PrintString("ERROR");
        return 1;
+    }
+    for (i=0;i<12;i++){
+        if (cell_codes[0][i]>OVER_VOLTAGE){
+            return 1;
+        }else if (cell_codes[0][i]<UNDER_VOLTAGE){
+            return 1;
+        }
     }
     print_cells(cell_codes[0][3]);
     LCD_Position(0u,10u);

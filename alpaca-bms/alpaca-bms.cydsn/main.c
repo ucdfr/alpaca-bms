@@ -42,7 +42,7 @@ int main(void)
 	uint16_t temp[NUM_TEMP];
 	uint16_t battery_current;
 	uint8_t battery_status;
-
+    red_led_1_Write(0);
 
 	for(;;)
 	{   
@@ -51,8 +51,10 @@ int main(void)
 		}
 		//check_cfg();
 	//	check_chips(); // TODO Check if chip exists
-		check_cells(); // TODO Check if cell exists
-		get_cell_volt(); // TODO Get voltage
+		//check_cells(); // TODO Check if cell exists
+		if (get_cell_volt()){
+            break;
+        }// TODO Get voltage
 	//	get_cell_temp(); // TODO Get temperature
 
 
@@ -62,9 +64,21 @@ int main(void)
 		//get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
 		// send to CAN()
+        OK_SIG_Write(1);
 		CyDelay(500);
 
 	} // main loop
+    
+    for(;;){
+        //fatal error
+        red_led_1_Write(1);
+        OK_SIG_Write(0);
+        LCD_Position(0u, 0u);
+        LCD_PrintString("FATAL ERR FATAL ERR FA");
+        LCD_Position(1u,0u);
+        LCD_PrintString("TAL ERR FATAL ERR ");
+    }
+    
     
 	return 0;
 } // main()
