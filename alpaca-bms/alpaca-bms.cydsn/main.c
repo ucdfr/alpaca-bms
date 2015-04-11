@@ -13,7 +13,7 @@
 int main(void)
 {
 	CyGlobalIntEnable;
-	WDT_init();
+	//WDT_init();
 	red_led_1_Write(1);
 	CyDelay(100);
 	red_led_1_Write(0);
@@ -49,11 +49,11 @@ int main(void)
 		if (WDT_should_clear()) {
 			WDT_clear();
 		}
-		check_cfg();
-		check_chips(); // TODO Check if chip exists
-		check_cells(); // TODO Check if cell exists
+	//	check_cfg();
+	//	check_chips(); // TODO Check if chip exists
+	//	check_cells(); // TODO Check if cell exists
 		get_cell_volt(); // TODO Get voltage
-		get_cell_temp(); // TODO Get temperature
+	//	get_cell_temp(); // TODO Get temperature
 
 
 		// TODO Determine if need to deassert OK pin. (emergency stop)
@@ -62,7 +62,7 @@ int main(void)
 		//get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
 		// send to CAN()
-		//CyDelay(10000);
+		CyDelay(10000);
 
 	} // main loop
     

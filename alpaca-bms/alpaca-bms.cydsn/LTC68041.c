@@ -1104,36 +1104,35 @@ void spi_write_read(uint8_t tx_Data[],//array of data to be written on SPI port
 					)
 {
   uint8_t i = 0;
+    uint8_t dummy_read=0;
     for(i = 0; i < tx_len; i++)
   {
 
    LTC68_WriteTxData(tx_Data[i]);
     }
     
+    LTC68_ClearRxBuffer();
+
+   for(i = 0; i < rx_len; i++)
+  {
+
+  LTC68_WriteTxData(0x00);
+    }
+     
+ while(dummy_read!=rx_len){
+    dummy_read=(uint8_t)LTC68_GetRxBufferSize();
+    };
+
     
   for(i = 0; i < rx_len; i++)
   {
-    
-    LTC68_WriteTxData(0xff);
     rx_data[i] = (uint8_t)LTC68_ReadRxData();
+    
+    
 }
 
+    LTC68_ClearRxBuffer();
 
-    
-    
-  for(i = 0; i < rx_len; i++)
-  {
-    
-    
-    if (rx_data[i]<='9'){
-        DEBUG_UART_PutChar(rx_data[i]+'0');
-    }else{
-        DEBUG_UART_PutChar(rx_data[i]+'A'-10);
-    }
-    DEBUG_UART_PutChar(' ');
-    
-  }
-    DEBUG_UART_PutChar('\n');
    CyDelayUs(200);
 }
 
