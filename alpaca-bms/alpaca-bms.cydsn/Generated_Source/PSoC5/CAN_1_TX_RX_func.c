@@ -24,6 +24,10 @@
 #include "CAN_1.h"
 
 /* `#START TX_RX_FUNCTION` */
+#define CAN_TEMP_LEN 3
+#define CAN_VOLT_LEN 3
+#define CAN_CURRENT_LEN 2
+#define CAN_STATUS_LEN 1
 
 extern uint8_t can_buffer[];
 
@@ -187,7 +191,10 @@ void CAN_1_TxCancel(uint8 bufferId)
         else
         {
             /* `#START MESSAGE_temp_TRASMITTED` */
+						uint8_t i;
 
+						for(i=0; i<CAN_TEMP_LEN; i++)
+							CAN_1_TX_DATA_BYTE(0,i) = can_buffer[i];
             /* `#END` */
             
             CY_SET_REG32((reg32 *) &CAN_1_TX[0u].txcmd, CAN_1_SEND_MESSAGE);
@@ -231,7 +238,10 @@ void CAN_1_TxCancel(uint8 bufferId)
         else
         {
             /* `#START MESSAGE_volt_TRASMITTED` */
+						uint8_t i;
 
+						for(i=0; i<CAN_VOLT_LEN; i++)
+							CAN_1_TX_DATA_BYTE(1,i) = can_buffer[i];
             /* `#END` */
             
             CY_SET_REG32((reg32 *) & CAN_1_TX[1u].txcmd, CAN_1_SEND_MESSAGE);
@@ -275,6 +285,10 @@ void CAN_1_TxCancel(uint8 bufferId)
         else
         {
             /* `#START MESSAGE_current_TRASMITTED` */
+						uint8_t i;
+
+						for(i=0; i<CAN_CURRENT_LEN; i++)
+							CAN_1_TX_DATA_BYTE(2,i) = can_buffer[i];
 
             /* `#END` */
             
@@ -319,6 +333,10 @@ void CAN_1_TxCancel(uint8 bufferId)
         else
         {
             /* `#START MESSAGE_status_TRASMITTED` */
+						uint8_t i;
+
+						for(i=0; i<CAN_STATUS_LEN; i++)
+							CAN_1_TX_DATA_BYTE(3,i) = can_buffer[i];
 
             /* `#END` */
             
