@@ -1,25 +1,84 @@
-/* ========================================
- *
- * Copyright YOUR COMPANY, THE YEAR
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
- *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
- *
- * ========================================
-*/
 #include <project.h>
+#include <stdint.h>
 
-int main()
+#include "cell_interface.h"
+#include "current_sense.h"
+#include "WDT.h"
+#include "data.h"
+
+
+
+
+
+int main(void)
 {
-    /* Place your initialization/startup code here (e.g. MyInst_Start()) */
+	CyGlobalIntEnable;
+	//WDT_init();
+	red_led_1_Write(1);
+	CyDelay(100);
+	red_led_1_Write(0);
+	CyDelay(100);
+	red_led_1_Write(1);
+	CyDelay(100);
+	red_led_1_Write(0);
+	LCD_Start();
+	DEBUG_UART_Start();
+	CyGlobalIntEnable;
 
-    /* CyGlobalIntEnable; */ /* Uncomment this line to enable global interrupts. */
-    for(;;)
-    {
-        /* Place your application code here. */
+	LCD_ClearDisplay();
+	LCD_Position(0u, 0u);
+	LCD_PrintString("BMS DEMO");
+	DEBUG_UART_PutString("BMS DEMO START\n");
+	CyDelay(2000);
+	// TODO Watchdog Timer
+
+
+	//initialize
+	bms_init();
+
+	int pin_value=1;
+
+	uint16_t cell_volt[NUM_CELLS];
+	uint16_t temp[NUM_TEMP];
+	uint16_t battery_current;
+	uint8_t battery_status;
+    red_led_1_Write(0);
+
+	for(;;)
+	{   
+		if (WDT_should_clear()) {
+			WDT_clear();
+		}
+		//check_cfg();
+	//	check_chips(); // TODO Check if chip exists
+		//check_cells(); // TODO Check if cell exists
+		if (get_cell_volt()){
+            break;
+        }// TODO Get voltage
+	//	get_cell_temp(); // TODO Get temperature
+
+
+		// TODO Determine if need to deassert OK pin. (emergency stop)
+
+
+		//get_current(); // TODO get current reading from sensor
+		//get_soc(); // TODO calculate SOC()
+		// send to CAN()
+        OK_SIG_Write(1);
+		CyDelay(500);
+
+	} // main loop
+    
+    for(;;){
+        //fatal error
+        red_led_1_Write(1);
+        OK_SIG_Write(0);
+        LCD_Position(0u, 0u);
+        LCD_PrintString("FATAL ERR FATAL ERR FA");
+        LCD_Position(1u,0u);
+        LCD_PrintString("TAL ERR FATAL ERR ");
     }
-}
-
-/* [] END OF FILE */
+    
+    
+	return 0;
+} // main()

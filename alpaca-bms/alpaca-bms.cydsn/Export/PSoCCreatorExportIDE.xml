@@ -25,7 +25,7 @@
       <Tool Name="postbuild" Command="" Options="" />
     </Toolchain>
   </Toolchains>
-  <Project Name="alpaca-bms" Path="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" Version="4.20" Type="Normal">
+  <Project Name="alpaca-bms" Path="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" Version="4.20" Type="Normal">
     <CMSIS_SVD_File>alpaca-bms.svd</CMSIS_SVD_File>
     <Datasheet />
     <LinkerFiles>
@@ -33,13 +33,24 @@
       <LinkerFile Toolchain="ARM MDK Generic">.\Generated_Source\PSoC5\Cm3RealView.scat</LinkerFile>
     </LinkerFiles>
     <Folders>
-      <Folder BuildType="BUILD" Path="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
+      <Folder BuildType="BUILD" Path="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
           <File BuildType="BUILD" Toolchain="">.\main.c</File>
+          <File BuildType="BUILD" Toolchain="">.\cell_interface.c</File>
+          <File BuildType="BUILD" Toolchain="">.\cell_interface.h</File>
+          <File BuildType="BUILD" Toolchain="">.\current_sense.c</File>
+          <File BuildType="BUILD" Toolchain="">.\current_sense.h</File>
+          <File BuildType="BUILD" Toolchain="">.\LTC68041.c</File>
+          <File BuildType="BUILD" Toolchain="">.\LTC68041.h</File>
+          <File BuildType="BUILD" Toolchain="">.\WDT.h</File>
+          <File BuildType="BUILD" Toolchain="">.\WDT.c</File>
+          <File BuildType="BUILD" Toolchain="">.\can_manager.c</File>
+          <File BuildType="BUILD" Toolchain="">.\can_manager.h</File>
+          <File BuildType="BUILD" Toolchain="">.\data.h</File>
         </Files>
       </Folder>
-      <Folder BuildType="STRICT" Path="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn\Generated_Source\PSoC5">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
+      <Folder BuildType="STRICT" Path="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn\Generated_Source\PSoC5">
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\cyfitter_cfg.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\cyfitter_cfg.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\cymetadata.c</File>
@@ -78,49 +89,129 @@
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\core_cmInstr.h</File>
           <File BuildType="BUILD" Toolchain="ARM IAR Generic">.\Generated_Source\PSoC5\CyBootAsmIar.s</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\project.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\Rx_1_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\Rx_1.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\Rx_1.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\Tx_1_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\Tx_1.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\Tx_1.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\CAN_1.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\CAN_1.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\CAN_1_INT.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\CAN_1_PM.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\CAN_1_TX_RX_func.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MOSI_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MOSI.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MOSI.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SCLK_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SCLK.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SCLK.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MISO_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MISO.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\MISO.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\EEPROM_1.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\EEPROM_1.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68_PM.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68_INT.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68_PVT.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SS_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SS.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\SS.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68_IntClock.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LTC68_IntClock.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\poll.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\poll.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\timer_clock.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\timer_clock.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_PM.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_INT.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_AMux.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_AMux.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_Ext_CP_Clk.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_Ext_CP_Clk.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_IRQ.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_IRQ.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_theACLK.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\ADC_current_theACLK.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current_timer.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current_timer.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\current_timer_PM.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\OK_SIG_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\OK_SIG.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\OK_SIG.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_PM.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_LCDPort_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_LCDPort.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_LCDPort.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART_PM.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART_INT.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART_BOOT.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART_IntClock.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART_IntClock.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\WDT_timer.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\WDT_timer.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\WDT_timer_PM.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\WDT_timer_clock.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\WDT_timer_clock.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\WDT_ISR.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\WDT_ISR.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\red_led_1_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\red_led_1.c</File>
+          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\red_led_1.h</File>
         </Files>
       </Folder>
-      <Folder BuildType="STRICT" Path="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn\Export\ARM_GCC_Generic">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
+      <Folder BuildType="STRICT" Path="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn\Export\ARM_GCC_Generic">
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
           <File BuildType="BUILD" Toolchain="ARM GCC Generic">.\Export\ARM_GCC_Generic\CyComponentLibrary.a</File>
         </Files>
       </Folder>
-      <Folder BuildType="STRICT" Path="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn\Export\ARM_MDK_Generic">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
+      <Folder BuildType="STRICT" Path="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn\Export\ARM_MDK_Generic">
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
           <File BuildType="BUILD" Toolchain="ARM MDK Generic">.\Export\ARM_MDK_Generic\CyComponentLibrary.a</File>
         </Files>
       </Folder>
-      <Folder BuildType="STRICT" Path="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn\Export\ARM_IAR_Generic">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
+      <Folder BuildType="STRICT" Path="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn\Export\ARM_IAR_Generic">
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn">
           <File BuildType="BUILD" Toolchain="ARM IAR Generic">.\Export\ARM_IAR_Generic\CyComponentLibrary.a</File>
         </Files>
       </Folder>
       <Folder BuildType="EXCLUDE" Path=".\codegentemp">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
       </Folder>
       <Folder BuildType="EXCLUDE" Path=".\ARM_GCC_441">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
       </Folder>
       <Folder BuildType="EXCLUDE" Path=".\ARM_GCC_473">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
       </Folder>
       <Folder BuildType="EXCLUDE" Path=".\DP8051_Keil_951">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
       </Folder>
       <Folder BuildType="EXCLUDE" Path=".\DP8051">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
       </Folder>
       <Folder BuildType="EXCLUDE" Path=".\CortexM0">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
       </Folder>
       <Folder BuildType="EXCLUDE" Path=".\CortexM3">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
       </Folder>
       <Folder BuildType="EXCLUDE" Path=".\Generated_Source\PSoC3">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
       </Folder>
       <Folder BuildType="EXCLUDE" Path=".\Generated_Source\PSoC4">
-        <Files Root="C:\Users\Jonathan\My Documents\PSoC Creator\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
+        <Files Root="D:\workspace\alpaca-bms\alpaca-bms\alpaca-bms.cydsn" />
       </Folder>
     </Folders>
   </Project>
