@@ -14,8 +14,14 @@
 #include <stdio.h>
 #include "WDT.h"
 
+/**
+ * @brief flag to indicate if WDT should be cleared
+ */
 static volatile bool WDT_flag = false;
 
+/**
+ * @brief WDT timer ISR routine
+ */
 CY_ISR(WDT_int)
 {
     WDT_flag = true;

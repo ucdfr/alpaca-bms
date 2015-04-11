@@ -12,31 +12,31 @@ The datatype consists of three bytes:
 
 
 
-inline void load_buffer(uint8_t num, uint16_t data[])
-{
-	uint8_t i, j;
-	for(i=0; i<num; i++)
-	{
-		j = i*3; // actual index
-		can_buffer[j] = i;
-		can_buffer[j+1] = 0xFF & (data[i]>>8); // upper byte
-		can_buffer[j+2] = 0xFF & data[i]; // lower byte
-	} // for all temperature probes
-} // load_buffer()
-
-
-
 void can_send_temp(uint16_t temp[])
 {
-	load_buffer(NUM_TEMP, temp);
-	CAN_1_SendMsgtemp();
+	uint8_t i;
+	for(i=0; i<NUM_TEMP; i++)
+	{
+		can_buffer[0] = i;
+		can_buffer[1] = 0xFF & (temp[i]>>8); // upper byte
+		can_buffer[3] = 0xFF & temp[i]; // lower byte
+		CAN_1_SendMsgtemp();
+	} // for all temperature probes
 } // can_send_temp()
 
 
 
 void can_send_volt(uint16_t cell_volt[])
 {
-	load_buffer(NUM_CELLS, cell_volt);
+	uint8_t i;
+	for(i=0; i<NUM_CELLS; i++)
+	{
+		can_buffer[0] = i;
+		can_buffer[1] = 0xFF & (cell_volt[i]>>8); // upper byte
+		can_buffer[3] = 0xFF & cell_volt[i]; // lower byte
+		CAN_1_SendMsgtemp();
+	} // for all temperature probes
+
 	CAN_1_SendMsgvolt();
 } // can_send_volt()
 

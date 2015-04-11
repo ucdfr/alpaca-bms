@@ -1,6 +1,7 @@
 USE 6804-1 DAISY CHAINED
 
 25: GPIO ADC measurement
+29: Open-Wire Check
 30: WDT/SDT on LTC board
 41: CRC (PEC) Specification
 41: Waking up
