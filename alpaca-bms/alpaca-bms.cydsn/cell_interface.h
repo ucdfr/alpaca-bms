@@ -113,7 +113,7 @@ uint8_t get_cell_volt();
  * @param no input parameters.
  * @return 1 if everything is OK. 0 for hard failure.
  */
-void get_cell_temp();
+uint8_t get_cell_temp();
 
 /**
  * @balance each cell

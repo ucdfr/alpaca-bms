@@ -52,6 +52,9 @@ Copyright 2013 Linear Technology Corp. (LTC)
 #define OVER_VOLTAGE (20000)
 #define UNDER_VOLTAGE (10000)
 
+#define OVER_TEMP (20000)
+#define UNDER_TEMP (10000)
+
 /**
  * @initialize. In case need to setup anything, write them in it.
  *
@@ -153,11 +156,16 @@ uint8_t get_cell_volt(){
     }
     for (i=0;i<12;i++){
         if (cell_codes[0][i]>OVER_VOLTAGE){
+            LCD_Position(1u,0u);
+            LCD_PrintString("OVER VOLTAGE");
             return 1;
         }else if (cell_codes[0][i]<UNDER_VOLTAGE){
+            LCD_Position(1u,0u);
+            LCD_PrintString("UNDER VOLTAGE");
             return 1;
         }
     }
+    LCD_Position(1u,0u);
     print_cells(cell_codes[0][3]);
     LCD_Position(0u,10u);
     LCD_PrintString("OK");
@@ -165,8 +173,9 @@ uint8_t get_cell_volt(){
 }// get_cell_volt()
 
 
-void get_cell_temp(){
+uint8_t get_cell_temp(){
     int error;
+    int i=0;
     wakeup_sleep();
     LTC6804_adax();
     CyDelay(6);  
@@ -174,10 +183,27 @@ void get_cell_temp(){
     error = LTC6804_rdaux(0,TOTAL_IC,aux_codes); // Set to read back all aux registers
     if (error == -1)
     {
-      LCD_Position(0u,10u);
-       LCD_PrintString("ERROR");
+        LCD_Position(0u,10u);
+        LCD_PrintString("ERROR");
+        return 1;
     }
+ /*
+    for (i=0;i<12;i++){
+        if (aux_codes[0][i]>OVER_TEMP){
+            LCD_Position(1u,0u);
+            LCD_PrintString("OVER TEMP");
+            return 1;
+        }else if (aux_codes[0][i]<UNDER_TEMP){
+            LCD_Position(1u,0u);
+            LCD_PrintString("UNDER TEMP");
+            return 1;
+        }
+    }
+   */
+    LCD_Position(1u,10u);
+    print_cells(aux_codes[0][0]);
     LCD_Position(0u,10u);
     LCD_PrintString("OK");
+    return 0;
 }// get_cell_temp()
 //void balance_cells(){}// balance_cells()

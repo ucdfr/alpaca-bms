@@ -49,13 +49,16 @@ int main(void)
 		if (WDT_should_clear()) {
 			WDT_clear();
 		}
-		//check_cfg();
-	//	check_chips(); // TODO Check if chip exists
-		//check_cells(); // TODO Check if cell exists
+		check_cfg();
+		if(check_cells()){
+            break;
+        }// TODO Check if cell exists
 		if (get_cell_volt()){
             break;
         }// TODO Get voltage
-	//	get_cell_temp(); // TODO Get temperature
+		if (get_cell_temp()){
+            break;
+        }// TODO Get temperature
 
 
 		// TODO Determine if need to deassert OK pin. (emergency stop)
@@ -75,8 +78,7 @@ int main(void)
         OK_SIG_Write(0);
         LCD_Position(0u, 0u);
         LCD_PrintString("FATAL ERR FATAL ERR FA");
-        LCD_Position(1u,0u);
-        LCD_PrintString("TAL ERR FATAL ERR ");
+        
     }
     
     
