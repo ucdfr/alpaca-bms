@@ -142,7 +142,8 @@ uint8_t check_cells(){
 uint8_t get_cell_volt(){
     DEBUG_UART_PutString("Enter GET_CELL_VOLT\n");
     int error;
-    int i=0;
+    uint8_t i=0;
+    uint8_t ic=0;
     wakeup_sleep();
     LTC6804_adcv();
     CyDelay(6);
@@ -154,19 +155,27 @@ uint8_t get_cell_volt(){
        LCD_PrintString("ERROR");
        return 1;
     }
-    for (i=0;i<12;i++){
-        if (cell_codes[0][i]>OVER_VOLTAGE){
-            LCD_Position(1u,0u);
-            LCD_PrintString("OVER VOLTAGE");
-            return 1;
-        }else if (cell_codes[0][i]<UNDER_VOLTAGE){
-            LCD_Position(1u,0u);
-            LCD_PrintString("UNDER VOLTAGE");
-            return 1;
+    for (ic=0;ic<TOTAL_IC;ic++){
+        for (i=0;i<12;i++){
+            if (CELL_ENABLE & (0x1<<i)){
+                if (cell_codes[ic][i]>OVER_VOLTAGE){
+                LCD_Position(1u,0u);
+                LCD_PrintHexUint8(i);
+                LCD_Position(1u,2u);
+                LCD_PrintString("OVER VOLTAGE");
+                return 1;
+            }else if (cell_codes[ic][i]<UNDER_VOLTAGE){
+                LCD_Position(1u,0u);
+                LCD_PrintHexUint8(i);
+                LCD_Position(1u,2u);
+                LCD_PrintString("UNDER VOLTAGE");
+                return 1;
+                }
+            }
         }
     }
     LCD_Position(1u,0u);
-    print_cells(cell_codes[0][3]);
+    print_cells(cell_codes[1][3]);
     LCD_Position(0u,10u);
     LCD_PrintString("OK");
     return 0;

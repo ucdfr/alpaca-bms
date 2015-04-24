@@ -52,6 +52,8 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #include <stdint.h>
     #include <project.h>
 
+    
+    #define CELL_ENABLE (0x1CF)
 
 
 /**

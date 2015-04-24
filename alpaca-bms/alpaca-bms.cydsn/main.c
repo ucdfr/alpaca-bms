@@ -5,7 +5,7 @@
 #include "current_sense.h"
 #include "WDT.h"
 #include "data.h"
-
+#include "can_manager.h"
 
 
 
@@ -49,10 +49,10 @@ int main(void)
 		if (WDT_should_clear()) {
 			WDT_clear();
 		}
-		check_cfg();
-		if(check_cells()){
-            break;
-        }// TODO Check if cell exists
+	//	check_cfg();
+	//	if(check_cells()){
+     //       break;
+     //   }// TODO Check if cell exists
 		if (get_cell_volt()){
             break;
         }// TODO Get voltage
@@ -67,6 +67,13 @@ int main(void)
 		//get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
 		// send to CAN()
+        can_send_status(0x12,
+                    0x34,
+                    NO_ERROR,
+                    0x5678,
+                    0x9abc);
+        
+        
         OK_SIG_Write(1);
 		CyDelay(500);
 
