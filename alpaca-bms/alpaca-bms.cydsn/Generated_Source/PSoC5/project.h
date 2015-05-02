@@ -50,6 +50,9 @@
 #include <WDT_ISR.h>
 #include <red_led_1_aliases.h>
 #include <red_led_1.h>
+#include <timer_clock_1.h>
+#include <Can_Update_Timer.h>
+#include <Can_Update_ISR.h>
 #include <LTC68_IntClock.h>
 #include <LCD_LCDPort_aliases.h>
 #include <LCD_LCDPort.h>

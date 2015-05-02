@@ -7,6 +7,11 @@
 #include "data.h"
 #include "can_manager.h"
 
+volatile uint8_t CAN_UPDATE_FLAG=0;
+
+CY_ISR(CAN_UPDATE_Handler){
+    CAN_UPDATE_FLAG = 1;
+}
 
 
 
@@ -25,6 +30,8 @@ int main(void)
 	DEBUG_UART_Start();
 	CyGlobalIntEnable;
 
+    
+    Can_Update_ISR_StartEx(CAN_UPDATE_Handler);
 	LCD_ClearDisplay();
 	LCD_Position(0u, 0u);
 	LCD_PrintString("BMS DEMO");
@@ -43,7 +50,8 @@ int main(void)
 	uint16_t battery_current;
 	uint8_t battery_status;
     red_led_1_Write(0);
-
+    Can_Update_Timer_Start();
+    
 	for(;;)
 	{   
 		if (WDT_should_clear()) {
@@ -85,6 +93,12 @@ int main(void)
         OK_SIG_Write(0);
         LCD_Position(0u, 0u);
         LCD_PrintString("FATAL ERR FATAL ERR FA");
+        can_send_status(0x12,
+                    0x34,
+                    COM_FAILURE,
+                    0x5678,
+                    0x9abc);
+        
         
     }
     

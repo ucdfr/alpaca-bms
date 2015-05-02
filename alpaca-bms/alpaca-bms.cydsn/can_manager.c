@@ -81,5 +81,5 @@ void can_send_status(uint8_t SOC_P,
     can_buffer[5] = (charge_cy) & 0xFF;
     can_buffer[6] = (delta>>8) & 0xFF;
     can_buffer[7] = (delta) & 0xFF;
-    CAN_1_SendMsgvolt();
+    CAN_1_SendMsgstatus();
 }
