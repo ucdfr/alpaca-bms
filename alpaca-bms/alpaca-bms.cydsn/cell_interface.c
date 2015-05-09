@@ -55,6 +55,12 @@ Copyright 2013 Linear Technology Corp. (LTC)
 #define OVER_TEMP (20000)
 #define UNDER_TEMP (10000)
 
+extern volatile uint8_t CAN_UPDATE_FLAG;
+extern volatile BMS_STATUS fatal_err;
+extern volatile BMS_STATUS warning_err;
+
+
+
 /**
  * @initialize. In case need to setup anything, write them in it.
  *
@@ -81,15 +87,17 @@ void  wake_up(){
 }
 
 void check_cfg(){
-    DEBUG_UART_PutString("Enter Check_CFG\n");
-//    int i=0;
+    //DEBUG_UART_PutString("Enter Check_CFG\n");
+    int i=0;
     wakeup_sleep();
     LTC6804_rdcfg(TOTAL_IC,rx_cfg);
-    LCD_Position(1u,0u);
- //   for (i=0;i<8;i++){
-  //      LCD_PrintHexUint8(rx_cfg[0][i]);
-   //     LCD_PrintString(":");
-   // }
+    //LCD_Position(1u,0u);
+    for (i=0;i<8;i++){
+        if (rx_cfg[i] != tx_cfg[i]){
+              fatal_err = COM_FAILURE;
+            return;
+        }
+    }
 }
 
 
@@ -123,12 +131,15 @@ uint8_t check_cells(){
   for (i_IC=0;i_IC<TOTAL_IC;i_IC++){
     for (i_cell=0;i_cell<12;i_cell++){
       if ((((int16_t)cell_pu[i_IC][i_cell+1]-(int16_t)cell_pd[i_IC][i_cell+1]) < -400) && (CELL_ENABLE&(0x1<<i_cell))){
+        fatal_err |= CELL_VOLT_UNDER;
         return 1;
       }
       if (cell_pu[i_IC][0]==0){
+        fatal_err |= CELL_VOLT_UNDER;
         return 1;
       }
       if (cell_pd[i_IC][11]==0){
+        fatal_err |= CELL_VOLT_UNDER;
         return 1;
       }
     }
@@ -163,13 +174,22 @@ uint8_t get_cell_volt(){
                 LCD_PrintHexUint8(i);
                 LCD_Position(1u,2u);
                 LCD_PrintString("OVER VOLTAGE");
+                fatal_err |= CELL_VOLT_OVER;
                 return 1;
             }else if (cell_codes[ic][i]<UNDER_VOLTAGE){
                 LCD_Position(1u,0u);
                 LCD_PrintHexUint8(i);
                 LCD_Position(1u,2u);
                 LCD_PrintString("UNDER VOLTAGE");
+                fatal_err |= CELL_VOLT_UNDER;
                 return 1;
+                }
+            else{
+                if (CAN_UPDATE_FLAG){
+                    can_send_volt(ic,
+                    i,
+                    cell_codes);
+                }
                 }
             }
         }
@@ -196,19 +216,26 @@ uint8_t get_cell_temp(){
         LCD_PrintString("ERROR");
         return 1;
     }
- /*
+ 
     for (i=0;i<12;i++){
         if (aux_codes[0][i]>OVER_TEMP){
             LCD_Position(1u,0u);
             LCD_PrintString("OVER TEMP");
+            fatal_err |= PACK_TEMP_OVER;
             return 1;
         }else if (aux_codes[0][i]<UNDER_TEMP){
             LCD_Position(1u,0u);
             LCD_PrintString("UNDER TEMP");
+            warning_err |= PACK_TEMP_UNDER;
             return 1;
-        }
+        }else{
+            warning_err &= ~PACK_TEMP_UNDER;
+                if (CAN_UPDATE_FLAG){
+                    can_send_temp(aux_codes[0]);
+                }
+            }
     }
-   */
+   
     LCD_Position(1u,10u);
     print_cells(aux_codes[0][0]);
     LCD_Position(0u,10u);

@@ -8,9 +8,14 @@
 #include "can_manager.h"
 
 volatile uint8_t CAN_UPDATE_FLAG=0;
+volatile uint16_t CAN_count=0;
+volatile BMS_STATUS warning_err;
+volatile BMS_STATUS fatal_err;
 
 CY_ISR(CAN_UPDATE_Handler){
     CAN_UPDATE_FLAG = 1;
+    CAN_count++;
+    
 }
 
 
@@ -28,10 +33,16 @@ int main(void)
 	red_led_1_Write(0);
 	LCD_Start();
 	DEBUG_UART_Start();
+    
+    //WDT_init();
+    
+    Can_Update_ISR_StartEx(CAN_UPDATE_Handler);
+    Can_Update_Timer_Start();
+    can_init();
 	CyGlobalIntEnable;
 
     
-    Can_Update_ISR_StartEx(CAN_UPDATE_Handler);
+    
 	LCD_ClearDisplay();
 	LCD_Position(0u, 0u);
 	LCD_PrintString("BMS DEMO");
@@ -50,36 +61,48 @@ int main(void)
 	uint16_t battery_current;
 	uint8_t battery_status;
     red_led_1_Write(0);
-    Can_Update_Timer_Start();
+    
+    //initialize err event
+    fatal_err = NO_ERROR;
+    warning_err = NO_ERROR;
     
 	for(;;)
 	{   
+        uint8_t warning_index=0;
 		if (WDT_should_clear()) {
 			WDT_clear();
 		}
-	//	check_cfg();
-	//	if(check_cells()){
-     //       break;
-     //   }// TODO Check if cell exists
-		if (get_cell_volt()){
-            break;
-        }// TODO Get voltage
-		if (get_cell_temp()){
-            break;
-        }// TODO Get temperature
-
-
-		// TODO Determine if need to deassert OK pin. (emergency stop)
+        
+        
+		check_cfg();
+		check_cells();// TODO Check if cell exists
+		get_cell_volt();// TODO Get voltage
+		get_cell_temp();// TODO Get temperature
 
 
 		//get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
-		// send to CAN()
-        can_send_status(0x12,
-                    0x34,
+        if (fatal_err){
+            break;
+        }
+            
+        if (warning_err){
+            for (warning_index =0; warning_index<16;warning_index++){
+                if (fatal_err & (0x1<<warning_index)){
+                    can_send_status(0x00,
+                    0x00,
+                    (0x1<<warning_index),
+                    0x0000,
+                    0x0000);
+                }
+            }
+        }else{
+            can_send_status(0xff,
+                    0xff,
                     NO_ERROR,
-                    0x5678,
-                    0x9abc);
+                    0xffff,
+                    0xffff);
+        }
         
         
         OK_SIG_Write(1);
@@ -88,18 +111,28 @@ int main(void)
 	} // main loop
     
     for(;;){
-        //fatal error
-        red_led_1_Write(1);
-        OK_SIG_Write(0);
+        uint8_t event_index=0;
         LCD_Position(0u, 0u);
         LCD_PrintString("FATAL ERR FATAL ERR FA");
-        can_send_status(0x12,
-                    0x34,
-                    COM_FAILURE,
-                    0x5678,
-                    0x9abc);
+        for (;;){
+            //fatal error
+            CyDelay(500);
+            if (WDT_should_clear()) {
+    			WDT_clear();
+		    }//even in fatal error, the bms should keep alive
+            red_led_1_Write(1);
+            OK_SIG_Write(0);
         
-        
+            for (event_index =0; event_index<16;event_index++){
+                if (fatal_err & (0x1<<event_index)){
+                    can_send_status(0x00,
+                    0x00,
+                    (0x1<<event_index),
+                    0x0000,
+                    0x0000);
+                }
+            }
+        }
     }
     
     

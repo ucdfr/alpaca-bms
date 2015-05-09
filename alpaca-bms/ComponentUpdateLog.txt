@@ -23,3 +23,9 @@ alpaca-bms: TopDesign
 	ADC_current [v3.10] to [v3.20]
 
 
+Last Modified Date & Time: 05/08/2015 00:56:52
+
+alpaca-bms: TopDesign
+	DEBUG_UART [v2.40] to [v2.50]
+
+
