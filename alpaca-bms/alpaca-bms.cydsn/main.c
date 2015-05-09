@@ -7,7 +7,7 @@
 #include "data.h"
 #include "can_manager.h"
 
-volatile uint8_t CAN_UPDATE_FLAG=0;
+volatile uint8_t CAN_UPDATE_FLAG=1;
 volatile uint16_t CAN_count=0;
 volatile BMS_STATUS warning_err;
 volatile BMS_STATUS fatal_err;
@@ -74,10 +74,10 @@ int main(void)
 		}
         
         
-		check_cfg();
-		check_cells();// TODO Check if cell exists
+//		check_cfg();
+		//check_cells();// TODO Check if cell exists
 		get_cell_volt();// TODO Get voltage
-		get_cell_temp();// TODO Get temperature
+		//get_cell_temp();// TODO Get temperature
 
 
 		//get_current(); // TODO get current reading from sensor

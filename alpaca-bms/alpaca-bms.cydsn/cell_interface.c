@@ -52,6 +52,8 @@ Copyright 2013 Linear Technology Corp. (LTC)
 #define OVER_VOLTAGE (20000)
 #define UNDER_VOLTAGE (10000)
 
+#define DEBUG_LCD 1
+
 #define OVER_TEMP (20000)
 #define UNDER_TEMP (10000)
 
@@ -162,25 +164,31 @@ uint8_t get_cell_volt(){
     error = LTC6804_rdcv(0, TOTAL_IC,cell_codes); // Set to read back all cell voltage registers
     if (error == -1)
     {
-       LCD_Position(0u,10u);
-       LCD_PrintString("ERROR");
+        #ifdef DEBUG_LCD
+            LCD_Position(0u,10u);
+            LCD_PrintString("ERROR");
+        #endif
        return 1;
     }
     for (ic=0;ic<TOTAL_IC;ic++){
         for (i=0;i<12;i++){
             if (CELL_ENABLE & (0x1<<i)){
                 if (cell_codes[ic][i]>OVER_VOLTAGE){
-                LCD_Position(1u,0u);
-                LCD_PrintHexUint8(i);
-                LCD_Position(1u,2u);
-                LCD_PrintString("OVER VOLTAGE");
+                    #ifdef DEBUG_LCD
+                        LCD_Position(1u,0u);
+                        LCD_PrintHexUint8(i);
+                        LCD_Position(1u,2u);
+                        LCD_PrintString("OVER VOLTAGE");
+                    #endif
                 fatal_err |= CELL_VOLT_OVER;
                 return 1;
             }else if (cell_codes[ic][i]<UNDER_VOLTAGE){
-                LCD_Position(1u,0u);
-                LCD_PrintHexUint8(i);
-                LCD_Position(1u,2u);
-                LCD_PrintString("UNDER VOLTAGE");
+                #ifdef DEBUG_LCD
+                    LCD_Position(1u,0u);
+                    LCD_PrintHexUint8(i);
+                    LCD_Position(1u,2u);
+                    LCD_PrintString("UNDER VOLTAGE");
+                #endif
                 fatal_err |= CELL_VOLT_UNDER;
                 return 1;
                 }
@@ -190,14 +198,12 @@ uint8_t get_cell_volt(){
                     i,
                     cell_codes);
                 }
+                CyDelay(20);
                 }
             }
         }
     }
-    LCD_Position(1u,0u);
-    print_cells(cell_codes[1][3]);
-    LCD_Position(0u,10u);
-    LCD_PrintString("OK");
+
     return 0;
 }// get_cell_volt()
 

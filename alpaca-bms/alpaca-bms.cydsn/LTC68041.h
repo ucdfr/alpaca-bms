@@ -51,9 +51,9 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #include <project.h>
 
 #define WAKE_UP_DELAY_US (40)
-#define WAKE_IDLE_DELAY_US (1)
+#define WAKE_IDLE_DELAY_US (2)
     
-#define TOTAL_IC (1) //!<number of ICs in the daisy chain
+#define TOTAL_IC (3) //!<number of ICs in the daisy chain
 
 /*
 	Pre computed crc15 table used for the LTC6804 PEC calculation
