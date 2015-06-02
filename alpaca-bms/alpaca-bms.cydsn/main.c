@@ -47,7 +47,7 @@ int main(void)
 	LCD_Position(0u, 0u);
 	LCD_PrintString("BMS DEMO");
 	DEBUG_UART_PutString("BMS DEMO START\n");
-	CyDelay(2000);
+	CyDelay(500);
 	// TODO Watchdog Timer
 
 
@@ -74,7 +74,7 @@ int main(void)
 		}
         
         
-//		check_cfg();
+		//check_cfg();
 		//check_cells();// TODO Check if cell exists
 		get_cell_volt();// TODO Get voltage
 		//get_cell_temp();// TODO Get temperature
@@ -106,7 +106,7 @@ int main(void)
         
         
         OK_SIG_Write(1);
-		CyDelay(500);
+		CyDelay(100);
 
 	} // main loop
     

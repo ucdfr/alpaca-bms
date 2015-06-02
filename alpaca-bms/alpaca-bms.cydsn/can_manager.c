@@ -12,14 +12,34 @@ The datatype consists of three bytes:
 
 
 
-void can_send_temp(uint16_t temp[6])
+void can_send_temp(uint8_t IC_index, uint16_t temp[6])
 {
 	uint8_t i;
+    uint32_t temp_total=0;
+    uint16_t temp_max=0;
+    for(i=0;i<NUM_TEMP;i++){
+        temp_total += temp[i];
+        if (temp[i]>temp_max){
+            temp_max = temp[i];
+        }
+    }
+    temp_total = temp_total/NUM_TEMP;
+    
 	for(i=0; i<NUM_TEMP; i++)
 	{
-		can_buffer[0] = i;
-		can_buffer[1] = 0xFF & (temp[i]>>8); // upper byte
+		can_buffer[0] = IC_index;
+        can_buffer[1] = i;
+        
+		can_buffer[2] = 0xFF & (temp[i]>>8); // upper byte
 		can_buffer[3] = 0xFF & temp[i]; // lower byte
+        
+        can_buffer[4] = 0xFF & (temp_total>>8); // upper byte
+		can_buffer[5] = 0xFF & temp_total; // lower byte
+        
+        
+        can_buffer[6] = 0xFF & (temp_max>>8); // upper byte
+		can_buffer[7] = 0xFF & temp_max; // lower byte
+        
 		CAN_1_SendMsgtemp();
 	} // for all temperature probes
 } // can_send_temp()
@@ -39,25 +59,26 @@ void can_send_volt(uint8_t IC_index,
             total += cell_codes[ic][i];
         }
     }
-    can_buffer[0] = IC_index*12 + cell_index;
-	can_buffer[1] = 0xFF & (cell_codes[IC_index][cell_index]>>8); // upper byte
-	can_buffer[2] = 0xFF & (cell_codes[IC_index][cell_index]); // lower byte
+    can_buffer[0] = (IC_index);
+    can_buffer[1] = cell_index;
+	can_buffer[2] = 0xFF & (cell_codes[IC_index][cell_index]>>8); // upper byte
+	can_buffer[3] = 0xFF & (cell_codes[IC_index][cell_index]); // lower byte
     
-    can_buffer[3] = 0xFF & (total >> 24);
-    can_buffer[4] = 0xFF & (total >> 16);
-    can_buffer[5] = 0xFF & (total >> 8);
-    can_buffer[6] = 0xFF & (total);
-    can_buffer[7] = 0x00;
+    can_buffer[4] = 0xFF & (total >> 24);
+    can_buffer[5] = 0xFF & (total >> 16);
+    can_buffer[6] = 0xFF & (total >> 8);
+    can_buffer[7] = 0xFF & (total);
 
 	CAN_1_SendMsgvolt();
 } // can_send_volt()
 
 
 
-void can_send_current(uint16_t battery_current)
+void can_send_current(uint8_t IC_index, uint16_t battery_current)
 {
-	can_buffer[0] = 0xFF & (battery_current>>8); // upper byte
-	can_buffer[1] = 0xFF & battery_current; // lower byte
+    can_buffer[0] = IC_index;
+	can_buffer[1] = 0xFF & (battery_current>>8); // upper byte
+	can_buffer[2] = 0xFF & battery_current; // lower byte
 	CAN_1_SendMsgcurrent();
 } // can_send_current()
 
