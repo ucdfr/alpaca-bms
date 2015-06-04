@@ -11,6 +11,8 @@ volatile uint8_t CAN_UPDATE_FLAG=1;
 volatile uint16_t CAN_count=0;
 volatile BMS_STATUS warning_err;
 volatile BMS_STATUS fatal_err;
+volatile uint8_t error_IC;
+volatile uint8_t error_CHIP;
 
 CY_ISR(CAN_UPDATE_Handler){
     CAN_UPDATE_FLAG = 1;
@@ -97,11 +99,11 @@ int main(void)
                 }
             }
         }else{
-            can_send_status(0xff,
-                    0xff,
+            can_send_status(0x00,
+                    0x00,
                     NO_ERROR,
-                    0xffff,
-                    0xffff);
+                    0x0000,
+                    0x0000);
         }
         
         
@@ -128,7 +130,7 @@ int main(void)
                     can_send_status(0x00,
                     0x00,
                     (0x1<<event_index),
-                    0x0000,
+                    (error_IC<<4) | (error_CHIP),
                     0x0000);
                 }
             }

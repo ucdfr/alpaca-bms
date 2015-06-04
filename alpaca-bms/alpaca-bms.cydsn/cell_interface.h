@@ -54,7 +54,7 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #include "can_manager.h"
 
     
-    #define CELL_ENABLE (0x1CF)
+    #define CELL_ENABLE (0x1CE)
 
 
 /**

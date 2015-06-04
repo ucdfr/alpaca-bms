@@ -49,10 +49,10 @@ Copyright 2013 Linear Technology Corp. (LTC)
 #include "cell_interface.h"
 #include "LTC68041.h"
 
-#define OVER_VOLTAGE (20000)
-#define UNDER_VOLTAGE (10000)
+#define OVER_VOLTAGE (0x4000)
+#define UNDER_VOLTAGE (0x1000)
 
-#define DEBUG_LCD 1
+#define DEBUG_LCD 0
 
 #define OVER_TEMP (20000)
 #define UNDER_TEMP (10000)
@@ -60,7 +60,8 @@ Copyright 2013 Linear Technology Corp. (LTC)
 extern volatile uint8_t CAN_UPDATE_FLAG;
 extern volatile BMS_STATUS fatal_err;
 extern volatile BMS_STATUS warning_err;
-
+extern volatile uint8_t error_IC;
+extern volatile uint8_t error_CHIP;
 
 
 /**
@@ -134,10 +135,14 @@ uint8_t check_cells(){
     for (i_cell=0;i_cell<12;i_cell++){
       if ((((int16_t)cell_pu[i_IC][i_cell+1]-(int16_t)cell_pd[i_IC][i_cell+1]) < -400) && (CELL_ENABLE&(0x1<<i_cell))){
         fatal_err |= CELL_VOLT_UNDER;
+        LCD_Position(1u,0u);
+        LCD_PrintString("big ");
         return 1;
       }
       if (cell_pu[i_IC][0]==0){
         fatal_err |= CELL_VOLT_UNDER;
+        LCD_Position(1u,0u);
+        LCD_PrintString("eq 0");
         return 1;
       }
       if (cell_pd[i_IC][11]==0){
@@ -153,13 +158,14 @@ uint8_t check_cells(){
 
 
 uint8_t get_cell_volt(){
-    DEBUG_UART_PutString("Enter GET_CELL_VOLT\n");
+    LTC68_ClearFIFO();
+   // DEBUG_UART_PutString("Enter GET_CELL_VOLT\n");
     int error;
     uint8_t i=0;
     uint8_t ic=0;
     wakeup_sleep();
     LTC6804_adcv();
-    CyDelay(6);
+    CyDelay(10);
     wakeup_sleep();
     error = LTC6804_rdcv(0, TOTAL_IC,cell_codes); // Set to read back all cell voltage registers
     if (error == -1)
@@ -170,6 +176,8 @@ uint8_t get_cell_volt(){
         #endif
        return 1;
     }
+    
+    
     for (ic=0;ic<TOTAL_IC;ic++){
         for (i=0;i<12;i++){
             if (CELL_ENABLE & (0x1<<i)){
@@ -180,6 +188,8 @@ uint8_t get_cell_volt(){
                         LCD_Position(1u,2u);
                         LCD_PrintString("OVER VOLTAGE");
                     #endif
+                error_IC = ic;
+                error_CHIP = i;
                 fatal_err |= CELL_VOLT_OVER;
                 return 1;
             }else if (cell_codes[ic][i]<UNDER_VOLTAGE){
@@ -189,6 +199,8 @@ uint8_t get_cell_volt(){
                     LCD_Position(1u,2u);
                     LCD_PrintString("UNDER VOLTAGE");
                 #endif
+                error_IC = ic;
+                error_CHIP = i;
                 fatal_err |= CELL_VOLT_UNDER;
                 return 1;
                 }
@@ -204,6 +216,19 @@ uint8_t get_cell_volt(){
         }
     }
 
+  /*  
+    for (ic=0;ic<TOTAL_IC;ic++){
+        for (i=0;i<12;i++){
+            if (CELL_ENABLE & (0x1<<i)){
+                        can_send_volt(ic,
+                        i,
+                        cell_codes);
+                        CyDelay(10);
+            }
+        }
+    }
+    */
+    
     return 0;
 }// get_cell_volt()
 
@@ -227,6 +252,8 @@ uint8_t get_cell_temp(){
         if (aux_codes[0][i]>OVER_TEMP){
             LCD_Position(1u,0u);
             LCD_PrintString("OVER TEMP");
+           // error_IC = ic;
+           // error_TEMP = i;
             fatal_err |= PACK_TEMP_OVER;
             return 1;
         }else if (aux_codes[0][i]<UNDER_TEMP){
@@ -237,7 +264,7 @@ uint8_t get_cell_temp(){
         }else{
             warning_err &= ~PACK_TEMP_UNDER;
                 if (CAN_UPDATE_FLAG){
-                    can_send_temp(aux_codes[0]);
+                    can_send_temp(0,aux_codes);
                 }
             }
     }
