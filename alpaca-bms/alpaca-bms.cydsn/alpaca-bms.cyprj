@@ -121,6 +121,20 @@
 <build_action v="C_FILE" />
 <PropertyDeltas />
 </CyGuid_8b8ab257-35d3-4473-b57b-36315200b38b>
+<CyGuid_8b8ab257-35d3-4473-b57b-36315200b38b type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtFile" version="3" xml_contents_version="1">
+<CyGuid_31768f72-0253-412b-af77-e7dba74d1330 type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtItem" version="2" name="uart-terminal.c" persistent="..\..\..\Node-Elephant\Node-Elephant\Node-Elephant.cydsn\uart-terminal.c">
+<Hidden v="False" />
+</CyGuid_31768f72-0253-412b-af77-e7dba74d1330>
+<build_action v="C_FILE" />
+<PropertyDeltas />
+</CyGuid_8b8ab257-35d3-4473-b57b-36315200b38b>
+<CyGuid_8b8ab257-35d3-4473-b57b-36315200b38b type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtFile" version="3" xml_contents_version="1">
+<CyGuid_31768f72-0253-412b-af77-e7dba74d1330 type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtItem" version="2" name="uart-terminal.h" persistent="..\..\..\Node-Elephant\Node-Elephant\Node-Elephant.cydsn\uart-terminal.h">
+<Hidden v="False" />
+</CyGuid_31768f72-0253-412b-af77-e7dba74d1330>
+<build_action v="NONE" />
+<PropertyDeltas />
+</CyGuid_8b8ab257-35d3-4473-b57b-36315200b38b>
 </dependencies>
 </CyGuid_0820c2e7-528d-4137-9a08-97257b946089>
 </CyGuid_2f73275c-45bf-46ba-b3b1-00a2fe0c8dd8>
@@ -2714,6 +2728,7 @@
 <GlobalPages />
 <GlobalTools name="Code Generation">
 <GlobalPages>
+<name_val_pair name="General@Application Type" v="Normal" />
 <name_val_pair name="General@Custom Code Gen Options" v="" />
 <name_val_pair name="General@Skip Code Generation" v="False" />
 <name_val_pair name="General@Custom Synthesis Options" v="" />
@@ -2760,6 +2775,7 @@
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@C/C++@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@C/C++@Optimization@Inline Functions" v="False" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@C/C++@Optimization@Optimization Level" v="None" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@C/C++@Optimization@Link Time Optimization" v="False" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@General@Additional Libraries" v="" />
@@ -2767,9 +2783,11 @@
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@General@Additional Link Files" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@General@Use Debugging Information" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@General@Use Default Libs" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@General@Use Nano Lib" v="True" />
-<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@General@Enable Float printf" v="False" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@General@Enable printf Float" v="True" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@Optimization@Optimization Level" v="None" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM3@Linker@Command Line@Command Line" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@General@Output Directory" v="${ProjectDir}\${ProcessorType}\${Platform}\${Config}" />
@@ -2792,6 +2810,7 @@
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@C/C++@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@C/C++@Optimization@Inline Functions" v="False" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@C/C++@Optimization@Optimization Level" v="Size" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@C/C++@Optimization@Link Time Optimization" v="False" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@General@Additional Libraries" v="" />
@@ -2799,9 +2818,11 @@
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@General@Additional Link Files" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@General@Use Debugging Information" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@General@Use Default Libs" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@General@Use Nano Lib" v="True" />
-<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@General@Enable Float printf" v="False" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@General@Enable printf Float" v="True" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@Optimization@Optimization Level" v="None" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM3@Linker@Command Line@Command Line" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@General@Output Directory" v="${ProjectDir}\${ProcessorType}\${Platform}\${Config}" />
@@ -2824,6 +2845,7 @@
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@C/C++@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@C/C++@Optimization@Inline Functions" v="False" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@C/C++@Optimization@Optimization Level" v="None" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@C/C++@Optimization@Link Time Optimization" v="False" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@General@Additional Libraries" v="" />
@@ -2831,9 +2853,11 @@
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@General@Additional Link Files" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@General@Use Debugging Information" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@General@Use Default Libs" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@General@Use Nano Lib" v="True" />
-<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@General@Enable Float printf" v="False" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@General@Enable printf Float" v="True" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@Optimization@Optimization Level" v="None" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Debug@CortexM0@Linker@Command Line@Command Line" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@General@Output Directory" v="${ProjectDir}\${ProcessorType}\${Platform}\${Config}" />
@@ -2856,6 +2880,7 @@
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@C/C++@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@C/C++@Optimization@Inline Functions" v="False" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@C/C++@Optimization@Optimization Level" v="Size" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@C/C++@Optimization@Link Time Optimization" v="False" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@General@Additional Libraries" v="" />
@@ -2863,9 +2888,11 @@
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@General@Additional Link Files" v="" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@General@Use Debugging Information" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@General@Use Default Libs" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@General@Use Nano Lib" v="True" />
-<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@General@Enable Float printf" v="False" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@General@Enable printf Float" v="True" />
+<name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@Optimization@Optimization Level" v="None" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="c9323d49-d323-40b8-9b59-cc008d68a989@Release@CortexM0@Linker@Command Line@Command Line" v="" />
 </name>
@@ -2892,6 +2919,7 @@
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@C/C++@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@C/C++@Optimization@Inline Functions" v="False" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@C/C++@Optimization@Optimization Level" v="None" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@C/C++@Optimization@Link Time Optimization" v="False" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@General@Additional Libraries" v="" />
@@ -2899,9 +2927,11 @@
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@General@Additional Link Files" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@General@Use Debugging Information" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@General@Use Default Libs" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@General@Use Nano Lib" v="True" />
-<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@General@Enable Float printf" v="False" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@General@Enable printf Float" v="True" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@Optimization@Optimization Level" v="None" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM3@Linker@Command Line@Command Line" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@General@Output Directory" v="${ProjectDir}\${ProcessorType}\${Platform}\${Config}" />
@@ -2924,6 +2954,7 @@
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@C/C++@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@C/C++@Optimization@Inline Functions" v="False" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@C/C++@Optimization@Optimization Level" v="Size" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@C/C++@Optimization@Link Time Optimization" v="False" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@General@Additional Libraries" v="" />
@@ -2931,9 +2962,11 @@
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@General@Additional Link Files" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@General@Use Debugging Information" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@General@Use Default Libs" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@General@Use Nano Lib" v="True" />
-<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@General@Enable Float printf" v="False" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@General@Enable printf Float" v="True" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@Optimization@Optimization Level" v="None" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM3@Linker@Command Line@Command Line" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@General@Output Directory" v="${ProjectDir}\${ProcessorType}\${Platform}\${Config}" />
@@ -2956,6 +2989,7 @@
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@C/C++@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@C/C++@Optimization@Inline Functions" v="False" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@C/C++@Optimization@Optimization Level" v="None" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@C/C++@Optimization@Link Time Optimization" v="False" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@General@Additional Libraries" v="" />
@@ -2963,9 +2997,11 @@
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@General@Additional Link Files" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@General@Use Debugging Information" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@General@Use Default Libs" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@General@Use Nano Lib" v="True" />
-<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@General@Enable Float printf" v="False" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@General@Enable printf Float" v="True" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@Optimization@Optimization Level" v="None" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Debug@CortexM0@Linker@Command Line@Command Line" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@General@Output Directory" v="${ProjectDir}\${ProcessorType}\${Platform}\${Config}" />
@@ -2988,6 +3024,7 @@
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@C/C++@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@C/C++@Optimization@Inline Functions" v="False" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@C/C++@Optimization@Optimization Level" v="Size" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@C/C++@Optimization@Link Time Optimization" v="False" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@General@Additional Libraries" v="" />
@@ -2995,9 +3032,11 @@
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@General@Additional Link Files" v="" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@General@Use Debugging Information" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@General@Use Default Libs" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@General@Use Nano Lib" v="True" />
-<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@General@Enable Float printf" v="False" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@General@Enable printf Float" v="True" />
+<name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@Optimization@Optimization Level" v="None" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@Optimization@Remove Unused Functions" v="True" />
 <name_val_pair name="b98f980c-3bd1-4fc7-a887-c56a20a46fdd@Release@CortexM0@Linker@Command Line@Command Line" v="" />
 </name>
@@ -3005,9 +3044,101 @@
 <platform>
 <name v="5bca58cd-5542-421c-b08d-9513dbb687fd">
 <name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@General@Output Directory" v="${ProjectDir}\${ProcessorType}\${Platform}\${Config}" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Assembly@General@Additional Include Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Assembly@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Assembly@General@Suppress Warnings" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Assembly@General@Generate List Files" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Assembly@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@C/C++@General@Additional Include Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@C/C++@General@Generate List Files" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@C/C++@General@Default Char Unsigned" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@C/C++@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@C/C++@General@Preprocessor Definitions" v="DEBUG" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@C/C++@General@Strict Compilation" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@C/C++@Optimization@Inline Functions" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@C/C++@Optimization@Optimization Level" v="None" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@C/C++@Optimization@Split Sections" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@C/C++@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Library Generation@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Linker@General@Additional Libraries" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Linker@General@Additional Library Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Linker@General@Generate Map File" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Linker@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Linker@General@Use Default Libs" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM3@Linker@Command Line@Command Line" v="" />
 <name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@General@Output Directory" v="${ProjectDir}\${ProcessorType}\${Platform}\${Config}" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Assembly@General@Additional Include Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Assembly@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Assembly@General@Suppress Warnings" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Assembly@General@Generate List Files" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Assembly@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@C/C++@General@Additional Include Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@C/C++@General@Generate List Files" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@C/C++@General@Default Char Unsigned" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@C/C++@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@C/C++@General@Preprocessor Definitions" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@C/C++@General@Strict Compilation" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@C/C++@Optimization@Inline Functions" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@C/C++@Optimization@Optimization Level" v="Size" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@C/C++@Optimization@Split Sections" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@C/C++@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Library Generation@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Linker@General@Additional Libraries" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Linker@General@Additional Library Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Linker@General@Generate Map File" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Linker@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Linker@General@Use Default Libs" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM3@Linker@Command Line@Command Line" v="" />
 <name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@General@Output Directory" v="${ProjectDir}\${ProcessorType}\${Platform}\${Config}" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Assembly@General@Additional Include Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Assembly@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Assembly@General@Suppress Warnings" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Assembly@General@Generate List Files" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Assembly@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@C/C++@General@Additional Include Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@C/C++@General@Generate List Files" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@C/C++@General@Default Char Unsigned" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@C/C++@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@C/C++@General@Preprocessor Definitions" v="DEBUG" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@C/C++@General@Strict Compilation" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@C/C++@Optimization@Inline Functions" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@C/C++@Optimization@Optimization Level" v="None" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@C/C++@Optimization@Split Sections" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@C/C++@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Library Generation@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Linker@General@Additional Libraries" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Linker@General@Additional Library Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Linker@General@Generate Map File" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Linker@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Linker@General@Use Default Libs" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Debug@CortexM0@Linker@Command Line@Command Line" v="" />
 <name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@General@Output Directory" v="${ProjectDir}\${ProcessorType}\${Platform}\${Config}" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Assembly@General@Additional Include Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Assembly@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Assembly@General@Suppress Warnings" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Assembly@General@Generate List Files" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Assembly@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@C/C++@General@Additional Include Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@C/C++@General@Generate List Files" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@C/C++@General@Default Char Unsigned" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@C/C++@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@C/C++@General@Preprocessor Definitions" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@C/C++@General@Strict Compilation" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@C/C++@Optimization@Inline Functions" v="False" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@C/C++@Optimization@Optimization Level" v="Size" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@C/C++@Optimization@Split Sections" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@C/C++@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Library Generation@Command Line@Command Line" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Linker@General@Additional Libraries" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Linker@General@Additional Library Directories" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Linker@General@Generate Map File" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Linker@General@Custom Linker Script" v="" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Linker@General@Generate Debugging Information" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Linker@General@Use Default Libs" v="True" />
+<name_val_pair name="5bca58cd-5542-421c-b08d-9513dbb687fd@Release@CortexM0@Linker@Command Line@Command Line" v="" />
 </name>
 </platform>
 <platform>
@@ -3031,7 +3162,6 @@
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM3@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM3@Linker@General@Additional Libraries" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM3@Linker@General@Additional Library Directories" v="" />
-<name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM3@Linker@General@Use MicroLib" v="True" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM3@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM3@Linker@General@Custom Linker Script" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM3@Linker@General@Generate Debugging Information" v="True" />
@@ -3056,7 +3186,6 @@
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM3@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM3@Linker@General@Additional Libraries" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM3@Linker@General@Additional Library Directories" v="" />
-<name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM3@Linker@General@Use MicroLib" v="True" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM3@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM3@Linker@General@Custom Linker Script" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM3@Linker@General@Generate Debugging Information" v="True" />
@@ -3081,7 +3210,6 @@
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM0@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM0@Linker@General@Additional Libraries" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM0@Linker@General@Additional Library Directories" v="" />
-<name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM0@Linker@General@Use MicroLib" v="True" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM0@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM0@Linker@General@Custom Linker Script" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Debug@CortexM0@Linker@General@Generate Debugging Information" v="True" />
@@ -3106,7 +3234,6 @@
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM0@Library Generation@Command Line@Command Line" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM0@Linker@General@Additional Libraries" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM0@Linker@General@Additional Library Directories" v="" />
-<name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM0@Linker@General@Use MicroLib" v="True" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM0@Linker@General@Generate Map File" v="True" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM0@Linker@General@Custom Linker Script" v="" />
 <name_val_pair name="fdb8e1ae-f83a-46cf-9446-1d703716f38a@Release@CortexM0@Linker@General@Generate Debugging Information" v="True" />
@@ -3160,8 +3287,8 @@
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Debug@DP8051@C/C++@General@PrintListingFile" v="True" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Debug@DP8051@C/C++@General@AssemblyCodeList" v="True" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Debug@DP8051@C/C++@General@ListInclude" v="False" />
-<name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Debug@DP8051@C/C++@Optimization@OptimizationLevel" v="2" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Debug@DP8051@C/C++@Optimization@OptimizationEmphasis" v="Size" />
+<name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Debug@DP8051@C/C++@Optimization@OptimizationLevel" v="2" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Debug@DP8051@C/C++@Optimization@ObjectAdvanced" v="False" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Debug@DP8051@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Debug@DP8051@Linker@General@Additional Link Files" v="" />
@@ -3198,8 +3325,8 @@
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Release@DP8051@C/C++@General@PrintListingFile" v="True" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Release@DP8051@C/C++@General@AssemblyCodeList" v="True" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Release@DP8051@C/C++@General@ListInclude" v="False" />
-<name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Release@DP8051@C/C++@Optimization@OptimizationLevel" v="8" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Release@DP8051@C/C++@Optimization@OptimizationEmphasis" v="Size" />
+<name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Release@DP8051@C/C++@Optimization@OptimizationLevel" v="8" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Release@DP8051@C/C++@Optimization@ObjectAdvanced" v="False" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Release@DP8051@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="4bd5669a-0e4e-4e1c-9625-e982dd945372@Release@DP8051@Linker@General@Additional Link Files" v="" />
@@ -3240,8 +3367,8 @@
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Debug@DP8051@C/C++@General@PrintListingFile" v="True" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Debug@DP8051@C/C++@General@AssemblyCodeList" v="True" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Debug@DP8051@C/C++@General@ListInclude" v="False" />
-<name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Debug@DP8051@C/C++@Optimization@OptimizationLevel" v="2" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Debug@DP8051@C/C++@Optimization@OptimizationEmphasis" v="Size" />
+<name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Debug@DP8051@C/C++@Optimization@OptimizationLevel" v="2" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Debug@DP8051@C/C++@Optimization@ObjectAdvanced" v="False" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Debug@DP8051@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Debug@DP8051@Linker@General@Additional Link Files" v="" />
@@ -3278,8 +3405,8 @@
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Release@DP8051@C/C++@General@PrintListingFile" v="True" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Release@DP8051@C/C++@General@AssemblyCodeList" v="True" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Release@DP8051@C/C++@General@ListInclude" v="False" />
-<name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Release@DP8051@C/C++@Optimization@OptimizationLevel" v="8" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Release@DP8051@C/C++@Optimization@OptimizationEmphasis" v="Size" />
+<name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Release@DP8051@C/C++@Optimization@OptimizationLevel" v="8" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Release@DP8051@C/C++@Optimization@ObjectAdvanced" v="False" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Release@DP8051@C/C++@Command Line@Command Line" v="" />
 <name_val_pair name="c659702b-5f69-4783-8160-eb7977f1c97a@Release@DP8051@Linker@General@Additional Link Files" v="" />
@@ -3301,9 +3428,11 @@
 </platforms>
 <project_current_platform v="c9323d49-d323-40b8-9b59-cc008d68a989" />
 <project_current_processor v="CortexM3" />
+<component_generation v="" />
 <last_selected_tab v="Cypress" />
-<WriteAppVersionLastSavedWith v="3.2.0.724" />
-<WriteAppMarketingVersionLastSavedWith v=" 3.2" />
+<component_dependent_projects_generation v="" />
+<WriteAppVersionLastSavedWith v="3.1.0.2288" />
+<WriteAppMarketingVersionLastSavedWith v=" 3.1 SP3" />
 <project_id v="26d68f6a-a92a-4ad9-b697-2e45eae3655f" />
 </CyGuid_49cfd574-032a-4a64-b7be-d4eeeaf25e43>
 </CyGuid_60697ce6-dce2-4816-8680-4de0635742eb>
@@ -3317,5 +3446,7 @@
 <ignored_deps />
 </CyGuid_495451fe-d201-4d01-b22d-5d3f5609ac37>
 <boot_component v="cy_boot_v4_20" />
-<current_generation v="3" /><BootloaderTag hexFile="" elfFile="" /></CyGuid_fec8f9e8-2365-4bdb-96d3-a4380222e01b>
+<BootloaderTag hexFile="" elfFile="" />
+<current_generation v="3" />
+</CyGuid_fec8f9e8-2365-4bdb-96d3-a4380222e01b>
 </CyXmlSerializer>
