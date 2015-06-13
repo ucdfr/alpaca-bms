@@ -49,6 +49,8 @@ int main(void)
 	LCD_Position(0u, 0u);
 	LCD_PrintString("BMS DEMO");
 	DEBUG_UART_PutString("BMS DEMO START\n");
+    LCD_Position(1u,0u);
+    LCD_PrintString("System OK");
 	CyDelay(500);
 	// TODO Watchdog Timer
 
