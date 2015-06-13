@@ -26,14 +26,14 @@ int main(void)
 {
 	CyGlobalIntEnable;
 	//WDT_init();
-	red_led_1_Write(1);
-	CyDelay(100);
-	red_led_1_Write(0);
-	CyDelay(100);
-	red_led_1_Write(1);
-	CyDelay(100);
-	red_led_1_Write(0);
-	LCD_Start();
+	//red_led_1_Write(1);
+	//CyDelay(100);
+	//red_led_1_Write(0);
+	//CyDelay(100);
+	//red_led_1_Write(1);
+	//CyDelay(100);
+	//red_led_1_Write(0);
+	//LCD_Start();
 	DEBUG_UART_Start();
     
     //WDT_init();
@@ -45,12 +45,12 @@ int main(void)
 
     
     
-	LCD_ClearDisplay();
-	LCD_Position(0u, 0u);
-	LCD_PrintString("BMS DEMO");
+	//LCD_ClearDisplay();
+	//LCD_Position(0u, 0u);
+	//LCD_PrintString("BMS DEMO");
 	DEBUG_UART_PutString("BMS DEMO START\n");
-    LCD_Position(1u,0u);
-    LCD_PrintString("System OK");
+    //LCD_Position(1u,0u);
+    //LCD_PrintString("System OK");
 	CyDelay(500);
 	// TODO Watchdog Timer
 
@@ -64,7 +64,6 @@ int main(void)
 	uint16_t temp[NUM_TEMP];
 	uint16_t battery_current;
 	uint8_t battery_status;
-    red_led_1_Write(0);
     
     //initialize err event
     fatal_err = NO_ERROR;
@@ -116,15 +115,14 @@ int main(void)
     
     for(;;){
         uint8_t event_index=0;
-        LCD_Position(0u, 0u);
-        LCD_PrintString("FATAL ERR FATAL ERR FA");
+        //LCD_Position(0u, 0u);
+        //LCD_PrintString("FATAL ERR FATAL ERR FA");
         for (;;){
             //fatal error
             CyDelay(500);
             if (WDT_should_clear()) {
     			WDT_clear();
 		    }//even in fatal error, the bms should keep alive
-            red_led_1_Write(1);
             OK_SIG_Write(0);
         
             for (event_index =0; event_index<16;event_index++){

@@ -148,12 +148,6 @@
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\OK_SIG_aliases.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\OK_SIG.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\OK_SIG.h</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD.c</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD.h</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_PM.c</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_LCDPort_aliases.h</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_LCDPort.c</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\LCD_LCDPort.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\DEBUG_UART_PM.c</File>
@@ -168,9 +162,6 @@
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\WDT_timer_clock.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\WDT_ISR.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\WDT_ISR.h</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\red_led_1_aliases.h</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\red_led_1.c</File>
-          <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\red_led_1.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\timer_clock_1.c</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\timer_clock_1.h</File>
           <File BuildType="BUILD" Toolchain="">.\Generated_Source\PSoC5\Can_Update_Timer.c</File>

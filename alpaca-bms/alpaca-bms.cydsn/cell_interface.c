@@ -52,7 +52,7 @@ Copyright 2013 Linear Technology Corp. (LTC)
 #define OVER_VOLTAGE (0x4000)
 #define UNDER_VOLTAGE (0x1000)
 
-#define DEBUG_LCD 0
+//#define DEBUG_LCD 0
 
 #define OVER_TEMP (20000)
 #define UNDER_TEMP (10000)
@@ -135,14 +135,14 @@ uint8_t check_cells(){
     for (i_cell=0;i_cell<12;i_cell++){
       if ((((int16_t)cell_pu[i_IC][i_cell+1]-(int16_t)cell_pd[i_IC][i_cell+1]) < -400) && (CELL_ENABLE&(0x1<<i_cell))){
         fatal_err |= CELL_VOLT_UNDER;
-        LCD_Position(1u,0u);
-        LCD_PrintString("big ");
+        //LCD_Position(1u,0u);
+        //LCD_PrintString("big ");
         return 1;
       }
       if (cell_pu[i_IC][0]==0){
         fatal_err |= CELL_VOLT_UNDER;
-        LCD_Position(1u,0u);
-        LCD_PrintString("eq 0");
+        //LCD_Position(1u,0u);
+        //LCD_PrintString("eq 0");
         return 1;
       }
       if (cell_pd[i_IC][11]==0){
@@ -243,22 +243,28 @@ uint8_t get_cell_temp(){
     error = LTC6804_rdaux(0,TOTAL_IC,aux_codes); // Set to read back all aux registers
     if (error == -1)
     {
+        #ifdef DEBUG_LCD
         LCD_Position(0u,10u);
         LCD_PrintString("ERROR");
+        #endif
         return 1;
     }
  
     for (i=0;i<12;i++){
         if (aux_codes[0][i]>OVER_TEMP){
+            #ifdef DEBUG_LCD
             LCD_Position(1u,0u);
             LCD_PrintString("OVER TEMP");
+            #endif
            // error_IC = ic;
            // error_TEMP = i;
             fatal_err |= PACK_TEMP_OVER;
             return 1;
         }else if (aux_codes[0][i]<UNDER_TEMP){
+            #ifdef DEBUG_LCD
             LCD_Position(1u,0u);
             LCD_PrintString("UNDER TEMP");
+            #endif
             warning_err |= PACK_TEMP_UNDER;
             return 1;
         }else{
@@ -269,10 +275,12 @@ uint8_t get_cell_temp(){
             }
     }
    
+    #ifdef DEBUG_LCD
     LCD_Position(1u,10u);
     print_cells(aux_codes[0][0]);
     LCD_Position(0u,10u);
     LCD_PrintString("OK");
+    #endif
     return 0;
 }// get_cell_temp()
 //void balance_cells(){}// balance_cells()
