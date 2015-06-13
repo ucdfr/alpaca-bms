@@ -7,7 +7,7 @@
   <width>32</width>
   <peripherals>
     <peripheral>
-      <name>DEBUG_UART</name>
+      <name>USBUART</name>
       <description>USBFS</description>
       <baseAddress>0x0</baseAddress>
       <addressBlock>
@@ -17,7 +17,7 @@
       </addressBlock>
       <registers>
         <register>
-          <name>DEBUG_UART_PM_USB_CR0</name>
+          <name>USBUART_PM_USB_CR0</name>
           <description>USB Power Mode Control Register 0</description>
           <addressOffset>0x40004394</addressOffset>
           <size>8</size>
@@ -49,7 +49,7 @@
           </fields>
         </register>
         <register>
-          <name>DEBUG_UART_PM_ACT_CFG</name>
+          <name>USBUART_PM_ACT_CFG</name>
           <description>Active Power Mode Configuration Register</description>
           <addressOffset>0x400043A5</addressOffset>
           <size>8</size>
@@ -58,7 +58,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_PM_STBY_CFG</name>
+          <name>USBUART_PM_STBY_CFG</name>
           <description>Standby Power Mode Configuration Register</description>
           <addressOffset>0x400043B5</addressOffset>
           <size>8</size>
@@ -67,7 +67,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_PRT_PS</name>
+          <name>USBUART_PRT_PS</name>
           <description>Port Pin State Register</description>
           <addressOffset>0x400051F1</addressOffset>
           <size>8</size>
@@ -92,7 +92,7 @@
           </fields>
         </register>
         <register>
-          <name>DEBUG_UART_PRT_DM0</name>
+          <name>USBUART_PRT_DM0</name>
           <description>Port Drive Mode Register</description>
           <addressOffset>0x400051F2</addressOffset>
           <size>8</size>
@@ -117,7 +117,7 @@
           </fields>
         </register>
         <register>
-          <name>DEBUG_UART_PRT_DM1</name>
+          <name>USBUART_PRT_DM1</name>
           <description>Port Drive Mode Register</description>
           <addressOffset>0x400051F3</addressOffset>
           <size>8</size>
@@ -142,7 +142,7 @@
           </fields>
         </register>
         <register>
-          <name>DEBUG_UART_PRT_INP_DIS</name>
+          <name>USBUART_PRT_INP_DIS</name>
           <description>Input buffer disable override</description>
           <addressOffset>0x400051F8</addressOffset>
           <size>8</size>
@@ -167,7 +167,7 @@
           </fields>
         </register>
         <register>
-          <name>DEBUG_UART_EP0_DR0</name>
+          <name>USBUART_EP0_DR0</name>
           <description>bmRequestType</description>
           <addressOffset>0x40006000</addressOffset>
           <size>8</size>
@@ -176,7 +176,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_EP0_DR1</name>
+          <name>USBUART_EP0_DR1</name>
           <description>bRequest</description>
           <addressOffset>0x40006001</addressOffset>
           <size>8</size>
@@ -185,7 +185,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_EP0_DR2</name>
+          <name>USBUART_EP0_DR2</name>
           <description>wValueLo</description>
           <addressOffset>0x40006002</addressOffset>
           <size>8</size>
@@ -194,7 +194,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_EP0_DR3</name>
+          <name>USBUART_EP0_DR3</name>
           <description>wValueHi</description>
           <addressOffset>0x40006003</addressOffset>
           <size>8</size>
@@ -203,7 +203,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_EP0_DR4</name>
+          <name>USBUART_EP0_DR4</name>
           <description>wIndexLo</description>
           <addressOffset>0x40006004</addressOffset>
           <size>8</size>
@@ -212,7 +212,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_EP0_DR5</name>
+          <name>USBUART_EP0_DR5</name>
           <description>wIndexHi</description>
           <addressOffset>0x40006005</addressOffset>
           <size>8</size>
@@ -221,7 +221,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_EP0_DR6</name>
+          <name>USBUART_EP0_DR6</name>
           <description>lengthLo</description>
           <addressOffset>0x40006006</addressOffset>
           <size>8</size>
@@ -230,7 +230,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_EP0_DR7</name>
+          <name>USBUART_EP0_DR7</name>
           <description>lengthHi</description>
           <addressOffset>0x40006007</addressOffset>
           <size>8</size>
@@ -239,7 +239,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_CR0</name>
+          <name>USBUART_CR0</name>
           <description>USB Control Register 0</description>
           <addressOffset>0x40006008</addressOffset>
           <size>8</size>
@@ -264,7 +264,7 @@
           </fields>
         </register>
         <register>
-          <name>DEBUG_UART_CR1</name>
+          <name>USBUART_CR1</name>
           <description>USB Control Register 1</description>
           <addressOffset>0x40006009</addressOffset>
           <size>8</size>
@@ -303,7 +303,7 @@
           </fields>
         </register>
         <register>
-          <name>DEBUG_UART_SIE_EP1_CR0</name>
+          <name>USBUART_SIE_EP1_CR0</name>
           <description>The Endpoint1 Control Register</description>
           <addressOffset>0x4000600E</addressOffset>
           <size>8</size>
@@ -312,7 +312,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_USBIO_CR0</name>
+          <name>USBUART_USBIO_CR0</name>
           <description>USBIO Control Register 0</description>
           <addressOffset>0x40006010</addressOffset>
           <size>8</size>
@@ -351,7 +351,7 @@
           </fields>
         </register>
         <register>
-          <name>DEBUG_UART_USBIO_CR1</name>
+          <name>USBUART_USBIO_CR1</name>
           <description>USBIO Control Register 1</description>
           <addressOffset>0x40006012</addressOffset>
           <size>8</size>
@@ -390,7 +390,7 @@
           </fields>
         </register>
         <register>
-          <name>DEBUG_UART_SIE_EP2_CR0</name>
+          <name>USBUART_SIE_EP2_CR0</name>
           <description>The Endpoint2 Control Register</description>
           <addressOffset>0x4000601E</addressOffset>
           <size>8</size>
@@ -399,7 +399,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_SIE_EP3_CR0</name>
+          <name>USBUART_SIE_EP3_CR0</name>
           <description>The Endpoint3 Control Register</description>
           <addressOffset>0x4000602E</addressOffset>
           <size>8</size>
@@ -408,7 +408,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_SIE_EP4_CR0</name>
+          <name>USBUART_SIE_EP4_CR0</name>
           <description>The Endpoint4 Control Register</description>
           <addressOffset>0x4000603E</addressOffset>
           <size>8</size>
@@ -417,7 +417,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_SIE_EP5_CR0</name>
+          <name>USBUART_SIE_EP5_CR0</name>
           <description>The Endpoint5 Control Register</description>
           <addressOffset>0x4000604E</addressOffset>
           <size>8</size>
@@ -426,7 +426,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_SIE_EP6_CR0</name>
+          <name>USBUART_SIE_EP6_CR0</name>
           <description>The Endpoint6 Control Register</description>
           <addressOffset>0x4000605E</addressOffset>
           <size>8</size>
@@ -435,7 +435,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_SIE_EP7_CR0</name>
+          <name>USBUART_SIE_EP7_CR0</name>
           <description>The Endpoint7 Control Register</description>
           <addressOffset>0x4000606E</addressOffset>
           <size>8</size>
@@ -444,7 +444,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_SIE_EP8_CR0</name>
+          <name>USBUART_SIE_EP8_CR0</name>
           <description>The Endpoint8 Control Register</description>
           <addressOffset>0x4000607E</addressOffset>
           <size>8</size>
@@ -453,7 +453,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_BUF_SIZE</name>
+          <name>USBUART_BUF_SIZE</name>
           <description>Dedicated Endpoint Buffer Size Register</description>
           <addressOffset>0x4000608C</addressOffset>
           <size>8</size>
@@ -462,7 +462,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_EP_ACTIVE</name>
+          <name>USBUART_EP_ACTIVE</name>
           <description>Endpoint Active Indication Register</description>
           <addressOffset>0x4000608E</addressOffset>
           <size>8</size>
@@ -471,7 +471,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_EP_TYPE</name>
+          <name>USBUART_EP_TYPE</name>
           <description>Endpoint Type (IN/OUT) Indication</description>
           <addressOffset>0x4000608F</addressOffset>
           <size>8</size>
@@ -480,7 +480,7 @@
           <resetMask>0</resetMask>
         </register>
         <register>
-          <name>DEBUG_UART_USB_CLK_EN</name>
+          <name>USBUART_USB_CLK_EN</name>
           <description>USB Block Clock Enable Register</description>
           <addressOffset>0x4000609D</addressOffset>
           <size>8</size>

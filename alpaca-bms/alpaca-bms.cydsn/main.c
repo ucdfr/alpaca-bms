@@ -34,7 +34,7 @@ int main(void)
 	//CyDelay(100);
 	//red_led_1_Write(0);
 	//LCD_Start();
-	DEBUG_UART_Start();
+	//DEBUG_UART_Start();
     
     //WDT_init();
     
@@ -48,7 +48,6 @@ int main(void)
 	//LCD_ClearDisplay();
 	//LCD_Position(0u, 0u);
 	//LCD_PrintString("BMS DEMO");
-	DEBUG_UART_PutString("BMS DEMO START\n");
     //LCD_Position(1u,0u);
     //LCD_PrintString("System OK");
 	CyDelay(500);
@@ -68,6 +67,8 @@ int main(void)
     //initialize err event
     fatal_err = NO_ERROR;
     warning_err = NO_ERROR;
+    
+    OK_SIG_Write(0);
     
 	for(;;)
 	{   
@@ -108,7 +109,7 @@ int main(void)
         }
         
         
-        OK_SIG_Write(1);
+      //  OK_SIG_Write(1);
 		CyDelay(100);
 
 	} // main loop
@@ -123,7 +124,7 @@ int main(void)
             if (WDT_should_clear()) {
     			WDT_clear();
 		    }//even in fatal error, the bms should keep alive
-            OK_SIG_Write(0);
+            //OK_SIG_Write(0);
         
             for (event_index =0; event_index<16;event_index++){
                 if (fatal_err & (0x1<<event_index)){

@@ -188,7 +188,9 @@ void LTC6804_adcv()
   
   //4
     //spi_write_array(4,cmd);
+    OK_SIG_Write(1);
   LTC68_PutArray(cmd, 4);
+OK_SIG_Write(0);
 
 }
 /*
@@ -240,13 +242,16 @@ void LTC6804_adow()
   
   //4
     //spi_write_array(4,cmd);
+  OK_SIG_Write(1);
   LTC68_PutArray(cmd, 4);
-
+  OK_SIG_Write(0);
+OK_SIG_Write(1);
   CyDelay(6);
+OK_SIG_Write(0);
 
-  LTC68_PutArray(cmd, 4);
+  //LTC68_PutArray(cmd, 4);
 
-  CyDelay(6);
+  //CyDelay(6);
   
 }
 /*
@@ -1037,14 +1042,22 @@ void wakeup_idle()
  *****************************************************/
 void wakeup_sleep()
 {
+  OK_SIG_Write(1);
   // output_low(LTC6804_CS);
   // delay(1); // Guarantees the LTC6804 will be in standby
   // output_high(LTC6804_CS);
   LTC68_WriteTxData(0xff);  //write dummy byte to wake up
+OK_SIG_Write(0);
+OK_SIG_Write(1);
   while(! (LTC68_ReadTxStatus() & LTC68_STS_SPI_DONE)){
     }
+OK_SIG_Write(0);
+OK_SIG_Write(1);
    LTC68_ReadRxData();
+OK_SIG_Write(0);
+OK_SIG_Write(1);
   CyDelayUs(WAKE_UP_DELAY_US);
+    OK_SIG_Write(0);
 }
 /*!**********************************************************
  \brief calaculates  and returns the CRC15
