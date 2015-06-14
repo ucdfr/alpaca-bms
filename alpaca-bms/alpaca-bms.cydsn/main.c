@@ -38,6 +38,8 @@ int main(void)
 	// Initialize
 	bms_init();
 
+	current_init();
+
 	int pin_value=1;
 
 	uint16_t cell_volt[NUM_CELLS];

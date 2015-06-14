@@ -2,7 +2,15 @@
 
 
 
-uint16_t get_current()
+void current_init(void)
+{
+	ADC_current_Start();
+} // current_init()
+
+
+
+
+uint16_t get_current(void)
 {
 	uint16_t current = 0;
 
