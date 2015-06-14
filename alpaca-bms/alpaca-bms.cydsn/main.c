@@ -65,7 +65,7 @@ int main(void)
 		//get_cell_temp();// TODO Get temperature
 
 
-		battery_current = get_current(); // TODO get current reading from sensor
+		//battery_current = get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
 
 

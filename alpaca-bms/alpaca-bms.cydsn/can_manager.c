@@ -1,5 +1,7 @@
 #include "can_manager.h"
 
+#include "cell_interface.h"
+
 volatile uint8_t can_buffer[8];
 
 
@@ -52,22 +54,30 @@ void can_send_volt(uint8_t IC_index,
 {
 	uint8_t i;
     uint8_t ic;
-    uint32_t total=0;
-    for (ic=0;ic<TOTAL_IC;ic++){
-	    for(i=0; i<12; i++)
-	    {
-            total += cell_codes[ic][i];
-        }
+    uint32_t total[3]={0,0,0};
+    uint32_t calculated_total=0;
+    uint8_t stage=0;
+    for (stage =0; stage<(TOTAL_IC/4);stage++){
+        for (ic=0;ic<4;ic++){
+	        for(i=0; i<12; i++)
+	        {
+                total[stage] += cell_codes[ic+stage*4][i] & CELL_ENABLE;
+            }
     }
+    }
+    
+    calculated_total = total[0]+total[1]+total[2];
+    calculated_total /= 3;
+    
     can_buffer[0] = (IC_index);
     can_buffer[1] = cell_index;
 	can_buffer[2] = 0xFF & (cell_codes[IC_index][cell_index]>>8); // upper byte
 	can_buffer[3] = 0xFF & (cell_codes[IC_index][cell_index]); // lower byte
     
-    can_buffer[4] = 0xFF & (total >> 24);
-    can_buffer[5] = 0xFF & (total >> 16);
-    can_buffer[6] = 0xFF & (total >> 8);
-    can_buffer[7] = 0xFF & (total);
+    can_buffer[4] = 0xFF & (calculated_total >> 24);
+    can_buffer[5] = 0xFF & (calculated_total >> 16);
+    can_buffer[6] = 0xFF & (calculated_total >> 8);
+    can_buffer[7] = 0xFF & (calculated_total);
 
 	CAN_1_SendMsgvolt();
 } // can_send_volt()
