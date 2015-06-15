@@ -132,7 +132,7 @@ uint8_t get_cell_volt(){
     
     //check error
     if (mypack.status!=NOMRAL){
-        if (bad_cell_index>0){
+        if (mypack.bad_cell_index>0){
             return 1;
         }
     }
@@ -160,40 +160,17 @@ uint8_t get_cell_temp(){
  
 
     //get information
-    update_temp(aux_codes);
+    update_temp(*aux_codes[6]);
 
     //check error
     //check error
     if (mypack.status!=NOMRAL){
-        if (bad_cell_index>0){
+        if (mypack.bad_temp_index>0){
             return 1;
         }
     }
 
-    for (i=0;i<12;i++){
-        if (aux_codes[0][i]>OVER_TEMP){
-            #ifdef DEBUG_LCD
-            LCD_Position(1u,0u);
-            LCD_PrintString("OVER TEMP");
-            #endif
-           // error_IC = ic;
-           // error_TEMP = i;
-            fatal_err |= PACK_TEMP_OVER;
-            return 1;
-        }else if (aux_codes[0][i]<UNDER_TEMP){
-            #ifdef DEBUG_LCD
-            LCD_Position(1u,0u);
-            LCD_PrintString("UNDER TEMP");
-            #endif
-            warning_err |= PACK_TEMP_UNDER;
-            return 1;
-        }else{
-            warning_err &= ~PACK_TEMP_UNDER;
-                if (CAN_UPDATE_FLAG){
-                    can_send_temp(0,aux_codes);
-                }
-            }
-    }
+   
    
     #ifdef DEBUG_LCD
         LCD_Position(1u,10u);
@@ -330,17 +307,6 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
                         fatal_err |= CELL_VOLT_UNDER;  
                     }
                 }
-
-                if ((mypack.stack[0].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
-                    fatal_err |= STACK_FUSE_BROKEN;
-                    fuse_fault=0;
-                }else if ((mypack.stack[1].value32 - mypack.stack[0].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
-                    fatal_err |= STACK_FUSE_BROKEN;
-                    fuse_fault=1;
-                }else if ((mypack.stack[2].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT)){
-                    fatal_err |= STACK_FUSE_BROKEN;
-                    fuse_fault=2;
-                }
             }
         }
     }
@@ -351,23 +317,19 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
                 
 
 
-void update_temp(){
+void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     uint8_t cell=0;
     uint8_t ic=0;
-    uint32_t stack_volt=0;
     uint8_t stack=0;
-    uint16_t voltage;
+    uint16_t temp;
 
     //log in temp data
     for (ic=0;ic<TOTAL_IC;ic++){
         for (cell=0;cell<5;cell++){
-            if (ic%2){      //odd number is on board, even number is on BAT
-                //on board
-                mypack.board_temp[ic/4][(ic%4==3? 1:0)*5+cell].value16=cell_codes[ic][cell];
-            }else{
-                //on BAT
-                mypack.board_temp[ic/4][(ic%4==2? 1:0)*5+cell].value16=cell_codes[ic][cell];
-            }
+            mypack.temp[ic/4][ic*5+cell].value16=cell_codes[ic][cell];        
+        }
+        if (CAN_UPDATE_FLAG){
+            can_send_temp(ic,aux_codes[ic]);
         }
     }
 
@@ -375,53 +337,67 @@ void update_temp(){
 
     //update healthy status
     for (stack = 0; stack <3;stack ++){
-            for (cell=0;cell<10;cell++){
-                voltage = mypack.cell_temp[stack][cell].value16;
-                if (voltage>OVER_VOLTAGE){
-                    mypack.cell_temp[stack][cell].bad_counter++;
-                    mypack.cell_temp[stack][cell].bad=1;
-                }else if (voltage < UNDER_VOLTAGE){
-                    mypack.cell_temp[stack][cell].bad_counter++;
-                    mypack.cell_temp[stack][cell].bad=0;
-                }else{
-                    if (mypack.cell_temp[stack][cell].bad_counter>0){
-                        mypack.cell_temp[stack][cell].bad_counter--;
-                    }
-                    if (CAN_UPDATE_FLAG){
-                        can_send_volt(ic,cell,cell_codes);
-                    }
+        for (cell=0;cell<20;cell++){
+            temp = mypack.temp[stack][cell].value16;
+            if (temp>OVER_TEMP){
+                mypack.temp[stack][cell].bad_counter++;
+                mypack.temp[stack][cell].bad=1;
+            }else if (temp < UNDER_TEMP){
+                mypack.temp[stack][cell].bad_counter++;
+                mypack.temp[stack][cell].bad=0;
+            }else{
+                if (mypack.temp[stack][cell].bad_counter>0){
+                    mypack.temp[stack][cell].bad_counter--;
                 }
+                
+            }
 
-                //check faulty cell
-                if (mypack.cell[stack][ic][cell].bad_counter>ERROR_VOLTAGE_LIMIT){
-                    mypack.bad_cell[mypack.bad_cell_index].stack=stack;
-                    mypack.bad_cell[mypack.bad_cell_index].ic=ic;
-                    mypack.bad_cell[mypack.bad_cell_index].cell=cell;
-                    mypack.bad_cell[mypack.bad_cell_index].error=mypack.cell[stack][ic][cell].bad;
-                    if (mypack.bad_cell_index<255){
-                        mypack.bad_cell_index++;
-                    }else{
-                        mypack.bad_cell_index=255;
-                    }
-                    mypack.status = FAULT;
-                    if (mypack.bad_cell[mypack.bad_cell_index].error){
-                        fatal_err |= CELL_VOLT_OVER;
-                    }else{
-                        fatal_err |= CELL_VOLT_UNDER;  
-                    }
+            //check faulty temp
+            if (mypack.temp[stack][cell].bad_counter>ERROR_TEMPERATURE_LIMIT){
+                mypack.bad_temp[mypack.bad_temp_index].stack=stack;
+                mypack.bad_temp[mypack.bad_temp_index].cell=cell;
+                mypack.bad_temp[mypack.bad_temp_index].error=mypack.temp[stack][cell].bad;
+                if (mypack.bad_temp_index<255){
+                    mypack.bad_temp_index++;
+                }else{
+                    mypack.bad_temp_index=255;
+                }
+                mypack.status = FAULT;
+                if (mypack.bad_cell[mypack.bad_temp_index].error){
+                    fatal_err |= PACK_TEMP_OVER;
+                }else{
+                    fatal_err |= PACK_TEMP_UNDER;  
                 }
             }
         }
     }
-
-
 }
+
+
 
 
 void mypack_init(){
-
+    mypack.status = NOMRAL;
+    mypack.bad_cell_index =0;
+    mypack.bad_temp_index =0;
+    mypack.fuse_fault=NORMAL;
+    mypack.voltage =0;
 }
 
-
+void check_stack_fuse(){
+    if ((mypack.stack[0].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
+            mypack.status = FAULT;
+            fatal_err |= STACK_FUSE_BROKEN;
+            mypack.fuse_fault=STACK0;
+        }else if ((mypack.stack[1].value32 - mypack.stack[0].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
+            mypack.status = FAULT;
+            fatal_err |= STACK_FUSE_BROKEN;
+            mypack.fuse_fault=STACK1;
+        }else if ((mypack.stack[2].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT)){
+            mypack.status = FAULT;
+            fatal_err |= STACK_FUSE_BROKEN;
+            mypack.fuse_fault=STACK2;
+        }
+}
 
 //void balance_cells(){}// balance_cells()

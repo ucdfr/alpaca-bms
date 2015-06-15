@@ -53,11 +53,12 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #include <project.h>
     #include "can_manager.h"
    
-    #define ERROR_VOLTAGE_LIMIT (1u)
-    #define ERROR_TEMPERATURE_LIMIT (1u)
+    #define ERROR_VOLTAGE_LIMIT (3u)
+    #define ERROR_TEMPERATURE_LIMIT (3u)
     #define CELL_ENABLE (0x1CE)
     #define OVER_VOLTAGE (50000u)
     #define UNDER_VOLTAGE (35000u)
+    #define STACK_VOLT_DIFF_LIMIT (10000u)
 
     //#define DEBUG_LCD 0
 
@@ -93,6 +94,12 @@ typedef struct{
   uint8_t error;
 }BAT_ERROR;
 
+typedef enum{
+  NORMAL = 0,
+  STACK0 = 1,
+  STACK1 = 2,
+  STACK2 = 3
+}STACK_ID;
 
 typedef struct 
 {
@@ -102,11 +109,10 @@ typedef struct
   BAT_ERROR bad_cell[255];
   BAT_ERROR bad_temp[255];
   BAT_VOLT cell[3][4][7];
-  BAT_TEMP cell_temp[3][10];
-  BAT_TEMP board_temp[3][10];
+  BAT_TEMP temp[3][20];
   BAT_VOLT stack[3];
   BAT_VOLT pack;
-  uint8_t fuse_fault;
+  STACK_ID fuse_fault;
   uint32_t voltage;
 }BATTERYPACK;
 
@@ -187,7 +193,36 @@ uint8_t get_cell_temp();
  */
 //void balance_cells();
 
-
+/**
+ * @update voltage and detect error
+ *
+ * @param 1 input parameters, which is raw cell_codes.
+ * @return NULL.
+ */
 void update_volt(uint16_t cell_codes[TOTAL_IC][12]);
+
+/**
+ * @update temperature and detect error
+ *
+ * @param 1 input parameters, which is raw aux_codes.
+ * @return NULL.
+ */
+void update_temp(uint16_t aux_codes[TOTAL_IC][6]);
+
+/**
+ * @initial mypack
+ *
+ * @param no input parameters.
+ * @return NULL.
+ */
+void mypack_init();
+
+/**
+ * @check is fuse is broken
+ *
+ * @param no input parameters. (use global mypack)
+ * @return NULL.
+ */
+void check_stack_fuse();
 
 #endif // CELL_INTERFACE_H

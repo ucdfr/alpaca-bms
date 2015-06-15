@@ -53,7 +53,7 @@ int main(void)
 	fatal_err = NO_ERROR;
 	warning_err = NO_ERROR;
 
-	OK_SIG_Write(0);
+	//OK_SIG_Write(0);
     
 	for(;;) // main loop
 	{   
@@ -63,14 +63,13 @@ int main(void)
 			WDT_clear();
         
 		//check_cfg();
-		//check_cells();// TODO Check if cell exists
+		//check_cells();// TODO This function will be finished in get_cell_volt/check stack fuse
         get_cell_volt();// TODO Get voltage
-		//check_stack_fuse(); // TODO: check if stacks are disconnected
-		
-		//get_cell_temp();// TODO Get temperature
+		check_stack_fuse(); // TODO: check if stacks are disconnected
+		get_cell_temp();// TODO Get temperature
 
 
-		//battery_current = get_current(); // TODO get current reading from sensor
+		battery_current = get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
 
 
