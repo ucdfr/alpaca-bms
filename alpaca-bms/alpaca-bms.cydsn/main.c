@@ -13,6 +13,7 @@ volatile BMS_STATUS warning_err;
 volatile BMS_STATUS fatal_err;
 volatile uint8_t error_IC;
 volatile uint8_t error_CHIP;
+extern volatile BATTERYPACK mypack;
 
 
 
@@ -37,6 +38,7 @@ int main(void)
 
 	// Initialize
 	bms_init();
+	mypack_init();
 
 	current_init();
 

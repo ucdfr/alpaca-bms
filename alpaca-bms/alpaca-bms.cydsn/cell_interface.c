@@ -49,13 +49,7 @@ Copyright 2013 Linear Technology Corp. (LTC)
 #include "cell_interface.h"
 #include "LTC68041.h"
 
-#define OVER_VOLTAGE (0x4000)
-#define UNDER_VOLTAGE (0x1000)
 
-//#define DEBUG_LCD 0
-
-#define OVER_TEMP (20000)
-#define UNDER_TEMP (10000)
 
 extern volatile uint8_t CAN_UPDATE_FLAG;
 extern volatile BMS_STATUS fatal_err;
@@ -64,6 +58,7 @@ extern volatile uint8_t error_IC;
 extern volatile uint8_t error_CHIP;
 volatile uint8_t error_voltage_count=0;
 volatile uint8_t error_temperature_count=0;
+volatile BATTERYPACK mypack;
 
 
 /**
@@ -110,6 +105,106 @@ void check_cfg(){
 void check_chips(){
     
 }// check_chips()
+
+
+
+uint8_t get_cell_volt(){
+    LTC68_ClearFIFO();
+   // DEBUG_UART_PutString("Enter GET_CELL_VOLT\n");
+    int error;
+    wakeup_sleep();
+    LTC6804_adcv();
+    CyDelay(10);
+    wakeup_sleep();
+    error = LTC6804_rdcv(0, TOTAL_IC,cell_codes); // Set to read back all cell voltage registers
+    if (error == -1)
+    {
+        #ifdef DEBUG_LCD
+            LCD_Position(0u,10u);
+            LCD_PrintString("ERROR");
+        #endif
+       return 1;
+    }
+    
+    //get information
+    update_volt(cell_codes);
+    
+    
+    //check error
+    if (mypack.status!=NOMRAL){
+        if (bad_cell_index>0){
+            return 1;
+        }
+    }
+    
+    return 0;
+}// get_cell_volt()
+
+
+uint8_t get_cell_temp(){
+    int error;
+    int i=0;
+    wakeup_sleep();
+    LTC6804_adax();
+    CyDelay(6);  
+    wakeup_sleep();
+    error = LTC6804_rdaux(0,TOTAL_IC,aux_codes); // Set to read back all aux registers
+    if (error == -1)
+    {
+        #ifdef DEBUG_LCD
+        LCD_Position(0u,10u);
+        LCD_PrintString("ERROR");
+        #endif
+        return 1;
+    }
+ 
+
+    //get information
+    update_temp(aux_codes);
+
+    //check error
+    //check error
+    if (mypack.status!=NOMRAL){
+        if (bad_cell_index>0){
+            return 1;
+        }
+    }
+
+    for (i=0;i<12;i++){
+        if (aux_codes[0][i]>OVER_TEMP){
+            #ifdef DEBUG_LCD
+            LCD_Position(1u,0u);
+            LCD_PrintString("OVER TEMP");
+            #endif
+           // error_IC = ic;
+           // error_TEMP = i;
+            fatal_err |= PACK_TEMP_OVER;
+            return 1;
+        }else if (aux_codes[0][i]<UNDER_TEMP){
+            #ifdef DEBUG_LCD
+            LCD_Position(1u,0u);
+            LCD_PrintString("UNDER TEMP");
+            #endif
+            warning_err |= PACK_TEMP_UNDER;
+            return 1;
+        }else{
+            warning_err &= ~PACK_TEMP_UNDER;
+                if (CAN_UPDATE_FLAG){
+                    can_send_temp(0,aux_codes);
+                }
+            }
+    }
+   
+    #ifdef DEBUG_LCD
+        LCD_Position(1u,10u);
+        print_cells(aux_codes[0][0]);
+        LCD_Position(0u,10u);
+        LCD_PrintString("OK");
+    #endif
+    return 0;
+}// get_cell_temp()
+
+
 
 uint8_t check_cells(){ 
     //using ADOW
@@ -159,130 +254,174 @@ uint8_t check_cells(){
 }// check_cells()
 
 
-uint8_t get_cell_volt(){
-    LTC68_ClearFIFO();
-   // DEBUG_UART_PutString("Enter GET_CELL_VOLT\n");
-    int error;
-    uint8_t i=0;
+void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
+    uint8_t cell=0;
     uint8_t ic=0;
-    wakeup_sleep();
-    LTC6804_adcv();
-    CyDelay(10);
-    wakeup_sleep();
-    error = LTC6804_rdcv(0, TOTAL_IC,cell_codes); // Set to read back all cell voltage registers
-    if (error == -1)
-    {
-        #ifdef DEBUG_LCD
-            LCD_Position(0u,10u);
-            LCD_PrintString("ERROR");
-        #endif
-       return 1;
-    }
-    
-    
+    uint32_t stack_volt=0;
+    uint8_t stack=0;
+    uint16_t voltage;
+
+    //log in voltage data
     for (ic=0;ic<TOTAL_IC;ic++){
-        for (i=0;i<12;i++){
-            if (CELL_ENABLE & (0x1<<i)){
-                if (cell_codes[ic][i]>OVER_VOLTAGE){
-                    #ifdef DEBUG_LCD
-                        LCD_Position(1u,0u);
-                        LCD_PrintHexUint8(i);
-                        LCD_Position(1u,2u);
-                        LCD_PrintString("OVER VOLTAGE");
-                    #endif
-                error_IC = ic;
-                error_CHIP = i;
-                fatal_err |= CELL_VOLT_OVER;
-                return 1;
-            }else if (cell_codes[ic][i]<UNDER_VOLTAGE){
-                #ifdef DEBUG_LCD
-                    LCD_Position(1u,0u);
-                    LCD_PrintHexUint8(i);
-                    LCD_Position(1u,2u);
-                    LCD_PrintString("UNDER VOLTAGE");
-                #endif
-                error_IC = ic;
-                error_CHIP = i;
-                fatal_err |= CELL_VOLT_UNDER;
-                return 1;
+        for (cell=0;cell<12;cell++){
+            if (CELL_ENABLE & (0x1<<cell)){
+                mypack.cell[ic/4][ic%4][cell].value16=cell_codes[ic][cell];
+            }
+        }
+    }
+
+    //update stack voltage
+    for (stack =0; stack<3;stack++){
+        ic=0;
+        cell=0;
+        stack_volt=0;
+        for (ic=0;ic<4;ic++){
+            cell=0;
+            for (cell=0;cell<7;cell++){
+                stack_volt =stack_volt+mypack.cell[stack][ic][cell].value16;
+            }
+        }
+        mypack.stack[stack].value32=stack_volt;
+    }
+
+    //update pack voltage
+    stack_volt=0;
+    for (stack =0;stack<3;stack++){
+        stack_volt = stack_volt + mypack.stack[stack].value32;
+    }
+    mypack.pack.value32=stack_volt;
+
+
+    //update healthy status
+    for (stack = 0; stack <3;stack ++){
+        for (ic =0; ic< 4;ic++){
+            for (cell=0;cell<7;cell++){
+                voltage = mypack.cell[stack][ic][cell].value16;
+                if (voltage>OVER_VOLTAGE){
+                    mypack.cell[stack][ic][cell].bad_counter++;
+                    mypack.cell[stack][ic][cell].bad=1;
+                }else if (voltage < UNDER_VOLTAGE){
+                    mypack.cell[stack][ic][cell].bad_counter++;
+                    mypack.cell[stack][ic][cell].bad=0;
+                }else{
+                    if (mypack.cell[stack][ic][cell].bad_counter>0){
+                        mypack.cell[stack][ic][cell].bad_counter--;
+                    }
+                    if (CAN_UPDATE_FLAG){
+                        can_send_volt(ic,cell,cell_codes);
+                    }
                 }
-            else{
-                if (CAN_UPDATE_FLAG){
-                    can_send_volt(ic,
-                    i,
-                    cell_codes);
+
+                //check faulty cell
+                if (mypack.cell[stack][ic][cell].bad_counter>ERROR_VOLTAGE_LIMIT){
+                    mypack.bad_cell[mypack.bad_cell_index].stack=stack;
+                    mypack.bad_cell[mypack.bad_cell_index].ic=ic;
+                    mypack.bad_cell[mypack.bad_cell_index].cell=cell;
+                    mypack.bad_cell[mypack.bad_cell_index].error=mypack.cell[stack][ic][cell].bad;
+                    if (mypack.bad_cell_index<255){
+                        mypack.bad_cell_index++;
+                    }else{
+                        mypack.bad_cell_index=255;
+                    }
+                    mypack.status = FAULT;
+                    if (mypack.bad_cell[mypack.bad_cell_index].error){
+                        fatal_err |= CELL_VOLT_OVER;
+                    }else{
+                        fatal_err |= CELL_VOLT_UNDER;  
+                    }
                 }
-                CyDelay(20);
+
+                if ((mypack.stack[0].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
+                    fatal_err |= STACK_FUSE_BROKEN;
+                    fuse_fault=0;
+                }else if ((mypack.stack[1].value32 - mypack.stack[0].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
+                    fatal_err |= STACK_FUSE_BROKEN;
+                    fuse_fault=1;
+                }else if ((mypack.stack[2].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT)){
+                    fatal_err |= STACK_FUSE_BROKEN;
+                    fuse_fault=2;
                 }
             }
         }
     }
 
-  /*  
+
+
+}
+                
+
+
+void update_temp(){
+    uint8_t cell=0;
+    uint8_t ic=0;
+    uint32_t stack_volt=0;
+    uint8_t stack=0;
+    uint16_t voltage;
+
+    //log in temp data
     for (ic=0;ic<TOTAL_IC;ic++){
-        for (i=0;i<12;i++){
-            if (CELL_ENABLE & (0x1<<i)){
-                        can_send_volt(ic,
-                        i,
-                        cell_codes);
-                        CyDelay(10);
+        for (cell=0;cell<5;cell++){
+            if (ic%2){      //odd number is on board, even number is on BAT
+                //on board
+                mypack.board_temp[ic/4][(ic%4==3? 1:0)*5+cell].value16=cell_codes[ic][cell];
+            }else{
+                //on BAT
+                mypack.board_temp[ic/4][(ic%4==2? 1:0)*5+cell].value16=cell_codes[ic][cell];
             }
         }
     }
-    */
-    
-    return 0;
-}// get_cell_volt()
 
 
-uint8_t get_cell_temp(){
-    int error;
-    int i=0;
-    wakeup_sleep();
-    LTC6804_adax();
-    CyDelay(6);  
-    wakeup_sleep();
-    error = LTC6804_rdaux(0,TOTAL_IC,aux_codes); // Set to read back all aux registers
-    if (error == -1)
-    {
-        #ifdef DEBUG_LCD
-        LCD_Position(0u,10u);
-        LCD_PrintString("ERROR");
-        #endif
-        return 1;
-    }
- 
-    for (i=0;i<12;i++){
-        if (aux_codes[0][i]>OVER_TEMP){
-            #ifdef DEBUG_LCD
-            LCD_Position(1u,0u);
-            LCD_PrintString("OVER TEMP");
-            #endif
-           // error_IC = ic;
-           // error_TEMP = i;
-            fatal_err |= PACK_TEMP_OVER;
-            return 1;
-        }else if (aux_codes[0][i]<UNDER_TEMP){
-            #ifdef DEBUG_LCD
-            LCD_Position(1u,0u);
-            LCD_PrintString("UNDER TEMP");
-            #endif
-            warning_err |= PACK_TEMP_UNDER;
-            return 1;
-        }else{
-            warning_err &= ~PACK_TEMP_UNDER;
-                if (CAN_UPDATE_FLAG){
-                    can_send_temp(0,aux_codes);
+
+    //update healthy status
+    for (stack = 0; stack <3;stack ++){
+            for (cell=0;cell<10;cell++){
+                voltage = mypack.cell_temp[stack][cell].value16;
+                if (voltage>OVER_VOLTAGE){
+                    mypack.cell_temp[stack][cell].bad_counter++;
+                    mypack.cell_temp[stack][cell].bad=1;
+                }else if (voltage < UNDER_VOLTAGE){
+                    mypack.cell_temp[stack][cell].bad_counter++;
+                    mypack.cell_temp[stack][cell].bad=0;
+                }else{
+                    if (mypack.cell_temp[stack][cell].bad_counter>0){
+                        mypack.cell_temp[stack][cell].bad_counter--;
+                    }
+                    if (CAN_UPDATE_FLAG){
+                        can_send_volt(ic,cell,cell_codes);
+                    }
+                }
+
+                //check faulty cell
+                if (mypack.cell[stack][ic][cell].bad_counter>ERROR_VOLTAGE_LIMIT){
+                    mypack.bad_cell[mypack.bad_cell_index].stack=stack;
+                    mypack.bad_cell[mypack.bad_cell_index].ic=ic;
+                    mypack.bad_cell[mypack.bad_cell_index].cell=cell;
+                    mypack.bad_cell[mypack.bad_cell_index].error=mypack.cell[stack][ic][cell].bad;
+                    if (mypack.bad_cell_index<255){
+                        mypack.bad_cell_index++;
+                    }else{
+                        mypack.bad_cell_index=255;
+                    }
+                    mypack.status = FAULT;
+                    if (mypack.bad_cell[mypack.bad_cell_index].error){
+                        fatal_err |= CELL_VOLT_OVER;
+                    }else{
+                        fatal_err |= CELL_VOLT_UNDER;  
+                    }
                 }
             }
+        }
     }
-   
-    #ifdef DEBUG_LCD
-    LCD_Position(1u,10u);
-    print_cells(aux_codes[0][0]);
-    LCD_Position(0u,10u);
-    LCD_PrintString("OK");
-    #endif
-    return 0;
-}// get_cell_temp()
+
+
+}
+
+
+void mypack_init(){
+
+}
+
+
+
 //void balance_cells(){}// balance_cells()

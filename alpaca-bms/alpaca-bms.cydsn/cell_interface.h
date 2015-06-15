@@ -52,9 +52,70 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #include <stdint.h>
     #include <project.h>
     #include "can_manager.h"
-
-    
+   
+    #define ERROR_VOLTAGE_LIMIT (1u)
+    #define ERROR_TEMPERATURE_LIMIT (1u)
     #define CELL_ENABLE (0x1CE)
+    #define OVER_VOLTAGE (50000u)
+    #define UNDER_VOLTAGE (35000u)
+
+    //#define DEBUG_LCD 0
+
+    #define OVER_TEMP (20000)
+    #define UNDER_TEMP (10000)
+
+typedef enum {
+  NOMRAL =0,
+  WARNING =1,
+  FAULT =2,
+}BMS_HEALTH;
+
+
+typedef struct {
+  uint16_t value16;
+  uint32_t value32;
+  uint8_t bad;
+  uint8_t bad_counter;
+}BAT_VOLT;
+
+typedef struct {
+  uint16_t value16;
+  uint8_t bad;
+  uint8_t bad_counter;
+}BAT_TEMP;
+
+
+typedef struct{
+  uint8_t ID;
+  uint8_t stack;
+  uint8_t ic;
+  uint8_t cell;
+  uint8_t error;
+}BAT_ERROR;
+
+
+typedef struct 
+{
+  BMS_HEALTH status;
+  uint8_t bad_cell_index;
+  uint8_t bad_temp_index;
+  BAT_ERROR bad_cell[255];
+  BAT_ERROR bad_temp[255];
+  BAT_VOLT cell[3][4][7];
+  BAT_TEMP cell_temp[3][10];
+  BAT_TEMP board_temp[3][10];
+  BAT_VOLT stack[3];
+  BAT_VOLT pack;
+  uint8_t fuse_fault;
+  uint32_t voltage;
+}BATTERYPACK;
+
+
+
+
+
+
+
 
 
 /**
@@ -125,5 +186,8 @@ uint8_t get_cell_temp();
  * @return 1 if everything is OK. 0 for hard failure.
  */
 //void balance_cells();
+
+
+void update_volt(uint16_t cell_codes[TOTAL_IC][12]);
 
 #endif // CELL_INTERFACE_H
