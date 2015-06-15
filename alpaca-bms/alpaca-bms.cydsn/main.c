@@ -8,7 +8,7 @@
 #include "can_manager.h"
 
 volatile uint8_t CAN_UPDATE_FLAG=0;
-volatile BMS_STATUS warning_err;
+volatile BMS_STATUS warning_event;
 volatile BMS_STATUS fatal_err;
 volatile uint8_t error_IC;
 volatile uint8_t error_CHIP;
@@ -19,6 +19,18 @@ extern volatile BATTERYPACK mypack;
 CY_ISR(CAN_UPDATE_Handler){
     CAN_UPDATE_FLAG = 1;
 }
+
+
+void process_event(){
+    if (warning_event | CHARGEMODE){
+    	can_send_status(0x00,
+					0x00,
+					CHARGEMODE,
+					0x00,0x00,0x000);
+    }
+}
+
+
 
 
 
@@ -44,20 +56,15 @@ int main(void)
 
 	//int pin_value=1;
 
-	uint16_t cell_volt[NUM_CELLS];
-	uint16_t temp[NUM_TEMP];
-	uint16_t battery_current;
-	uint8_t battery_status;
 
 	// Initialize err event
 	fatal_err = NO_ERROR;
-	warning_err = NO_ERROR;
+	warning_event = NO_ERROR;
 
 	//OK_SIG_Write(0);
     
 	for(;;) // main loop
 	{   
-		uint8_t warning_index=0;
 
 		if (WDT_should_clear())
 			WDT_clear();
@@ -68,37 +75,31 @@ int main(void)
         get_cell_volt();// TODO Get voltage
 		check_stack_fuse(); // TODO: check if stacks are disconnected
 		get_cell_temp();// TODO Get temperature
-		battery_current = get_current(); // TODO get current reading from sensor
-		//get_soc(); // TODO calculate SOC()
+		get_current(); // TODO get current reading from sensor
+		get_soc(); // TODO calculate SOC()
 
         
 
 		if (fatal_err)
 			break; // break from main loop and enter fault loop
 
-		if (warning_err){
-			for (warning_index =0; warning_index<16;warning_index++){
-				if (fatal_err & (0x1<<warning_index)){
-					can_send_status(0x00,
-							0x00,
-							(0x1<<warning_index),
-							0x0000,
-							0x0000);
-				} // fatal_err 
-			} // for each warning
-		} // if warning err
+		if (warning_event){
+            process_event();
+        }
 		else{
 			can_send_status(0x00,
 					0x00,
 					NO_ERROR,
-					0x0000,
-					0x0000);
+					0x00,
+					0x00,
+                    0x0000);
 		} // else send no error
 
 		//  OK_SIG_Write(1);
         if(CAN_UPDATE_FLAG){
             can_send_volt();
             can_send_temp();
+            can_send_current();
             CAN_UPDATE_FLAG=0;
         }
 		CyDelay(100); // wait for next cycle
@@ -107,29 +108,77 @@ int main(void)
 
     
 	for(;;){
-		uint8_t event_index=0;
-		//LCD_Position(0u, 0u);
-		//LCD_PrintString("FATAL ERR FATAL ERR FA");
-		for (;;){
-			//fatal error
-			CyDelay(500);
-
-			if (WDT_should_clear())
+		if (WDT_should_clear()){
 				WDT_clear(); //even in fatal error, the bms should keep alive
+		}
 
-			//OK_SIG_Write(0);
-
-			for (event_index =0; event_index<16;event_index++){
-				if (fatal_err & (0x1<<event_index)){
+		uint8_t index=0;
+		if (fatal_err | PACK_TEMP_OVER){
+			for (index=0;index<mypack.bad_temp_index;index++){
+				if (mypack.bad_temp[index].error==1){
 					can_send_status(0x00,
-							0x00,
-							(0x1<<event_index),
-							(error_IC<<4) | (error_CHIP),
-							0x0000);
-				} // if fatal
-			} // for every event
-		} // fault loop
-	} // fault loop: testing?
+					0x00,
+					PACK_TEMP_OVER,
+					mypack.bad_temp[index].stack,
+					mypack.bad_temp[index].cell,
+					mypack.bad_temp[index].value16);
+				}
+			}
+
+		}
+
+		if (fatal_err | PACK_TEMP_UNDER){
+			for (index=0;index<mypack.bad_temp_index;index++){
+				if (mypack.bad_temp[index].error==0){
+					can_send_status(0x00,
+					0x00,
+					PACK_TEMP_UNDER,
+					mypack.bad_temp[index].stack,
+					mypack.bad_temp[index].cell,
+					mypack.bad_temp[index].value16);
+				}
+			}
+
+		}
+		if (fatal_err | STACK_FUSE_BROKEN){
+			can_send_status(0x00,
+			0x00,
+			STACK_FUSE_BROKEN,
+			mypack.bad_temp[index].stack,
+			0x00,
+			0x0000);
+		}
+
+
+		if(fatal_err | CELL_VOLT_OVER){
+			for (index=0;index<mypack.bad_cell_index;index++){
+				if (mypack.bad_cell[index].error==1){
+					can_send_status(0x00,
+					0x00,
+					CELL_VOLT_OVER,
+					mypack.bad_temp[index].stack,
+					mypack.bad_temp[index].ic*4+mypack.bad_temp[index].cell,
+					mypack.bad_temp[index].value16);
+				}
+			}
+
+		}
+		if(fatal_err | CELL_VOLT_UNDER){
+			for (index=0;index<mypack.bad_cell_index;index++){
+				if (mypack.bad_cell[index].error==0){
+					can_send_status(0x00,
+					0x00,
+					CELL_VOLT_OVER,
+					mypack.bad_temp[index].stack,
+					mypack.bad_temp[index].ic*4+mypack.bad_temp[index].cell,
+					mypack.bad_temp[index].value16);
+				}
+			}
+		}
+
+
+		CyDelay(500);
+	}
     
     
 	return 0;

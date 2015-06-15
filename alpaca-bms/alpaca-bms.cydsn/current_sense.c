@@ -1,6 +1,8 @@
 #include "current_sense.h"
-
-
+#include "cell_interface.h"
+extern volatile BATTERYPACK mypack;
+extern volatile BMS_STATUS warning_event;
+extern volatile BMS_STATUS fatal_err;
 
 void current_init(void)
 {
@@ -12,7 +14,7 @@ void current_init(void)
 
 uint16_t get_current(void)
 {
-	uint16_t current = 0;
+	int16_t current = 0;
 
 	// Delta Sigma measurment of Hall effect sensor
 	ADC_current_StartConvert();
@@ -24,6 +26,12 @@ uint16_t get_current(void)
 	// Vi referenced to 5V
 	current = (current - 2.5)/4;
 
+    mypack.current = current;
+    
+    //charging?
+    if (current<0){
+    	warning_event |= CHARGEMODE;
+    }
 	return current;
 }// get_current()
 

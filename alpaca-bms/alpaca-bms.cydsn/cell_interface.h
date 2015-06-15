@@ -62,8 +62,8 @@ Copyright 2013 Linear Technology Corp. (LTC)
 
     //#define DEBUG_LCD 0
 
-    #define OVER_TEMP (20000)
-    #define UNDER_TEMP (10000)
+    #define OVER_TEMP (60u)
+    #define UNDER_TEMP (10u)
 
 typedef enum {
   NOMRAL =0,
@@ -87,11 +87,11 @@ typedef struct {
 
 
 typedef struct{
-  uint8_t ID;
   uint8_t stack;
   uint8_t ic;
   uint8_t cell;
   uint8_t error;
+  uint16_t value16;
 }BAT_ERROR;
 
 typedef enum{
@@ -114,6 +114,7 @@ typedef struct
   BAT_VOLT pack;
   STACK_ID fuse_fault;
   uint32_t voltage;
+  int16_t current;
 }BATTERYPACK;
 
 

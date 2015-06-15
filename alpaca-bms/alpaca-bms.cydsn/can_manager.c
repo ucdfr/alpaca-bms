@@ -105,11 +105,11 @@ void can_send_volt()
 
 
 
-void can_send_current(uint8_t IC_index, uint16_t battery_current)
+void can_send_current()
 {
-    can_buffer[0] = IC_index;
-	can_buffer[1] = 0xFF & (battery_current>>8); // upper byte
-	can_buffer[2] = 0xFF & battery_current; // lower byte
+    int16_t battery_current = mypack.current;
+	can_buffer[0] = 0xFF & (battery_current>>8); // upper byte
+	can_buffer[1] = 0xFF & battery_current; // lower byte
 	CAN_1_SendMsgcurrent();
 } // can_send_current()
 
@@ -118,8 +118,9 @@ void can_send_current(uint8_t IC_index, uint16_t battery_current)
 void can_send_status(uint8_t SOC_P,
                     uint8_t AH,
                     BMS_STATUS status,
-                    uint16_t charge_cy,
-                    uint16_t delta){
+                    uint8_t stack,
+                    uint8_t cell,
+                    uint16_t value16){
 //8 SOC Percent
 //8 AH used since full charge
 //16 BMS Status bits (error flags)
@@ -129,10 +130,10 @@ void can_send_status(uint8_t SOC_P,
     can_buffer[1] = AH;
     can_buffer[2] = (status>>8) & 0xFF;
     can_buffer[3] = (status) & 0xFF;
-    can_buffer[4] = (charge_cy>>8) & 0xFF;
-    can_buffer[5] = (charge_cy) & 0xFF;
-    can_buffer[6] = (delta>>8) & 0xFF;
-    can_buffer[7] = (delta) & 0xFF;
+    can_buffer[4] = stack & 0xFF;
+    can_buffer[5] = (cell) & 0xFF;
+    can_buffer[6] = (value16>>8) & 0xFF;
+    can_buffer[7] = (value16) & 0xFF;
 
     CAN_1_SendMsgstatus();
 }
