@@ -19,10 +19,10 @@ uint16_t get_current(void)
 	ADC_current_IsEndConversion(ADC_current_WAIT_FOR_RESULT);
 	ADC_current_StopConvert();
 	current = ADC_current_GetResult16();
-
+//todo: convert current to float
 	// current = (Vi - 2.5)/4
 	// Vi referenced to 5V
-	current = (current - 0x7FFF) >> 2;
+	current = (current - 2.5)/4;
 
 	return current;
 }// get_current()
