@@ -62,6 +62,8 @@ extern volatile BMS_STATUS fatal_err;
 extern volatile BMS_STATUS warning_err;
 extern volatile uint8_t error_IC;
 extern volatile uint8_t error_CHIP;
+volatile uint8_t error_voltage_count=0;
+volatile uint8_t error_temperature_count=0;
 
 
 /**
@@ -114,8 +116,8 @@ uint8_t check_cells(){
   uint16_t cell_pu[TOTAL_IC][12];
   uint16_t cell_pd[TOTAL_IC][12];
   int error;
-  int i_IC=0;
-  int i_cell=0;
+  uint8_t i_IC=0;
+  uint8_t i_cell=0;
 
   wakeup_sleep();
 

@@ -62,8 +62,9 @@ int main(void)
         
 		//check_cfg();
 		//check_cells();// TODO Check if cell exists
+        get_cell_volt();// TODO Get voltage
 		//check_stack_fuse(); // TODO: check if stacks are disconnected
-		get_cell_volt();// TODO Get voltage
+		
 		//get_cell_temp();// TODO Get temperature
 
 
