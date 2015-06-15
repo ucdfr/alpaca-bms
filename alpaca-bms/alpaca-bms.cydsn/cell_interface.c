@@ -284,9 +284,7 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
                     if (mypack.cell[stack][ic][cell].bad_counter>0){
                         mypack.cell[stack][ic][cell].bad_counter--;
                     }
-                    if (CAN_UPDATE_FLAG){
-                        can_send_volt(ic,cell,cell_codes);
-                    }
+                   
                 }
 
                 //check faulty cell
@@ -326,10 +324,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     //log in temp data
     for (ic=0;ic<TOTAL_IC;ic++){
         for (cell=0;cell<5;cell++){
-            mypack.temp[ic/4][ic*5+cell].value16=cell_codes[ic][cell];        
-        }
-        if (CAN_UPDATE_FLAG){
-            can_send_temp(ic,aux_codes[ic]);
+            mypack.temp[ic/4][ic*5+cell].value8=temp_transfer(cell_codes[ic][cell]);        
         }
     }
 
@@ -338,7 +333,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     //update healthy status
     for (stack = 0; stack <3;stack ++){
         for (cell=0;cell<20;cell++){
-            temp = mypack.temp[stack][cell].value16;
+            temp = mypack.temp[stack][cell].value8;
             if (temp>OVER_TEMP){
                 mypack.temp[stack][cell].bad_counter++;
                 mypack.temp[stack][cell].bad=1;
@@ -400,4 +395,10 @@ void check_stack_fuse(){
         }
 }
 
+
+
+uint8_t temp_transfer(uint16_t raw){
+    //translate raw reading to C temperature
+    return (0xff & raw);
+}
 //void balance_cells(){}// balance_cells()

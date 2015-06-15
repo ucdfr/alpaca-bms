@@ -80,7 +80,7 @@ typedef struct {
 }BAT_VOLT;
 
 typedef struct {
-  uint16_t value16;
+  uint16_t value8;
   uint8_t bad;
   uint8_t bad_counter;
 }BAT_TEMP;
@@ -224,5 +224,7 @@ void mypack_init();
  * @return NULL.
  */
 void check_stack_fuse();
+
+uint8_t temp_transfer(uint16_t);
 
 #endif // CELL_INTERFACE_H

@@ -7,8 +7,7 @@
 #include "data.h"
 #include "can_manager.h"
 
-volatile uint8_t CAN_UPDATE_FLAG=1;
-volatile uint16_t CAN_count=0;
+volatile uint8_t CAN_UPDATE_FLAG=0;
 volatile BMS_STATUS warning_err;
 volatile BMS_STATUS fatal_err;
 volatile uint8_t error_IC;
@@ -19,30 +18,31 @@ extern volatile BATTERYPACK mypack;
 
 CY_ISR(CAN_UPDATE_Handler){
     CAN_UPDATE_FLAG = 1;
-    CAN_count++;
 }
 
 
 
 int main(void)
 {
-	CyGlobalIntEnable;
 
 	Can_Update_ISR_StartEx(CAN_UPDATE_Handler);
 	Can_Update_Timer_Start();
 	can_init();
-	CyGlobalIntEnable;
+	
 
 	// TODO Watchdog Timer
-
+    //WDT_init();
 
 	// Initialize
 	bms_init();
 	mypack_init();
 
 	current_init();
+    
+    //enable global interrupt
+    CyGlobalIntEnable;
 
-	int pin_value=1;
+	//int pin_value=1;
 
 	uint16_t cell_volt[NUM_CELLS];
 	uint16_t temp[NUM_TEMP];
@@ -62,16 +62,16 @@ int main(void)
 		if (WDT_should_clear())
 			WDT_clear();
         
-		//check_cfg();
+        
+		//check_cfg();  //CANNOT be finished, because 
 		//check_cells();// TODO This function will be finished in get_cell_volt/check stack fuse
         get_cell_volt();// TODO Get voltage
 		check_stack_fuse(); // TODO: check if stacks are disconnected
 		get_cell_temp();// TODO Get temperature
-
-
 		battery_current = get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
 
+        
 
 		if (fatal_err)
 			break; // break from main loop and enter fault loop
@@ -96,6 +96,11 @@ int main(void)
 		} // else send no error
 
 		//  OK_SIG_Write(1);
+        if(CAN_UPDATE_FLAG){
+            can_send_volt();
+            can_send_temp();
+            CAN_UPDATE_FLAG=0;
+        }
 		CyDelay(100); // wait for next cycle
 	} // main loop
 
