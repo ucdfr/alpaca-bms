@@ -55,7 +55,7 @@ Copyright 2013 Linear Technology Corp. (LTC)
    
     #define ERROR_VOLTAGE_LIMIT (3u)
     #define ERROR_TEMPERATURE_LIMIT (3u)
-    #define CELL_ENABLE (0x1CE)
+    #define CELL_ENABLE (0x1cf)
     #define OVER_VOLTAGE (50000u)
     #define UNDER_VOLTAGE (35000u)
     #define STACK_VOLT_DIFF_LIMIT (10000u)

@@ -527,7 +527,7 @@ void LTC6804_rdcv_reg(uint8_t reg, //Determines which cell voltage register is r
   
   //4
     if (reg == 1){
-        spi_write_read(cmd,4,data,(REG_LEN*total_ic));
+        //spi_write_read(cmd,4,data,(REG_LEN*total_ic));
         spi_write_read(cmd,4,data,(REG_LEN*total_ic));
     }else{
         spi_write_read(cmd,4,data,(REG_LEN*total_ic));

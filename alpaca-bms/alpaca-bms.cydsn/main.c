@@ -17,6 +17,7 @@ extern volatile BATTERYPACK mypack;
 
 
 CY_ISR(CAN_UPDATE_Handler){
+    Can_Update_Timer_STATUS;
     CAN_UPDATE_FLAG = 1;
 }
 
@@ -78,15 +79,15 @@ int main(void)
 		//get_current(); // TODO get current reading from sensor
 		get_soc(); // TODO calculate SOC()
 
-		if (fatal_err)
-			break; // break from main loop and enter fault loop
+		//if (fatal_err)
+		//	break; // break from main loop and enter fault loop
 
 		if (warning_event){
             process_event();
         }
 		else{
-			can_send_status(0x00,
-					0x00,
+			can_send_status(0x01,
+					0x02,
 					NO_ERROR,
 					0x00,
 					0x00,
@@ -96,11 +97,11 @@ int main(void)
 		
         if(CAN_UPDATE_FLAG){
             can_send_volt();
-            can_send_temp();
-            can_send_current();
-            CAN_UPDATE_FLAG=0;
+          //  can_send_temp();
+           // can_send_current();
+           // CAN_UPDATE_FLAG=0;
         }
-        OK_SIG_Write(1);
+        OK_SIG_Write(0);
 		CyDelay(1000); // wait for next cycle
 	} // main loop
 

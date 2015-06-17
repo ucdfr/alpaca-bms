@@ -241,7 +241,10 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
     //log in voltage data
     for (ic=0;ic<TOTAL_IC;ic++){
         for (cell=0;cell<12;cell++){
-            if (CELL_ENABLE & (0x1<<cell)){
+            if (cell==1){
+                1==1;
+            }
+            if ((CELL_ENABLE & (0x1<<cell))){
                 mypack.cell[ic/4][ic%4][cell].value16=cell_codes[ic][cell];
             }
         }
@@ -255,7 +258,7 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
         for (ic=0;ic<4;ic++){
             cell=0;
             for (cell=0;cell<7;cell++){
-                stack_volt =stack_volt+mypack.cell[stack][ic][cell].value16;
+                stack_volt +=stack_volt+mypack.cell[stack][ic][cell].value16;
             }
         }
         mypack.stack[stack].value32=stack_volt;

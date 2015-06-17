@@ -86,7 +86,7 @@ void can_send_volt()
     for (stack=0;stack<3;stack++){
         for(ic=0;ic<4;ic++){
             for(cell=0;cell<7;cell++){
-                can_buffer[0] = (stack*3+ic);
+                can_buffer[0] = (stack*4+ic);
                 can_buffer[1] = cell;
                 can_buffer[2] = 0xFF & (mypack.cell[stack][ic][cell].value16>>8); // upper byte
                 can_buffer[3] = 0xFF & mypack.cell[stack][ic][cell].value16; // lower byte
@@ -95,12 +95,15 @@ void can_send_volt()
                 can_buffer[5] = 0xFF & (stack_voltage >> 16);
                 can_buffer[6] = 0xFF & (stack_voltage >> 8);
                 can_buffer[7] = 0xFF & (stack_voltage);
+                
+                CAN_1_SendMsgvolt();
+                CyDelay(1);
             }
         }
     }
     
 
-	CAN_1_SendMsgvolt();
+	
 } // can_send_volt()
 
 
