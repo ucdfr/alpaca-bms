@@ -233,6 +233,7 @@ uint8_t check_cells(){
 
 void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
     uint8_t cell=0;
+    uint8_t raw_cell=0;
     uint8_t ic=0;
     uint32_t stack_volt=0;
     uint8_t stack=0;
@@ -240,21 +241,19 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
 
     //log in voltage data
     for (ic=0;ic<TOTAL_IC;ic++){
-        for (cell=0;cell<12;cell++){
-            if (cell==1){
-                1==1;
-            }
-            if ((CELL_ENABLE & (0x1<<cell))){
-                mypack.cell[ic/4][ic%4][cell].value16=cell_codes[ic][cell];
+        for (raw_cell=0;raw_cell<12;raw_cell++){
+            if ((CELL_ENABLE & (0x1<<raw_cell))){
+                mypack.cell[ic/4][ic%4][cell].value16=cell_codes[ic][raw_cell];
+                cell++;
             }
         }
     }
 
     //update stack voltage
+    ic=0;
+    cell=0;
+    stack_volt=0;
     for (stack =0; stack<3;stack++){
-        ic=0;
-        cell=0;
-        stack_volt=0;
         for (ic=0;ic<4;ic++){
             cell=0;
             for (cell=0;cell<7;cell++){
