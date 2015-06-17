@@ -31,9 +31,6 @@ void process_event(){
 }
 
 
-
-
-
 int main(void)
 {
 
@@ -45,12 +42,15 @@ int main(void)
 	// TODO Watchdog Timer
     //WDT_init();
 
+    OK_SIG_Write(1);
 	// Initialize
 	bms_init();
 	mypack_init();
+    OK_SIG_Write(0);
 
 	current_init();
     
+    OK_SIG_Write(1);
     //enable global interrupt
     CyGlobalIntEnable;
 
@@ -73,12 +73,10 @@ int main(void)
 		//check_cfg();  //CANNOT be finished, because 
 		//check_cells();// TODO This function will be finished in get_cell_volt/check stack fuse
         get_cell_volt();// TODO Get voltage
-		check_stack_fuse(); // TODO: check if stacks are disconnected
-		get_cell_temp();// TODO Get temperature
-		get_current(); // TODO get current reading from sensor
+		//check_stack_fuse(); // TODO: check if stacks are disconnected
+		//get_cell_temp();// TODO Get temperature
+		//get_current(); // TODO get current reading from sensor
 		get_soc(); // TODO calculate SOC()
-
-        
 
 		if (fatal_err)
 			break; // break from main loop and enter fault loop
@@ -95,14 +93,15 @@ int main(void)
                     0x0000);
 		} // else send no error
 
-		//  OK_SIG_Write(1);
+		
         if(CAN_UPDATE_FLAG){
             can_send_volt();
             can_send_temp();
             can_send_current();
             CAN_UPDATE_FLAG=0;
         }
-		CyDelay(100); // wait for next cycle
+        OK_SIG_Write(1);
+		CyDelay(1000); // wait for next cycle
 	} // main loop
 
 
@@ -111,7 +110,7 @@ int main(void)
 		if (WDT_should_clear()){
 				WDT_clear(); //even in fatal error, the bms should keep alive
 		}
-
+        OK_SIG_Write(0);
 		uint8_t index=0;
 		if (fatal_err | PACK_TEMP_OVER){
 			for (index=0;index<mypack.bad_temp_index;index++){

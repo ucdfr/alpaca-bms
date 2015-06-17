@@ -324,7 +324,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     //log in temp data
     for (ic=0;ic<TOTAL_IC;ic++){
         for (cell=0;cell<5;cell++){
-            mypack.temp[ic/4][ic*5+cell].value8=temp_transfer(cell_codes[ic][cell]);        
+            mypack.temp[ic/4][ic*5+cell].value8=temp_transfer(aux_codes[ic][cell]);        
         }
     }
 
