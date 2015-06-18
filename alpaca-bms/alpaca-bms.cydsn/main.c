@@ -113,7 +113,7 @@ int main(void)
 		}
         OK_SIG_Write(0);
 		uint8_t index=0;
-		if (fatal_err & PACK_TEMP_OVER){
+		if (fatal_err & PACK_TEMP_OVER){        //0x0002
 			for (index=0;index<mypack.bad_temp_index;index++){
 				if (mypack.bad_temp[index].error==1){
 					can_send_status(0xff & index,
@@ -127,7 +127,7 @@ int main(void)
 
 		}
 
-		if (fatal_err & PACK_TEMP_UNDER){
+		if (fatal_err & PACK_TEMP_UNDER){       //0x0008
 			for (index=0;index<mypack.bad_temp_index;index++){
 				if (mypack.bad_temp[index].error==0){
 					can_send_status(0xff & index,
@@ -140,7 +140,7 @@ int main(void)
 			}
 
 		}
-		if (fatal_err & STACK_FUSE_BROKEN){
+		if (fatal_err & STACK_FUSE_BROKEN){         //0x0004
 			can_send_status(0x00,
 			0x00,
 			STACK_FUSE_BROKEN,
@@ -150,7 +150,7 @@ int main(void)
 		}
 
 
-		if(fatal_err & CELL_VOLT_OVER){
+		if(fatal_err & CELL_VOLT_OVER){         //0x0800
 			for (index=0;index<mypack.bad_cell_index;index++){
 				if (mypack.bad_cell[index].error==1){
 					can_send_status(0xff & index,

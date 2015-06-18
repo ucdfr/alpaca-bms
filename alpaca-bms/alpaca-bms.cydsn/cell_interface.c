@@ -48,6 +48,7 @@ Copyright 2013 Linear Technology Corp. (LTC)
 
 #include "cell_interface.h"
 #include "LTC68041.h"
+#include "math.h"
 
 
 
@@ -411,7 +412,16 @@ void check_stack_fuse(){
 
 
 uint8_t temp_transfer(uint16_t raw){
+    //using 1/T = 1/T0 +(1/B)(R/R0)
+    //V = raw/0xffff*5
+    //R is R=10K(5-V)/V;
     //translate raw reading to C temperature
+    //B25=3900
+    //B75=3936
+    float V=(raw/0xffff)*5;
+    float R=10000*(5-V)/V;
+    float R0=10000;
+    float oneOverT=(1/298.15)+(1/3900)*(log(R/R0));
     return (0xff & raw);
 }
 //void balance_cells(){}// balance_cells()
