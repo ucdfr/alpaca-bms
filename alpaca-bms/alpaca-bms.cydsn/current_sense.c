@@ -23,6 +23,7 @@ uint16_t get_current(void)
 	ADC_current_IsEndConversion(ADC_current_WAIT_FOR_RESULT);
 	ADC_current_StopConvert();
 	raw_vol = ADC_current_GetResult16();
+    raw_vol = (5*raw_vol/0xffff);
     
     //todo: convert current to float
 	// current = (Vi - 2.5)/4
