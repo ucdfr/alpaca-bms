@@ -1,5 +1,6 @@
 #include "current_sense.h"
 #include "cell_interface.h"
+#include "math.h"
 extern volatile BATTERYPACK mypack;
 extern volatile BMS_STATUS warning_event;
 extern volatile BMS_STATUS fatal_err;
@@ -28,7 +29,7 @@ uint16_t get_current(void)
 	// Vi referenced to 5V
 	current = ((10*current-25)/4)/10;
 
-    mypack.current = current;
+    mypack.current = (int16_t)floor(current);
     
     //charging?
     if (current<0){
