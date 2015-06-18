@@ -21,10 +21,10 @@ uint16_t get_current(void)
 	ADC_current_IsEndConversion(ADC_current_WAIT_FOR_RESULT);
 	ADC_current_StopConvert();
 	current = ADC_current_GetResult16();
-//todo: convert current to float
+    //todo: convert current to float
 	// current = (Vi - 2.5)/4
 	// Vi referenced to 5V
-	current = (current - 2.5)/4;
+	current = (10*(current-25)/4)/10;
 
     mypack.current = current;
     

@@ -62,12 +62,13 @@ void can_send_temp()
         can_buffer[2] = max_cell ; // upper byte of C
         can_buffer[3] = max_cell_temp ; // lower byte of C
         
-        can_buffer[1] = 0xff & avg_board_temp;
-        can_buffer[2] = max_board ; // upper byte of C
-        can_buffer[3] = max_board_temp ; // lower byte of C
+        can_buffer[4] = 0xff & avg_board_temp;
+        can_buffer[5] = max_board ; // upper byte of C
+        can_buffer[6] = max_board_temp ; // lower byte of C
         can_buffer[7] = 0x00;
         
 		CAN_1_SendMsgtemp();
+        CyDelay(5);
     }
 
 } // can_send_temp()
@@ -82,7 +83,27 @@ void can_send_volt()
     
     uint32_t stack_voltage=mypack.stack[0].value32 + mypack.stack[1].value32 + mypack.stack[2].value32;
     stack_voltage = stack_voltage/3;
+    //uint32_t stack_voltage = mypack.stack[2].value32;
 
+    /*
+    for (stack =0;stack<3;stack++){
+        stack_voltage = stack_voltage=mypack.stack[stack].value32;
+        can_buffer[0] = 0xff & stack;
+        can_buffer[1] = 0x00;
+        can_buffer[2] = 0x00;
+        can_buffer[3] = 0x00;
+        
+        can_buffer[4] = 0xFF & (stack_voltage >> 24);
+        can_buffer[5] = 0xFF & (stack_voltage >> 16);
+        can_buffer[6] = 0xFF & (stack_voltage >> 8);
+        can_buffer[7] = 0xFF & (stack_voltage);
+        CAN_1_SendMsgvolt();
+        CyDelay(5);
+    }
+    */
+
+
+    
     for (stack=0;stack<3;stack++){
         for(ic=0;ic<4;ic++){
             for(cell=0;cell<7;cell++){
@@ -101,6 +122,7 @@ void can_send_volt()
             }
         }
     }
+    
     
 
 	

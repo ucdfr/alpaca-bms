@@ -74,13 +74,13 @@ int main(void)
 		//check_cfg();  //CANNOT be finished, because 
 		//check_cells();// TODO This function will be finished in get_cell_volt/check stack fuse
         get_cell_volt();// TODO Get voltage
-		//check_stack_fuse(); // TODO: check if stacks are disconnected
+		check_stack_fuse(); // TODO: check if stacks are disconnected
 		//get_cell_temp();// TODO Get temperature
-		//get_current(); // TODO get current reading from sensor
+		get_current(); // TODO get current reading from sensor
 		get_soc(); // TODO calculate SOC()
 
-		//if (fatal_err)
-		//	break; // break from main loop and enter fault loop
+		if (fatal_err)
+			break; // break from main loop and enter fault loop
 
 		if (warning_event){
             process_event();
@@ -97,8 +97,8 @@ int main(void)
 		
         if(CAN_UPDATE_FLAG){
             can_send_volt();
-          //  can_send_temp();
-           // can_send_current();
+            can_send_temp();
+            can_send_current();
            // CAN_UPDATE_FLAG=0;
         }
         OK_SIG_Write(0);
@@ -113,7 +113,7 @@ int main(void)
 		}
         OK_SIG_Write(0);
 		uint8_t index=0;
-		if (fatal_err | PACK_TEMP_OVER){
+		if (fatal_err & PACK_TEMP_OVER){
 			for (index=0;index<mypack.bad_temp_index;index++){
 				if (mypack.bad_temp[index].error==1){
 					can_send_status(0x00,
@@ -127,7 +127,7 @@ int main(void)
 
 		}
 
-		if (fatal_err | PACK_TEMP_UNDER){
+		if (fatal_err & PACK_TEMP_UNDER){
 			for (index=0;index<mypack.bad_temp_index;index++){
 				if (mypack.bad_temp[index].error==0){
 					can_send_status(0x00,
@@ -140,7 +140,7 @@ int main(void)
 			}
 
 		}
-		if (fatal_err | STACK_FUSE_BROKEN){
+		if (fatal_err & STACK_FUSE_BROKEN){
 			can_send_status(0x00,
 			0x00,
 			STACK_FUSE_BROKEN,
@@ -150,7 +150,7 @@ int main(void)
 		}
 
 
-		if(fatal_err | CELL_VOLT_OVER){
+		if(fatal_err & CELL_VOLT_OVER){
 			for (index=0;index<mypack.bad_cell_index;index++){
 				if (mypack.bad_cell[index].error==1){
 					can_send_status(0x00,
@@ -163,12 +163,12 @@ int main(void)
 			}
 
 		}
-		if(fatal_err | CELL_VOLT_UNDER){
+		if(fatal_err & CELL_VOLT_UNDER){                //0x1000
 			for (index=0;index<mypack.bad_cell_index;index++){
 				if (mypack.bad_cell[index].error==0){
 					can_send_status(0x00,
 					0x00,
-					CELL_VOLT_OVER,
+					CELL_VOLT_UNDER,
 					mypack.bad_temp[index].stack,
 					mypack.bad_temp[index].ic*4+mypack.bad_temp[index].cell,
 					mypack.bad_temp[index].value16);

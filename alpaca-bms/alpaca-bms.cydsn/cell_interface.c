@@ -247,6 +247,7 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
                 cell++;
             }
         }
+        cell=0;
     }
 
     //update stack voltage
@@ -257,10 +258,11 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
         for (ic=0;ic<4;ic++){
             cell=0;
             for (cell=0;cell<7;cell++){
-                stack_volt +=stack_volt+mypack.cell[stack][ic][cell].value16;
+                stack_volt=stack_volt+(uint32_t)mypack.cell[stack][ic][cell].value16;
             }
         }
         mypack.stack[stack].value32=stack_volt;
+        stack_volt=0;
     }
 
     //update pack voltage
@@ -382,19 +384,28 @@ void mypack_init(){
 }
 
 void check_stack_fuse(){
-    if ((mypack.stack[0].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
-            mypack.status = FAULT;
+    if (((mypack.stack[0].value32 > mypack.stack[1].value32) && \
+    (mypack.stack[0].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT)) && \
+    (mypack.stack[0].value32 > mypack.stack[2].value32) && \
+    (mypack.stack[0].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
+        mypack.status = FAULT;
             fatal_err |= STACK_FUSE_BROKEN;
             mypack.fuse_fault=STACK0;
-        }else if ((mypack.stack[1].value32 - mypack.stack[0].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
-            mypack.status = FAULT;
-            fatal_err |= STACK_FUSE_BROKEN;
-            mypack.fuse_fault=STACK1;
-        }else if ((mypack.stack[2].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT) && (mypack.stack[0].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT)){
-            mypack.status = FAULT;
-            fatal_err |= STACK_FUSE_BROKEN;
-            mypack.fuse_fault=STACK2;
-        }
+    }else if (((mypack.stack[1].value32 > mypack.stack[0].value32) && \
+    (mypack.stack[1].value32 - mypack.stack[0].value32 > STACK_VOLT_DIFF_LIMIT)) && \
+    (mypack.stack[1].value32 > mypack.stack[2].value32) && \
+    (mypack.stack[1].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
+        mypack.status = FAULT;
+        fatal_err |= STACK_FUSE_BROKEN;
+        mypack.fuse_fault=STACK1;
+    }else if (((mypack.stack[2].value32 > mypack.stack[0].value32) && \
+    (mypack.stack[2].value32 - mypack.stack[0].value32 > STACK_VOLT_DIFF_LIMIT)) && \
+    (mypack.stack[2].value32 > mypack.stack[1].value32) && \
+    (mypack.stack[2].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT)){
+        mypack.status = FAULT;
+        fatal_err |= STACK_FUSE_BROKEN;
+        mypack.fuse_fault=STACK2;
+    }
 }
 
 
