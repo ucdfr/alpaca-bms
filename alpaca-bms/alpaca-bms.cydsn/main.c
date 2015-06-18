@@ -116,7 +116,7 @@ int main(void)
 		if (fatal_err & PACK_TEMP_OVER){
 			for (index=0;index<mypack.bad_temp_index;index++){
 				if (mypack.bad_temp[index].error==1){
-					can_send_status(0x00,
+					can_send_status(0xff & index,
 					0x00,
 					PACK_TEMP_OVER,
 					mypack.bad_temp[index].stack,
@@ -130,7 +130,7 @@ int main(void)
 		if (fatal_err & PACK_TEMP_UNDER){
 			for (index=0;index<mypack.bad_temp_index;index++){
 				if (mypack.bad_temp[index].error==0){
-					can_send_status(0x00,
+					can_send_status(0xff & index,
 					0x00,
 					PACK_TEMP_UNDER,
 					mypack.bad_temp[index].stack,
@@ -153,7 +153,7 @@ int main(void)
 		if(fatal_err & CELL_VOLT_OVER){
 			for (index=0;index<mypack.bad_cell_index;index++){
 				if (mypack.bad_cell[index].error==1){
-					can_send_status(0x00,
+					can_send_status(0xff & index,
 					0x00,
 					CELL_VOLT_OVER,
 					mypack.bad_temp[index].stack,
@@ -166,7 +166,7 @@ int main(void)
 		if(fatal_err & CELL_VOLT_UNDER){                //0x1000
 			for (index=0;index<mypack.bad_cell_index;index++){
 				if (mypack.bad_cell[index].error==0){
-					can_send_status(0x00,
+					can_send_status(0xff & index,
 					0x00,
 					CELL_VOLT_UNDER,
 					mypack.bad_temp[index].stack,

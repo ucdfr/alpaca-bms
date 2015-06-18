@@ -278,10 +278,10 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
         for (ic =0; ic< 4;ic++){
             for (cell=0;cell<7;cell++){
                 voltage = mypack.cell[stack][ic][cell].value16;
-                if (voltage>OVER_VOLTAGE){
+                if (voltage > (uint16_t)OVER_VOLTAGE){
                     mypack.cell[stack][ic][cell].bad_counter++;
                     mypack.cell[stack][ic][cell].bad=1;
-                }else if (voltage < UNDER_VOLTAGE){
+                }else if (voltage < (uint16_t)UNDER_VOLTAGE){
                     mypack.cell[stack][ic][cell].bad_counter++;
                     mypack.cell[stack][ic][cell].bad=0;
                 }else{
@@ -297,17 +297,17 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
                     mypack.bad_cell[mypack.bad_cell_index].ic=ic;
                     mypack.bad_cell[mypack.bad_cell_index].cell=cell;
                     mypack.bad_cell[mypack.bad_cell_index].error=mypack.cell[stack][ic][cell].bad;
+                    if (mypack.bad_cell[mypack.bad_cell_index].error==0){
+                      fatal_err |= CELL_VOLT_UNDER;
+                    }else{
+                        fatal_err |= CELL_VOLT_OVER;
+                    }
                     if (mypack.bad_cell_index<255){
                         mypack.bad_cell_index++;
                     }else{
                         mypack.bad_cell_index=255;
                     }
                     mypack.status = FAULT;
-                    if (mypack.bad_cell[mypack.bad_cell_index].error){
-                        fatal_err |= CELL_VOLT_OVER;
-                    }else{
-                        fatal_err |= CELL_VOLT_UNDER;  
-                    }
                 }
             }
         }
