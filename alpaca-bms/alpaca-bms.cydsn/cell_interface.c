@@ -458,19 +458,19 @@ void check_stack_fuse()
 			fatal_err |= STACK_FUSE_BROKEN;
 
 		if(mypack.stack[0].bad_counter > FUSE_BAD_LIMIT &&
-			mypack.stack[1].badcounter > FUSE_BAD_LIMIT)
+			mypack.stack[1].bad_counter > FUSE_BAD_LIMIT)
 		{
 			mypack.fuse_fault = STACK1;
 		} // if fuse on stack 1 fails
 
 		if(mypack.stack[1].bad_counter > FUSE_BAD_LIMIT &&
-			mypack.stack[2].badcounter > FUSE_BAD_LIMIT)
+			mypack.stack[2].bad_counter > FUSE_BAD_LIMIT)
 		{
 			mypack.fuse_fault = STACK2;
 		} // if fuse on stack 2 fails
 
 		if(mypack.stack[2].bad_counter > FUSE_BAD_LIMIT &&
-			mypack.stack[0].badcounter > FUSE_BAD_LIMIT)
+			mypack.stack[0].bad_counter > FUSE_BAD_LIMIT)
 		{
 			mypack.fuse_fault = STACK0;
 		} // if fuse on stack 0 fails
