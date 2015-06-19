@@ -77,11 +77,11 @@ int main(void)
         get_cell_volt();// TODO Get voltage
 		check_stack_fuse(); // TODO: check if stacks are disconnected
 		get_cell_temp();// TODO Get temperature
-		//get_current(); // TODO get current reading from sensor
+		get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
         
         //voltage compensate
-        //voltage_compensation();
+        
 
 		//if (fatal_err)
     	//	break; // break from main loop and enter fault loop
@@ -102,10 +102,10 @@ int main(void)
         if(CAN_UPDATE_FLAG){
             can_send_volt();
             can_send_temp();
-            //can_send_current();
+            can_send_current();
             CAN_UPDATE_FLAG=0;
         }
-		CyDelay(10); // wait for next cycle
+		CyDelay(100); // wait for next cycle
 	} // main loop
 
 

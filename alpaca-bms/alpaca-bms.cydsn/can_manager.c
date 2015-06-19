@@ -110,7 +110,7 @@ void can_send_volt()
         can_buffer[6] = 0xFF & (stack_voltage >> 8);
         can_buffer[7] = 0xFF & (stack_voltage);
         CAN_1_SendMsgvolt();
-        CyDelay(5);
+        CyDelay(1);
     }
     }
     
@@ -129,6 +129,12 @@ void can_send_current()
     int16_t battery_current = mypack.current;
 	can_buffer[0] = 0xFF & (battery_current>>8); // upper byte
 	can_buffer[1] = 0xFF & battery_current; // lower byte
+    can_buffer[2] = 0x00; 
+    can_buffer[3] = 0x00; 
+    can_buffer[4] = 0x00; 
+    can_buffer[5] = 0x00; 
+    can_buffer[6] = 0x00; 
+    can_buffer[7] = 0x00; 
 	CAN_1_SendMsgcurrent();
 } // can_send_current()
 

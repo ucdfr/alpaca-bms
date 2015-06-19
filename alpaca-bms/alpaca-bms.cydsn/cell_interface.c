@@ -252,7 +252,7 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
         cell=0;
     }
 
-    
+    voltage_compensation();
     
     //update stack voltage
     ic=0;
@@ -349,8 +349,9 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
         for (cell=0;cell<20;cell++){
             temp = mypack.temp[stack][cell].value16;
             if (temp <CRITICAL_TEMP_H){
-                mypack.temp[stack][cell].bad_counter++;
-                mypack.temp[stack][cell].bad=1;
+                if (mypack.temp[stack][cell].bad_counter!=255){
+                    mypack.temp[stack][cell].bad_counter++;
+                }
             }else{
                 if (mypack.temp[stack][cell].bad_counter>0){
                     mypack.temp[stack][cell].bad_counter--;
@@ -527,21 +528,34 @@ uint8_t temp_transfer(uint16_t raw){
 
 void voltage_compensation(){
     //should compsensation to top and bottom cells
-    uint8_t temp=40;
+    float dV = 500;         //in 0.0001V
+    float temp = 0;
+    float d=0;
     uint8_t stack=0;
-    uint16_t r;
-    uint8_t ic;
-    uint16_t current=193;   //current in 0.0001A
-    r = current*17/10;
+    uint8_t ic=0;
+    float dT=0;
+    
     for (stack=0;stack<3;stack++){
         //calculate voltage across interface
-        for (ic=0;ic<4;ic++){
-            mypack.cell[stack][ic][0].value16+=(uint16_t)r;
-            mypack.cell[stack][ic][5].value16+=(uint16_t)r;
-        
+        if (temp_transfer(mypack.stack[stack].value16) > 25){
+            dT = (float)(temp_transfer(mypack.stack[stack].value16) - 25);
+            temp = dT*0.017+1.4;
+            d = (temp/1.4)*dV;
+        }else{
+            dT = (float)(25-temp_transfer(mypack.stack[stack].value16));
+            temp = 1.4-dT*0.017;
+            d = (temp/1.4)*dV;
         }
-        mypack.stack[stack].value32+=2*(uint16_t)r;
-        mypack.stack[stack].value32+=2*(uint16_t)r;
+        if (d>800){
+            d=800;
+        }else if(d<500){
+            d=500;
+        }
+        mypack.cell[stack][0][0].value16+=(uint16_t)d;
+        mypack.cell[stack][1][6].value16+=(uint16_t)d;
+        mypack.cell[stack][2][0].value16+=(uint16_t)d;
+        mypack.cell[stack][3][6].value16+=(uint16_t)d;
+        
     }
     
 }
