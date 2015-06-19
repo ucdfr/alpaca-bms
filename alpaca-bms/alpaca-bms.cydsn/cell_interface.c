@@ -352,7 +352,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
 			{
 				mypack.temp[stack][therm].value16 = aux_codes[ic][therm%5];        
 
-				if(therm == 4)
+				if((therm%5) == 4)
 					ic++;
 			} // for thermistors
 		} // for stack
