@@ -60,7 +60,7 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #define CELL_ENABLE (0x1cf)
     #define OVER_VOLTAGE (42000u)
     #define UNDER_VOLTAGE (20000u)
-    #define STACK_VOLT_DIFF_LIMIT (10000u)
+    #define STACK_VOLT_DIFF_LIMIT (30000u)
     #define CRITICAL_TEMP_L (2000u)          //0.2V
     #define CRITICAL_TEMP_H (10213u)             //1.0213V  10213
     #define BAD_THERM_LIMIT (8u)
