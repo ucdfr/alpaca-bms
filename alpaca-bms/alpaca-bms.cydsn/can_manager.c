@@ -19,11 +19,6 @@ void can_send_temp()
 {
     uint32_t avg_temp=0;
     uint32_t avg_board_temp=0;
-    uint8_t max_cell_temp=0;
-    uint8_t max_board_temp=0;
-    uint8_t max_board=0;
-    uint8_t max_cell=0;
-    uint8_t temp;
     uint8_t stack=0;
     uint8_t cell=0;
     
@@ -31,10 +26,7 @@ void can_send_temp()
     for(stack=0;stack<3;stack++){
         avg_temp=0;
         avg_board_temp=0;
-        max_cell_temp=0;
-        max_board_temp=0;
-        max_board=0;
-        max_cell=0;
+
 
         
         for(cell=0;cell<20;cell++){

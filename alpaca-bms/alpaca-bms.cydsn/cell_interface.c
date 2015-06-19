@@ -357,7 +357,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
                     mypack.temp[stack][cell].bad_counter--;
                 }
                 
-        }
+            }
     
 
             //check faulty temp
@@ -371,7 +371,6 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
                 if (!temp_found){
                     mypack.bad_temp[mypack.bad_temp_index].stack=stack;
                     mypack.bad_temp[mypack.bad_temp_index].cell=cell;
-                    mypack.bad_temp[mypack.bad_temp_index].error=mypack.temp[stack][cell].bad;
                     if (mypack.bad_temp_index<255){
                        mypack.bad_temp_index++;
                     }else{
@@ -380,7 +379,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
                 }
                 
                 
-                if (mypack.bad_cell_index>BAD_THERM_LIMIT){     //really bad!
+                if (mypack.bad_temp_index>BAD_THERM_LIMIT){     //really bad!
                         mypack.status = FAULT;
                         fatal_err |= PACK_TEMP_OVER;
                 }
@@ -532,7 +531,6 @@ void voltage_compensation(){
     float temp = 0;
     float d=0;
     uint8_t stack=0;
-    uint8_t ic=0;
     float dT=0;
     
     for (stack=0;stack<3;stack++){

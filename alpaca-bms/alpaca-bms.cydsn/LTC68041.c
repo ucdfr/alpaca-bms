@@ -1113,7 +1113,7 @@ void spi_write_read(uint8_t tx_Data[],//array of data to be written on SPI port
 {
     LTC68_ClearRxBuffer();
     uint8_t i = 0;
-    uint8_t dummy_read=0;
+    uint8_t dummy_read;
     for(i = 0; i < tx_len; i++)
   {
 
