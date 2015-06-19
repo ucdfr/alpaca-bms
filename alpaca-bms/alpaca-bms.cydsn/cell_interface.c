@@ -496,14 +496,14 @@ void check_stack_fuse()
 
 
 
-uint8_t temp_transfer(uint16_t raw,uint16_t raw_v){
+uint8_t temp_transfer(uint16_t raw){
     //using 1/T = 1/T0 +(1/B)(R/R0)
     //V = raw/0xffff*5
     //R is R=10K(5-V)/V;
     //translate raw reading to C temperature
     //B25=3900
     //B75=3936
-    float vcc=(float)raw_v*5.0/0xffff;
+    float vcc=5.0;
     float V=((float)raw*vcc/0xffff);
     float R=10000.0*(vcc-V)/V;
     float R0=10000.0;
