@@ -50,10 +50,12 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #include <stdint.h>
     #include <project.h>
 
-#define WAKE_UP_DELAY_US (40)
-#define WAKE_IDLE_DELAY_US (1)
+//#define WAKE_UP_DELAY_US (80)
+#define WAKE_UP_DELAY_US (3653)
     
-#define TOTAL_IC (1) //!<number of ICs in the daisy chain
+#define WAKE_IDLE_DELAY_US (45)
+    
+#define TOTAL_IC (12u) //!<number of ICs in the daisy chain
 
 /*
 	Pre computed crc15 table used for the LTC6804 PEC calculation
@@ -186,7 +188,7 @@ static const unsigned int crc15Table[256] = {0x0,0xc599, 0xceab, 0xb32, 0xd8cf, 
 #define ADOW_PUP_UP 1
 
 
-#define CELL_ENABLE (0x7f<<3)
+
 
 
 

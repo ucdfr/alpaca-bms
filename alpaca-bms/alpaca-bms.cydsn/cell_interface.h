@@ -51,6 +51,82 @@ Copyright 2013 Linear Technology Corp. (LTC)
 
     #include <stdint.h>
     #include <project.h>
+    #include "can_manager.h"
+   
+    #define ERROR_VOLTAGE_LIMIT (3u)
+    #define ERROR_TEMPERATURE_LIMIT (3u)
+    #define FUSE_BAD_LIMIT (3u)
+    
+    #define CELL_ENABLE (0x1cf)
+    #define OVER_VOLTAGE (42000u)
+    #define UNDER_VOLTAGE (20000u)
+    #define STACK_VOLT_DIFF_LIMIT (30000u)
+    #define CRITICAL_TEMP_L (2000u)          //0.2V
+    #define CRITICAL_TEMP_H (10213u)             //1.0213V  10213
+    #define BAD_THERM_LIMIT (8u)
+    
+
+    //#define DEBUG_LCD 0
+
+    #define OVER_TEMP (90u)             //now it just for debug purpose
+    #define UNDER_TEMP (0u)
+
+typedef enum {
+  NORMAL =0,
+  WARNING =1,
+  FAULT =2,
+}BMS_HEALTH;
+
+
+typedef struct {
+  uint16_t value16;
+  uint32_t value32;
+  uint8_t bad;
+  uint8_t bad_counter;
+  uint16_t vcc;
+}BAT_VOLT;
+
+typedef struct {
+  uint16_t value16;
+  uint8_t bad;
+  uint8_t bad_counter;
+}BAT_TEMP;
+
+
+typedef struct{
+  uint8_t stack;
+  uint8_t ic;
+  uint8_t cell;
+  uint8_t error;
+  uint16_t value16;
+}BAT_ERROR;
+
+typedef struct 
+{
+  BMS_HEALTH status;
+  uint8_t bad_cell_index;
+  uint8_t bad_temp_index;
+  BAT_ERROR bad_cell[255];
+
+  //BAT_ERROR bad_temp[255];
+	uint8_t bad_temp[3][20];
+
+
+
+  BAT_VOLT cell[3][4][7];
+  BAT_TEMP temp[3][20];
+  BAT_VOLT stack[3];
+  BAT_VOLT pack;
+  uint8_t fuse_fault;
+  uint32_t voltage;
+  int16_t current;
+}BATTERYPACK;
+
+
+
+
+
+
 
 
 
@@ -113,7 +189,7 @@ uint8_t get_cell_volt();
  * @param no input parameters.
  * @return 1 if everything is OK. 0 for hard failure.
  */
-void get_cell_temp();
+uint8_t get_cell_temp();
 
 /**
  * @balance each cell
@@ -122,5 +198,41 @@ void get_cell_temp();
  * @return 1 if everything is OK. 0 for hard failure.
  */
 //void balance_cells();
+
+/**
+ * @update voltage and detect error
+ *
+ * @param 1 input parameters, which is raw cell_codes.
+ * @return NULL.
+ */
+void update_volt(uint16_t cell_codes[TOTAL_IC][12]);
+
+/**
+ * @update temperature and detect error
+ *
+ * @param 1 input parameters, which is raw aux_codes.
+ * @return NULL.
+ */
+void update_temp(uint16_t aux_codes[TOTAL_IC][6]);
+
+/**
+ * @initial mypack
+ *
+ * @param no input parameters.
+ * @return NULL.
+ */
+void mypack_init();
+
+/**
+ * @check is fuse is broken
+ *
+ * @param no input parameters. (use global mypack)
+ * @return NULL.
+ */
+void check_stack_fuse();
+
+uint8_t temp_transfer(uint16_t);
+
+void voltage_compensation();
 
 #endif // CELL_INTERFACE_H

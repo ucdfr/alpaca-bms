@@ -24,10 +24,10 @@
 #include "CAN_1.h"
 
 /* `#START TX_RX_FUNCTION` */
-#define CAN_TEMP_LEN 3
-#define CAN_VOLT_LEN 3
-#define CAN_CURRENT_LEN 2
-#define CAN_STATUS_LEN 1
+#define CAN_TEMP_LEN 8
+#define CAN_VOLT_LEN 8
+#define CAN_CURRENT_LEN 8
+#define CAN_STATUS_LEN 8
 
 extern uint8_t can_buffer[];
 
