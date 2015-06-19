@@ -44,7 +44,7 @@ int main(void)
 	
 
 	// TODO Watchdog Timer
-    //WDT_init();
+    CyWdtStart(CYWDT_1024_TICKS,CYWDT_LPMODE_NOCHANGE);
 
     OK_SIG_Write(1);
 	// Initialize
@@ -69,14 +69,13 @@ int main(void)
 	{   
         //terminal_run();
         OK_SIG_Write(1);
-		if (WDT_should_clear())
-			WDT_clear();
+		CyWdtClear();
         
         
 		//check_cfg();  //CANNOT be finished, because 
 		//check_cells();// TODO This function will be finished in get_cell_volt/check stack fuse
         get_cell_volt();// TODO Get voltage
-		//check_stack_fuse(); // TODO: check if stacks are disconnected
+		check_stack_fuse(); // TODO: check if stacks are disconnected
 		get_cell_temp();// TODO Get temperature
 		//get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
@@ -112,9 +111,7 @@ int main(void)
 
     
 	for(;;){
-		if (WDT_should_clear()){
-				WDT_clear(); //even in fatal error, the bms should keep alive
-		}
+		CyWdtClear();
         OK_SIG_Write(0);
 		uint8_t index=0;
 		if (fatal_err & PACK_TEMP_OVER){        //0x0002
@@ -127,6 +124,7 @@ int main(void)
 					mypack.bad_temp[index].cell,
 					mypack.bad_temp[index].value16);
 				}
+                CyDelay(1);
 			}
 
 		}
