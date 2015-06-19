@@ -136,7 +136,7 @@ uint8_t get_cell_volt(){
     
     
     //check error
-    if (mypack.status!=NOMRAL){
+    if (mypack.status!=NORMAL){
         if (mypack.bad_cell_index>0){
             return 1;
         }
@@ -168,7 +168,7 @@ uint8_t get_cell_temp(){
 
     //check error
     //check error
-    if (mypack.status!=NOMRAL){
+    if (mypack.status!=NORMAL){
         if (mypack.bad_temp_index>0){
             return 1;
         }
@@ -363,7 +363,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
 						mypack.temp[stack][cell].bad_counter--;
 
 
-				temp_fount = 0;
+				temp_found = 0;
 				//check faulty temp
 				if (mypack.temp[stack][cell].bad_counter > ERROR_TEMPERATURE_LIMIT)
 				{
@@ -403,13 +403,13 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
 
 
 void mypack_init(){
-	mypack.status = NOMRAL;
+	mypack.status = NORMAL;
 	mypack.bad_cell_index =0;
 	mypack.bad_temp_index =0;
-	mypack.fuse_fault=NORMAL;
+	mypack.fuse_fault=0;
 	mypack.voltage =0;
 
-	memset(mypack.badtemp, 0, sizeof(mypack.temp));
+	memset(mypack.bad_temp, 0, sizeof(mypack.temp));
 }
 
 
@@ -488,19 +488,19 @@ void check_stack_fuse()
 		if(mypack.stack[0].bad_counter > FUSE_BAD_LIMIT &&
 			mypack.stack[1].bad_counter > FUSE_BAD_LIMIT)
 		{
-			mypack.fuse_fault = STACK1;
+			mypack.fuse_fault = 1;
 		} // if fuse on stack 1 fails
 
 		if(mypack.stack[1].bad_counter > FUSE_BAD_LIMIT &&
 			mypack.stack[2].bad_counter > FUSE_BAD_LIMIT)
 		{
-			mypack.fuse_fault = STACK2;
+			mypack.fuse_fault = 2;
 		} // if fuse on stack 2 fails
 
 		if(mypack.stack[2].bad_counter > FUSE_BAD_LIMIT &&
 			mypack.stack[0].bad_counter > FUSE_BAD_LIMIT)
 		{
-			mypack.fuse_fault = STACK0;
+			mypack.fuse_fault = 0;
 		} // if fuse on stack 0 fails
 
 

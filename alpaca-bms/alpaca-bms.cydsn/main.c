@@ -65,6 +65,9 @@ int main(void)
 	warning_event = NO_ERROR;
 
     
+    //some variables
+    uint8_t stack, cell;
+    
 	for(;;) // main loop
 	{   
         //terminal_run();
@@ -83,8 +86,8 @@ int main(void)
         //voltage compensate
         
 
-		//if (fatal_err)
-    	//	break; // break from main loop and enter fault loop
+		if (fatal_err)
+    		break; // break from main loop and enter fault loop
 
 		if (warning_event){
             process_event();
@@ -131,32 +134,31 @@ int main(void)
 		}
 
 		if (fatal_err & PACK_TEMP_UNDER){       //0x0008
-			/*
-			for (index=0;index<mypack.bad_temp_index;index++){
-				if (mypack.bad_temp[index].error==0){
-					can_send_status(0xff & index,
-					0x00,
-					PACK_TEMP_UNDER,
-					mypack.bad_temp[index].stack,
-					mypack.bad_temp[index].cell,
-					mypack.bad_temp[index].value16);
-				}
+			
+			for (stack=0;stack<3;index++){
+                for (cell=0;cell<20;cell++){
+				    if (mypack.bad_temp[stack][cell]==1){
+					    can_send_status(0xff & index,
+					    0x00,
+					    PACK_TEMP_UNDER,
+					    stack,
+					    cell,
+					    mypack.temp[stack][cell].value16);
+				    }
                 CyDelay(1);
+                }
 			}
-			*/
+			
 
 		}
 
 		if (fatal_err & STACK_FUSE_BROKEN){         //0x0004
-			/*
 			can_send_status(0x00,
 			0x00,
 			STACK_FUSE_BROKEN,
-			mypack.bad_temp[index].stack,
+			0xff & mypack.fuse_fault,
 			0x00,
-			0x0000);
-			*/
-            
+			0x0000);            
 		}
 
 
@@ -166,9 +168,9 @@ int main(void)
 					can_send_status(0xff & index,
 					0x00,
 					CELL_VOLT_OVER,
-					mypack.bad_temp[index].stack,
-					mypack.bad_temp[index].ic*4+mypack.bad_temp[index].cell,
-					mypack.bad_temp[index].value16);
+					mypack.bad_cell[index].stack,
+					mypack.bad_cell[index].ic*4+mypack.bad_cell[index].cell,
+					mypack.bad_cell[index].value16);
 				}
                 CyDelay(1);
 			}
@@ -181,9 +183,9 @@ int main(void)
 					can_send_status(0xff & index,
 					0x00,
 					CELL_VOLT_UNDER,
-					mypack.bad_temp[index].stack,
-					mypack.bad_temp[index].ic*4+mypack.bad_temp[index].cell,
-					mypack.bad_temp[index].value16);
+					mypack.bad_cell[index].stack,
+					mypack.bad_cell[index].ic*4+mypack.bad_cell[index].cell,
+					mypack.bad_cell[index].value16);
 				}
                 CyDelay(1);
 			}

@@ -72,7 +72,7 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #define UNDER_TEMP (0u)
 
 typedef enum {
-  NOMRAL =0,
+  NORMAL =0,
   WARNING =1,
   FAULT =2,
 }BMS_HEALTH;
@@ -101,13 +101,6 @@ typedef struct{
   uint16_t value16;
 }BAT_ERROR;
 
-typedef enum{
-  NORMAL = 0,
-  STACK0 = 1,
-  STACK1 = 2,
-  STACK2 = 3
-}STACK_ID;
-
 typedef struct 
 {
   BMS_HEALTH status;
@@ -124,7 +117,7 @@ typedef struct
   BAT_TEMP temp[3][6];
   BAT_VOLT stack[3];
   BAT_VOLT pack;
-  STACK_ID fuse_fault;
+  uint8_t fuse_fault;
   uint32_t voltage;
   int16_t current;
 }BATTERYPACK;
