@@ -58,9 +58,11 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #define FUSE_BAD_LIMIT (3u)
     
     #define CELL_ENABLE (0x1cf)
-    #define OVER_VOLTAGE (380000u)
-    #define UNDER_VOLTAGE (330000u)
-    #define STACK_VOLT_DIFF_LIMIT (90000u)
+    #define OVER_VOLTAGE (42000u)
+    #define UNDER_VOLTAGE (20000u)
+    #define STACK_VOLT_DIFF_LIMIT (30000u)
+    #define CRITICAL_TEMP_R ()
+    #define CRITICAL_TEMP_V ()
     
 
     //#define DEBUG_LCD 0
@@ -80,10 +82,11 @@ typedef struct {
   uint32_t value32;
   uint8_t bad;
   uint8_t bad_counter;
+  uint16_t vcc;
 }BAT_VOLT;
 
 typedef struct {
-  uint16_t value8;
+  uint16_t value16;
   uint8_t bad;
   uint8_t bad_counter;
 }BAT_TEMP;
@@ -229,7 +232,7 @@ void mypack_init();
  */
 void check_stack_fuse();
 
-uint8_t temp_transfer(uint16_t);
+uint8_t temp_transfer(uint16_t,uint16_t);
 
 void voltage_compensation();
 

@@ -35,24 +35,25 @@ void can_send_temp()
         max_board=0;
         max_cell=0;
 
+        /*
         for(cell=0;cell<20;cell++){
             
             
             //board
             if (cell/5 == 1 || cell/5 == 3 ){
-                if (mypack.temp[stack][cell].value8>max_board_temp){
-                    max_board_temp = mypack.temp[stack][cell].value8;
+                if (mypack.temp[stack][cell].value16>max_board_temp){
+                    max_board_temp = mypack.temp[stack][cell].value16;
                     max_board = cell;
                 }
-                avg_board_temp = avg_board_temp + mypack.temp[stack][cell].value8;
+                avg_board_temp = avg_board_temp + mypack.temp[stack][cell].value16;
             }
             //cell
             if (cell/5 == 0 || cell/5 == 2 ){
-                if (mypack.temp[stack][cell].value8>max_cell_temp){
-                    max_cell_temp = mypack.temp[stack][cell].value8;
+                if (mypack.temp[stack][cell].value16>max_cell_temp){
+                    max_cell_temp = mypack.temp[stack][cell].value16;
                     max_cell = cell;
                 }
-                avg_cell_temp = avg_cell_temp + mypack.temp[stack][cell].value8;
+                avg_cell_temp = avg_cell_temp + mypack.temp[stack][cell].value16;
             }
             
         }
@@ -69,12 +70,15 @@ void can_send_temp()
         can_buffer[5] = max_board ; // upper byte of C
         can_buffer[6] = max_board_temp ; // lower byte of C
         can_buffer[7] = 0x00;
-            
-        /*
+          
+        */
+        
            
+        
+        
         can_buffer[0] = stack;
         can_buffer[1] = 0xff & cell;
-        can_buffer[2] = mypack.temp[stack][cell].value8;
+        can_buffer[2] = temp_transfer(mypack.temp[stack][cell].value16,mypack.stack[stack].vcc);
         can_buffer[3] = 0x00 ; // lower byte of C
         
         can_buffer[4] = 0x00;
@@ -88,10 +92,10 @@ void can_send_temp()
         CyDelay(5);
         }
         
-        */
-        CAN_1_SendMsgtemp();
-        CyDelay(5);
-    }
+        
+       // CAN_1_SendMsgtemp();
+        //CyDelay(5);
+    //}
 
 } // can_send_temp()
 

@@ -51,7 +51,7 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #include <project.h>
 
 //#define WAKE_UP_DELAY_US (80)
-#define WAKE_UP_DELAY_US (3753)
+#define WAKE_UP_DELAY_US (3653)
     
 #define WAKE_IDLE_DELAY_US (45)
     

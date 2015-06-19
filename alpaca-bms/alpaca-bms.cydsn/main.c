@@ -13,7 +13,7 @@ volatile BMS_STATUS fatal_err;
 volatile uint8_t error_IC;
 volatile uint8_t error_CHIP;
 extern volatile BATTERYPACK mypack;
-volatile uint8_t CAN_DEBUG=0;
+volatile uint8_t CAN_DEBUG=1;
 
 
 
@@ -73,15 +73,15 @@ int main(void)
 		//check_cells();// TODO This function will be finished in get_cell_volt/check stack fuse
         get_cell_volt();// TODO Get voltage
 		check_stack_fuse(); // TODO: check if stacks are disconnected
-		get_cell_temp();// TODO Get temperature
+		//get_cell_temp();// TODO Get temperature
 		//get_current(); // TODO get current reading from sensor
-		get_soc(); // TODO calculate SOC()
+		//get_soc(); // TODO calculate SOC()
         
         //voltage compensate
         //voltage_compensation();
 
 		if (fatal_err)
-			break; // break from main loop and enter fault loop
+    		break; // break from main loop and enter fault loop
 
 		if (warning_event){
             process_event();
@@ -98,11 +98,11 @@ int main(void)
 		
         if(CAN_UPDATE_FLAG){
             can_send_volt();
-            can_send_temp();
-            can_send_current();
+           // can_send_temp();
+            //can_send_current();
             CAN_UPDATE_FLAG=0;
         }
-		CyDelay(10); // wait for next cycle
+		CyDelay(1000); // wait for next cycle
 	} // main loop
 
 
@@ -137,6 +137,7 @@ int main(void)
 					mypack.bad_temp[index].cell,
 					mypack.bad_temp[index].value16);
 				}
+                CyDelay(1);
 			}
 
 		}
@@ -147,6 +148,7 @@ int main(void)
 			mypack.bad_temp[index].stack,
 			0x00,
 			0x0000);
+            
 		}
 
 
@@ -160,7 +162,9 @@ int main(void)
 					mypack.bad_temp[index].ic*4+mypack.bad_temp[index].cell,
 					mypack.bad_temp[index].value16);
 				}
+                CyDelay(1);
 			}
+            
 
 		}
 		if(fatal_err & CELL_VOLT_UNDER){                //0x1000
@@ -173,6 +177,7 @@ int main(void)
 					mypack.bad_temp[index].ic*4+mypack.bad_temp[index].cell,
 					mypack.bad_temp[index].value16);
 				}
+                CyDelay(1);
 			}
 		}
 

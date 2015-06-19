@@ -326,28 +326,28 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     uint8_t ic=0;
     uint8_t stack=0;
     uint16_t temp;
+    uint16_t critical_volt;
 
     //log in temp data
     for (ic=0;ic<TOTAL_IC;ic++){
         for (cell=0;cell<5;cell++){
-            mypack.temp[ic/4][(ic%4)*5+cell].value8=temp_transfer(aux_codes[ic][cell]);        
+            mypack.temp[ic/4][(ic%4)*5+cell].value16 = aux_codes[ic][cell];        
             //mypack.temp[ic/4][(ic%4)*5+cell].value8=0xff & aux_codes[ic][cell]; 
         }
+        mypack.stack[ic/4].vcc = aux_codes[ic][5];
     }
 
 
 
     //update healthy status
-    /*
+    
     for (stack = 0; stack <3;stack ++){
+        critical_volt = (uint16_t)((2.567/10+2.467)*(float)mypack.stack[ic/4].vcc);
         for (cell=0;cell<20;cell++){
-            temp = mypack.temp[stack][cell].value8;
-            if (temp>OVER_TEMP){
+            temp = mypack.temp[stack][cell].value16;
+            if (temp>critical_volt){
                 mypack.temp[stack][cell].bad_counter++;
                 mypack.temp[stack][cell].bad=1;
-            }else if (temp < UNDER_TEMP){
-                mypack.temp[stack][cell].bad_counter++;
-                mypack.temp[stack][cell].bad=0;
             }else{
                 if (mypack.temp[stack][cell].bad_counter>0){
                     mypack.temp[stack][cell].bad_counter--;
@@ -375,7 +375,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
             }
         }
     }
-    */
+    
 }
 
 
@@ -442,17 +442,18 @@ void check_stack_fuse(){
 
 
 
-uint8_t temp_transfer(uint16_t raw){
+uint8_t temp_transfer(uint16_t raw,uint16_t raw_v){
     //using 1/T = 1/T0 +(1/B)(R/R0)
     //V = raw/0xffff*5
     //R is R=10K(5-V)/V;
     //translate raw reading to C temperature
     //B25=3900
     //B75=3936
-    float V=((float)raw*5/0xffff);
-    float R=10000.0*(5.0-V)/V;
+    float vcc=(float)raw_v*5.0/0xffff;
+    float V=((float)raw*vcc/0xffff);
+    float R=10000.0*(vcc-V)/V;
     float R0=10000.0;
-    float oneOverT=(1/298.15)+(1/3900.0)*(log(R/R0));
+    float oneOverT=(1/298.15)+(1/3950.0)*(log(R/R0));
     return ((uint8_t)(floor(1/oneOverT)));
 }
 //void balance_cells(){}// balance_cells()
