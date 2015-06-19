@@ -6,6 +6,7 @@
 #include "WDT.h"
 #include "data.h"
 #include "can_manager.h"
+#include "uart-terminal.h"
 #include "BMS_monitor.h"
 
 volatile uint8_t CAN_UPDATE_FLAG=0;
@@ -49,7 +50,7 @@ int main(void)
 	// Initialize
 	bms_init();
 	mypack_init();
-    monitor_init();
+    //monitor_init();
 
 	current_init();
     
@@ -66,6 +67,7 @@ int main(void)
     
 	for(;;) // main loop
 	{   
+        //terminal_run();
         OK_SIG_Write(1);
 		if (WDT_should_clear())
 			WDT_clear();
@@ -75,15 +77,15 @@ int main(void)
 		//check_cells();// TODO This function will be finished in get_cell_volt/check stack fuse
         get_cell_volt();// TODO Get voltage
 		check_stack_fuse(); // TODO: check if stacks are disconnected
-		//get_cell_temp();// TODO Get temperature
+		get_cell_temp();// TODO Get temperature
 		//get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
         
         //voltage compensate
         //voltage_compensation();
 
-		if (fatal_err)
-    		break; // break from main loop and enter fault loop
+		//if (fatal_err)
+    	//	break; // break from main loop and enter fault loop
 
 		if (warning_event){
             process_event();
@@ -100,11 +102,11 @@ int main(void)
 		
         if(CAN_UPDATE_FLAG){
             can_send_volt();
-            can_send_temp();
+            //can_send_temp();
             //can_send_current();
             CAN_UPDATE_FLAG=0;
         }
-		CyDelay(1000); // wait for next cycle
+		CyDelay(10); // wait for next cycle
 	} // main loop
 
 

@@ -145,10 +145,9 @@ uint8_t get_cell_volt(){
 
 uint8_t get_cell_temp(){
     int error;
-    int i=0;
     wakeup_sleep();
     LTC6804_adax();
-    CyDelay(6);  
+    CyDelay(3);  
     wakeup_sleep();
     error = LTC6804_rdaux(0,TOTAL_IC,aux_codes); // Set to read back all aux registers
     if (error == -1)
@@ -252,6 +251,8 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
         cell=0;
     }
 
+    
+    
     //update stack voltage
     ic=0;
     cell=0;
@@ -268,7 +269,7 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
     }
 
     
-    /*
+    
     //update pack voltage
     stack_volt=0;
     for (stack =0;stack<3;stack++){
@@ -316,7 +317,7 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
             }
         }
     }
-    */
+    
 
 
 }
@@ -328,27 +329,23 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     uint8_t ic=0;
     uint8_t stack=0;
     uint16_t temp;
-    uint16_t critical_volt;
 
-    //log in temp data
+    //log in temp data    
     for (ic=0;ic<TOTAL_IC;ic++){
         for (cell=0;cell<5;cell++){
             mypack.temp[ic/4][(ic%4)*5+cell].value16 = aux_codes[ic][cell];        
-            //mypack.temp[ic/4][(ic%4)*5+cell].value8=0xff & aux_codes[ic][cell]; 
         }
-        mypack.stack[ic/4].vcc = aux_codes[ic][5];
     }
 
 
-
+    
     //update healthy status
     
     for (stack = 0; stack <3;stack ++){
-        critical_volt = (uint16_t)((2.567/(10+2.467))*(float)mypack.stack[ic/4].vcc);
         //critical_volt = 0xffff;
         for (cell=0;cell<20;cell++){
             temp = mypack.temp[stack][cell].value16;
-            if (temp>critical_volt){
+            if (temp>CRITICAL_TEMP_L && temp <CRITICAL_TEMP_H){
                 mypack.temp[stack][cell].bad_counter++;
                 mypack.temp[stack][cell].bad=1;
             }else{
@@ -360,7 +357,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     
 
             //check faulty temp
-            if (mypack.temp[stack][cell].bad_counter<ERROR_TEMPERATURE_LIMIT){
+            if (mypack.temp[stack][cell].bad_counter>ERROR_TEMPERATURE_LIMIT){
                 mypack.bad_temp[mypack.bad_temp_index].stack=stack;
                 mypack.bad_temp[mypack.bad_temp_index].cell=cell;
                 mypack.bad_temp[mypack.bad_temp_index].error=mypack.temp[stack][cell].bad;
@@ -372,13 +369,10 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
                 mypack.status = FAULT;
                 if (mypack.bad_cell[mypack.bad_temp_index].error){
                     fatal_err |= PACK_TEMP_OVER;
-                }else{
-                    fatal_err |= PACK_TEMP_UNDER;  
                 }
             }
         }
     }
-    
 }
 
 

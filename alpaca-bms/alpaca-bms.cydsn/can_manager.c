@@ -35,7 +35,7 @@ void can_send_temp()
         max_board=0;
         max_cell=0;
 
-        /*
+        
         for(cell=0;cell<20;cell++){
             
             
@@ -71,21 +71,22 @@ void can_send_temp()
         can_buffer[6] = max_board_temp ; // lower byte of C
         can_buffer[7] = 0x00;
           
-        */
+        
         
            
         
-        
+        /*
         can_buffer[0] = stack;
-        can_buffer[1] = 0xff & cell;
-        can_buffer[2] = temp_transfer(mypack.temp[stack][cell].value16,mypack.stack[stack].vcc);
-        can_buffer[3] = 0xff & (mypack.stack[stack].vcc<<8) ; // lower byte of C
-        
-        can_buffer[4] = 0xff & mypack.stack[stack].vcc;
-        can_buffer[5] = 0x00; // upper byte of C
-        can_buffer[6] = 0x00; // lower byte of C
+        can_buffer[1] = 0xff & (aux_codes[stack*3][5]>>8) ; // lower byte of C
+        can_buffer[2] = 0xff & (aux_codes[stack*3][5]);
+        //can_buffer[3] = 0xff & (mypack.stack[stack].vcc<<8) ; // lower byte of C
+        //can_buffer[4] = 0xff & mypack.stack[stack].vcc;
+        can_buffer[3] = 0xff & (aux_codes[stack*3+1][5]>>8) ; // lower byte of C
+        can_buffer[4] = 0xff & (aux_codes[stack*3+1][5]);
+        can_buffer[5] = 0xff & (aux_codes[stack*3+2][5]>>8) ; // lower byte of C
+        can_buffer[6] = 0xff & (aux_codes[stack*3+2][5]);
         can_buffer[7] = 0x00;
-            
+          */  
             
         
 		CAN_1_SendMsgtemp();
