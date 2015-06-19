@@ -1,0 +1,18 @@
+T=[0,29,36,41,48];
+R=[31.75,8.82,6.376,5.297,3.92];
+R=
+p = polyfit(R,T,3);         %from T to R
+r1 = linspace(0,30000,100);
+y1 = polyval(p,r1);
+plot(R,T,'o');
+hold on;
+plot(r1,y1,'-');
+
+T0=298.15;
+B=3950;
+R0=10000;
+
+Rlin=linspace(2000,30000);
+y2 = 1/((1/T0)+(1/B)*log(Rlin./R0));
+
+plot(Rlin,y2,'x');

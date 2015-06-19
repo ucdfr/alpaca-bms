@@ -60,6 +60,7 @@ extern volatile uint8_t error_CHIP;
 volatile uint8_t error_voltage_count=0;
 volatile uint8_t error_temperature_count=0;
 volatile BATTERYPACK mypack;
+extern volatile uint8_t CAN_DEBUG;
 
 
 /**
@@ -161,7 +162,7 @@ uint8_t get_cell_temp(){
  
 
     //get information
-    update_temp(*aux_codes[6]);
+    update_temp(aux_codes);
 
     //check error
     //check error
@@ -329,13 +330,15 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     //log in temp data
     for (ic=0;ic<TOTAL_IC;ic++){
         for (cell=0;cell<5;cell++){
-            mypack.temp[ic/4][ic*5+cell].value8=temp_transfer(aux_codes[ic][cell]);        
+            mypack.temp[ic/4][(ic%4)*5+cell].value8=temp_transfer(aux_codes[ic][cell]);        
+            //mypack.temp[ic/4][(ic%4)*5+cell].value8=0xff & aux_codes[ic][cell]; 
         }
     }
 
 
 
     //update healthy status
+    /*
     for (stack = 0; stack <3;stack ++){
         for (cell=0;cell<20;cell++){
             temp = mypack.temp[stack][cell].value8;
@@ -350,7 +353,8 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
                     mypack.temp[stack][cell].bad_counter--;
                 }
                 
-            }
+        }
+    
 
             //check faulty temp
             if (mypack.temp[stack][cell].bad_counter>ERROR_TEMPERATURE_LIMIT){
@@ -371,6 +375,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
             }
         }
     }
+    */
 }
 
 
@@ -385,27 +390,53 @@ void mypack_init(){
 }
 
 void check_stack_fuse(){
+    uint8_t stack=0;
     if (((mypack.stack[0].value32 > mypack.stack[1].value32) && \
-    (mypack.stack[0].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT)) && \
+    ((mypack.stack[0].value32 - mypack.stack[1].value32) > STACK_VOLT_DIFF_LIMIT)) && \
     (mypack.stack[0].value32 > mypack.stack[2].value32) && \
-    (mypack.stack[0].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
-        mypack.status = FAULT;
-            fatal_err |= STACK_FUSE_BROKEN;
-            mypack.fuse_fault=STACK0;
-    }else if (((mypack.stack[1].value32 > mypack.stack[0].value32) && \
-    (mypack.stack[1].value32 - mypack.stack[0].value32 > STACK_VOLT_DIFF_LIMIT)) && \
+    ((mypack.stack[0].value32 - mypack.stack[2].value32) > STACK_VOLT_DIFF_LIMIT)){
+        mypack.stack[0].bad_counter++;
+    }else if(mypack.stack[0].bad_counter>0){
+        mypack.stack[0].bad_counter--;
+    }
+    
+    if (((mypack.stack[1].value32 > mypack.stack[0].value32) && \
+    ((mypack.stack[1].value32 - mypack.stack[0].value32) > STACK_VOLT_DIFF_LIMIT)) && \
     (mypack.stack[1].value32 > mypack.stack[2].value32) && \
-    (mypack.stack[1].value32 - mypack.stack[2].value32 > STACK_VOLT_DIFF_LIMIT)){
-        mypack.status = FAULT;
-        fatal_err |= STACK_FUSE_BROKEN;
-        mypack.fuse_fault=STACK1;
-    }else if (((mypack.stack[2].value32 > mypack.stack[0].value32) && \
-    (mypack.stack[2].value32 - mypack.stack[0].value32 > STACK_VOLT_DIFF_LIMIT)) && \
+    ((mypack.stack[1].value32 - mypack.stack[2].value32) > STACK_VOLT_DIFF_LIMIT)){
+        mypack.stack[1].bad_counter++;
+    }else if(mypack.stack[1].bad_counter>0){
+        mypack.stack[1].bad_counter--;
+    }
+    
+    if (((mypack.stack[2].value32 > mypack.stack[0].value32) && \
+    ((mypack.stack[2].value32 - mypack.stack[0].value32) > STACK_VOLT_DIFF_LIMIT)) && \
     (mypack.stack[2].value32 > mypack.stack[1].value32) && \
-    (mypack.stack[2].value32 - mypack.stack[1].value32 > STACK_VOLT_DIFF_LIMIT)){
-        mypack.status = FAULT;
-        fatal_err |= STACK_FUSE_BROKEN;
-        mypack.fuse_fault=STACK2;
+    ((mypack.stack[2].value32 - mypack.stack[1].value32) > STACK_VOLT_DIFF_LIMIT)){
+        mypack.stack[2].bad_counter++;
+    }else if(mypack.stack[2].bad_counter>0){
+        mypack.stack[2].bad_counter--;
+    }
+    
+    stack=0;
+    for (stack =0;stack<3;stack++){
+        if (mypack.stack[stack].bad_counter>FUSE_BAD_LIMIT){
+           mypack.status = FAULT;
+            fatal_err |= STACK_FUSE_BROKEN;
+            switch(stack){
+                case 0:
+                    mypack.fuse_fault=STACK0;
+                    break;
+                case 1:
+                    mypack.fuse_fault=STACK1;
+                    break;
+                case 2:
+                    mypack.fuse_fault=STACK2;
+                    break;
+            }
+           
+            can_send_volt(); 
+        }  
     }
 }
 
@@ -418,10 +449,31 @@ uint8_t temp_transfer(uint16_t raw){
     //translate raw reading to C temperature
     //B25=3900
     //B75=3936
-    float V=(raw/0xffff)*5;
-    float R=10000*(5-V)/V;
-    float R0=10000;
-    float oneOverT=(1/298.15)+(1/3900)*(log(R/R0));
-    return (0xff & raw);
+    float V=((float)raw*5/0xffff);
+    float R=10000.0*(5.0-V)/V;
+    float R0=10000.0;
+    float oneOverT=(1/298.15)+(1/3900.0)*(log(R/R0));
+    return ((uint8_t)(floor(1/oneOverT)));
 }
 //void balance_cells(){}// balance_cells()
+
+void voltage_compensation(){
+    //should compsensation to top and bottom cells
+    uint8_t temp=40;
+    uint8_t stack=0;
+    uint16_t r;
+    uint8_t ic;
+    uint16_t current=193;   //current in 0.0001A
+    r = current*17/10;
+    for (stack=0;stack<3;stack++){
+        //calculate voltage across interface
+        for (ic=0;ic<4;ic++){
+            mypack.cell[stack][ic][0].value16+=(uint16_t)r;
+            mypack.cell[stack][ic][5].value16+=(uint16_t)r;
+        
+        }
+        mypack.stack[stack].value32+=2*(uint16_t)r;
+        mypack.stack[stack].value32+=2*(uint16_t)r;
+    }
+    
+}

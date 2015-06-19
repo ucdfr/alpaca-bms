@@ -55,15 +55,18 @@ Copyright 2013 Linear Technology Corp. (LTC)
    
     #define ERROR_VOLTAGE_LIMIT (3u)
     #define ERROR_TEMPERATURE_LIMIT (3u)
+    #define FUSE_BAD_LIMIT (3u)
+    
     #define CELL_ENABLE (0x1cf)
     #define OVER_VOLTAGE (380000u)
     #define UNDER_VOLTAGE (330000u)
     #define STACK_VOLT_DIFF_LIMIT (90000u)
+    
 
     //#define DEBUG_LCD 0
 
-    #define OVER_TEMP (60u)
-    #define UNDER_TEMP (10u)
+    #define OVER_TEMP (90u)
+    #define UNDER_TEMP (0u)
 
 typedef enum {
   NOMRAL =0,
@@ -227,5 +230,7 @@ void mypack_init();
 void check_stack_fuse();
 
 uint8_t temp_transfer(uint16_t);
+
+void voltage_compensation();
 
 #endif // CELL_INTERFACE_H

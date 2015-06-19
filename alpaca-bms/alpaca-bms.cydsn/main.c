@@ -13,6 +13,7 @@ volatile BMS_STATUS fatal_err;
 volatile uint8_t error_IC;
 volatile uint8_t error_CHIP;
 extern volatile BATTERYPACK mypack;
+volatile uint8_t CAN_DEBUG=0;
 
 
 
@@ -47,11 +48,9 @@ int main(void)
 	// Initialize
 	bms_init();
 	mypack_init();
-    OK_SIG_Write(0);
 
 	current_init();
     
-    OK_SIG_Write(1);
     //enable global interrupt
     CyGlobalIntEnable;
 
@@ -62,11 +61,10 @@ int main(void)
 	fatal_err = NO_ERROR;
 	warning_event = NO_ERROR;
 
-	//OK_SIG_Write(0);
     
 	for(;;) // main loop
 	{   
-
+        OK_SIG_Write(1);
 		if (WDT_should_clear())
 			WDT_clear();
         
@@ -75,9 +73,12 @@ int main(void)
 		//check_cells();// TODO This function will be finished in get_cell_volt/check stack fuse
         get_cell_volt();// TODO Get voltage
 		check_stack_fuse(); // TODO: check if stacks are disconnected
-		//get_cell_temp();// TODO Get temperature
-		get_current(); // TODO get current reading from sensor
+		get_cell_temp();// TODO Get temperature
+		//get_current(); // TODO get current reading from sensor
 		get_soc(); // TODO calculate SOC()
+        
+        //voltage compensate
+        //voltage_compensation();
 
 		if (fatal_err)
 			break; // break from main loop and enter fault loop
@@ -86,8 +87,8 @@ int main(void)
             process_event();
         }
 		else{
-			can_send_status(0x01,
-					0x02,
+			can_send_status(0x00,
+					0x00,
 					NO_ERROR,
 					0x00,
 					0x00,
@@ -99,10 +100,9 @@ int main(void)
             can_send_volt();
             can_send_temp();
             can_send_current();
-           // CAN_UPDATE_FLAG=0;
+            CAN_UPDATE_FLAG=0;
         }
-        OK_SIG_Write(0);
-		CyDelay(1000); // wait for next cycle
+		CyDelay(10); // wait for next cycle
 	} // main loop
 
 
