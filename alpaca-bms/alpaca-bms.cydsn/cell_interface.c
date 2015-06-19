@@ -336,11 +336,26 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     uint8_t temp_found=0;
 
     //log in temp data    
+		/*
     for (ic=0;ic<TOTAL_IC;ic++){
         for (cell=0;cell<5;cell++){
             mypack.temp[ic/4][(ic%4)*5+cell].value16 = aux_codes[ic][cell];        
         }
     }
+		*/
+
+		uint8_t therm;
+		ic = 0;
+		for(stack = 0; stack < 3; stack++)
+		{
+			for(therm = 0; therm < 20; therm++)
+			{
+				mypack.temp[stack][therm].value16 = aux_codes[ic][therm%5];        
+
+				if(therm == 4)
+					ic++;
+			} // for thermistors
+		} // for stack
 
 
     
