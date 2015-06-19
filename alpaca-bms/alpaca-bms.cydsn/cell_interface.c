@@ -61,6 +61,7 @@ volatile uint8_t error_voltage_count=0;
 volatile uint8_t error_temperature_count=0;
 volatile BATTERYPACK mypack;
 extern volatile uint8_t CAN_DEBUG;
+volatile uint8_t bad_therm=0;
 
 
 /**
@@ -329,6 +330,8 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     uint8_t ic=0;
     uint8_t stack=0;
     uint16_t temp;
+    uint8_t i=0;
+    uint8_t temp_found=0;
 
     //log in temp data    
     for (ic=0;ic<TOTAL_IC;ic++){
@@ -345,7 +348,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
         //critical_volt = 0xffff;
         for (cell=0;cell<20;cell++){
             temp = mypack.temp[stack][cell].value16;
-            if (temp>CRITICAL_TEMP_L && temp <CRITICAL_TEMP_H){
+            if (temp <CRITICAL_TEMP_H){
                 mypack.temp[stack][cell].bad_counter++;
                 mypack.temp[stack][cell].bad=1;
             }else{
@@ -358,17 +361,27 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
 
             //check faulty temp
             if (mypack.temp[stack][cell].bad_counter>ERROR_TEMPERATURE_LIMIT){
-                mypack.bad_temp[mypack.bad_temp_index].stack=stack;
-                mypack.bad_temp[mypack.bad_temp_index].cell=cell;
-                mypack.bad_temp[mypack.bad_temp_index].error=mypack.temp[stack][cell].bad;
-                if (mypack.bad_temp_index<255){
-                    mypack.bad_temp_index++;
-                }else{
-                    mypack.bad_temp_index=255;
+                //check if there is the thermistor on the list
+                for (i=0;i<mypack.bad_temp_index;i++){
+                    if ((mypack.bad_temp[i].stack==stack) && (mypack.bad_temp[i].cell == cell)){
+                        temp_found=1;
+                    }
                 }
-                mypack.status = FAULT;
-                if (mypack.bad_cell[mypack.bad_temp_index].error){
-                    fatal_err |= PACK_TEMP_OVER;
+                if (!temp_found){
+                    mypack.bad_temp[mypack.bad_temp_index].stack=stack;
+                    mypack.bad_temp[mypack.bad_temp_index].cell=cell;
+                    mypack.bad_temp[mypack.bad_temp_index].error=mypack.temp[stack][cell].bad;
+                    if (mypack.bad_temp_index<255){
+                       mypack.bad_temp_index++;
+                    }else{
+                        mypack.bad_temp_index=255;
+                    }
+                }
+                
+                
+                if (mypack.bad_cell_index>BAD_THERM_LIMIT){     //really bad!
+                        mypack.status = FAULT;
+                        fatal_err |= PACK_TEMP_OVER;
                 }
             }
         }
