@@ -456,6 +456,27 @@ void check_stack_fuse()
 		if (mypack.stack[stack].bad_counter>FUSE_BAD_LIMIT){
 			mypack.status = FAULT;
 			fatal_err |= STACK_FUSE_BROKEN;
+
+		if(mypack.stack[0].bad_counter > FUSE_BAD_LIMIT &&
+			mypack.stack[1].badcounter > FUSE_BAD_LIMIT)
+		{
+			mypack.fuse_fault = STACK1;
+		} // if fuse on stack 1 fails
+
+		if(mypack.stack[1].bad_counter > FUSE_BAD_LIMIT &&
+			mypack.stack[2].badcounter > FUSE_BAD_LIMIT)
+		{
+			mypack.fuse_fault = STACK2;
+		} // if fuse on stack 2 fails
+
+		if(mypack.stack[2].bad_counter > FUSE_BAD_LIMIT &&
+			mypack.stack[0].badcounter > FUSE_BAD_LIMIT)
+		{
+			mypack.fuse_fault = STACK0;
+		} // if fuse on stack 0 fails
+
+
+/*
 			switch(stack){
 				case 0:
 					mypack.fuse_fault=STACK0;
@@ -467,7 +488,7 @@ void check_stack_fuse()
 					mypack.fuse_fault=STACK2;
 					break;
 			}
-
+*/
 			can_send_volt(); 
 		}  
 	}
