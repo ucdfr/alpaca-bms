@@ -62,7 +62,7 @@ Copyright 2013 Linear Technology Corp. (LTC)
     #define UNDER_VOLTAGE (20000u)
     #define STACK_VOLT_DIFF_LIMIT (10000u)
     #define CRITICAL_TEMP_L (2000u)          //0.2V
-    #define CRITICAL_TEMP_H (30000u)             //1.0213V  10213
+    #define CRITICAL_TEMP_H (10213u)             //1.0213V  10213
     #define BAD_THERM_LIMIT (8u)
     
 
@@ -114,7 +114,7 @@ typedef struct
 
 
   BAT_VOLT cell[3][4][7];
-  BAT_TEMP temp[3][6];
+  BAT_TEMP temp[3][20];
   BAT_VOLT stack[3];
   BAT_VOLT pack;
   uint8_t fuse_fault;

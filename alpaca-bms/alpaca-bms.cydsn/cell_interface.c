@@ -403,13 +403,23 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
 
 
 void mypack_init(){
+    uint8_t stack=0;
+    uint8_t cell=0;
 	mypack.status = NORMAL;
 	mypack.bad_cell_index =0;
 	mypack.bad_temp_index =0;
 	mypack.fuse_fault=0;
 	mypack.voltage =0;
 
-	memset(mypack.bad_temp, 0, sizeof(mypack.temp));
+	//memset(mypack.bad_temp, 0, sizeof(mypack.temp));
+    for (stack=0;stack<3;stack++){
+        for (cell=0;cell<20;cell++){
+            mypack.bad_temp[stack][cell]=0;
+        }
+    }
+    
+    
+    
 }
 
 
