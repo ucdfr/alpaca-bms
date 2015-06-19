@@ -114,7 +114,12 @@ typedef struct
   uint8_t bad_cell_index;
   uint8_t bad_temp_index;
   BAT_ERROR bad_cell[255];
-  BAT_ERROR bad_temp[255];
+
+  //BAT_ERROR bad_temp[255];
+	uint8_t bad_temp[3][20];
+
+
+
   BAT_VOLT cell[3][4][7];
   BAT_TEMP temp[3][6];
   BAT_VOLT stack[3];

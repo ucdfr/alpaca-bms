@@ -50,6 +50,8 @@ Copyright 2013 Linear Technology Corp. (LTC)
 #include "LTC68041.h"
 #include "math.h"
 
+#include <stdlib.h>
+
 
 
 extern volatile uint8_t CAN_UPDATE_FLAG;
@@ -344,60 +346,73 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     
     //update healthy status
     
-    for (stack = 0; stack <3;stack ++){
-        //critical_volt = 0xffff;
-        for (cell=0;cell<20;cell++){
-            temp = mypack.temp[stack][cell].value16;
-            if (temp <CRITICAL_TEMP_H){
-                if (mypack.temp[stack][cell].bad_counter!=255){
-                    mypack.temp[stack][cell].bad_counter++;
-                }
-            }else{
-                if (mypack.temp[stack][cell].bad_counter>0){
-                    mypack.temp[stack][cell].bad_counter--;
-                }
-                
-            }
-    
+		for (stack = 0; stack < 3; stack++)
+		{
+			for (cell=0; cell<20; cell++)
+			{
+				temp = mypack.temp[stack][cell].value16;
 
-            //check faulty temp
-            if (mypack.temp[stack][cell].bad_counter>ERROR_TEMPERATURE_LIMIT){
-                //check if there is the thermistor on the list
-                for (i=0;i<mypack.bad_temp_index;i++){
-                    if ((mypack.bad_temp[i].stack==stack) && (mypack.bad_temp[i].cell == cell)){
-                        temp_found=1;
-                    }
-                }
-                if (!temp_found){
-                    mypack.bad_temp[mypack.bad_temp_index].stack=stack;
-                    mypack.bad_temp[mypack.bad_temp_index].cell=cell;
-                    if (mypack.bad_temp_index<255){
-                       mypack.bad_temp_index++;
-                    }else{
-                        mypack.bad_temp_index=255;
-                    }
-                }
-                
-                
-                if (mypack.bad_temp_index>BAD_THERM_LIMIT){     //really bad!
-                        mypack.status = FAULT;
-                        fatal_err |= PACK_TEMP_OVER;
-                }
-            }
-        }
-    }
+
+				if (temp < CRITICAL_TEMP_H && // is critical
+					mypack.temp[stack][cell].bad_counter != 255) // saturate counter
+				{
+					mypack.temp[stack][cell].bad_counter++;
+				}
+				else
+					if (mypack.temp[stack][cell].bad_counter>0)
+						mypack.temp[stack][cell].bad_counter--;
+
+
+				temp_fount = 0;
+				//check faulty temp
+				if (mypack.temp[stack][cell].bad_counter > ERROR_TEMPERATURE_LIMIT)
+				{
+					//check if there is the thermistor on the list
+					/*
+					for (i = 0; i < mypack.bad_temp_index; i++)
+						if ((mypack.bad_temp[i].stack == stack) &&
+							(mypack.bad_temp[i].cell == cell))
+						{
+							temp_found = 1;
+						}
+					*/
+
+					if(!mypack.bad_temp[stack][cell])
+					{
+						//mypack.bad_temp[mypack.bad_temp_index].stack=stack;
+						//mypack.bad_temp[mypack.bad_temp_index].cell=cell;
+						mypack.bad_temp[stack][cell] = 1;
+
+						if (mypack.bad_temp_index<255)
+							mypack.bad_temp_index++;
+					} // if not found temp
+
+
+					if (mypack.bad_temp_index > BAD_THERM_LIMIT)
+					{
+						mypack.status = FAULT;
+						fatal_err |= PACK_TEMP_OVER;
+					} // if temp index really bad
+
+				} // if faulty temp
+			} // for cells
+		} // for stack
 }
 
 
 
 
 void mypack_init(){
-    mypack.status = NOMRAL;
-    mypack.bad_cell_index =0;
-    mypack.bad_temp_index =0;
-    mypack.fuse_fault=NORMAL;
-    mypack.voltage =0;
+	mypack.status = NOMRAL;
+	mypack.bad_cell_index =0;
+	mypack.bad_temp_index =0;
+	mypack.fuse_fault=NORMAL;
+	mypack.voltage =0;
+
+	memset(mypack.badtemp, 0, sizeof(mypack.temp));
 }
+
+
 
 void check_stack_fuse()
 {

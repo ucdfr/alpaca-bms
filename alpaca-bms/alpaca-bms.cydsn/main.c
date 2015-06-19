@@ -115,6 +115,7 @@ int main(void)
         OK_SIG_Write(0);
 		uint8_t index=0;
 		if (fatal_err & PACK_TEMP_OVER){        //0x0002
+			/*
 			for (index=0;index<mypack.bad_temp_index;index++){
 				if (mypack.bad_temp[index].error==1){
 					can_send_status(0xff & index,
@@ -126,10 +127,11 @@ int main(void)
 				}
                 CyDelay(1);
 			}
-
+			*/
 		}
 
 		if (fatal_err & PACK_TEMP_UNDER){       //0x0008
+			/*
 			for (index=0;index<mypack.bad_temp_index;index++){
 				if (mypack.bad_temp[index].error==0){
 					can_send_status(0xff & index,
@@ -141,15 +143,19 @@ int main(void)
 				}
                 CyDelay(1);
 			}
+			*/
 
 		}
+
 		if (fatal_err & STACK_FUSE_BROKEN){         //0x0004
+			/*
 			can_send_status(0x00,
 			0x00,
 			STACK_FUSE_BROKEN,
 			mypack.bad_temp[index].stack,
 			0x00,
 			0x0000);
+			*/
             
 		}
 
