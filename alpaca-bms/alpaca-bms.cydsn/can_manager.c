@@ -79,9 +79,9 @@ void can_send_temp()
         can_buffer[0] = stack;
         can_buffer[1] = 0xff & cell;
         can_buffer[2] = temp_transfer(mypack.temp[stack][cell].value16,mypack.stack[stack].vcc);
-        can_buffer[3] = 0x00 ; // lower byte of C
+        can_buffer[3] = 0xff & (mypack.stack[stack].vcc<<8) ; // lower byte of C
         
-        can_buffer[4] = 0x00;
+        can_buffer[4] = 0xff & mypack.stack[stack].vcc;
         can_buffer[5] = 0x00; // upper byte of C
         can_buffer[6] = 0x00; // lower byte of C
         can_buffer[7] = 0x00;

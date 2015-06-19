@@ -267,6 +267,8 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
         stack_volt=0;
     }
 
+    
+    /*
     //update pack voltage
     stack_volt=0;
     for (stack =0;stack<3;stack++){
@@ -314,7 +316,7 @@ void update_volt(uint16_t cell_codes[TOTAL_IC][12]){
             }
         }
     }
-
+    */
 
 
 }
@@ -342,7 +344,8 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     //update healthy status
     
     for (stack = 0; stack <3;stack ++){
-        critical_volt = (uint16_t)((2.567/10+2.467)*(float)mypack.stack[ic/4].vcc);
+        critical_volt = (uint16_t)((2.567/(10+2.467))*(float)mypack.stack[ic/4].vcc);
+        //critical_volt = 0xffff;
         for (cell=0;cell<20;cell++){
             temp = mypack.temp[stack][cell].value16;
             if (temp>critical_volt){
@@ -357,7 +360,7 @@ void update_temp(uint16_t aux_codes[TOTAL_IC][6]){
     
 
             //check faulty temp
-            if (mypack.temp[stack][cell].bad_counter>ERROR_TEMPERATURE_LIMIT){
+            if (mypack.temp[stack][cell].bad_counter<ERROR_TEMPERATURE_LIMIT){
                 mypack.bad_temp[mypack.bad_temp_index].stack=stack;
                 mypack.bad_temp[mypack.bad_temp_index].cell=cell;
                 mypack.bad_temp[mypack.bad_temp_index].error=mypack.temp[stack][cell].bad;

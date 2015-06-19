@@ -6,6 +6,7 @@
 #include "WDT.h"
 #include "data.h"
 #include "can_manager.h"
+#include "BMS_monitor.h"
 
 volatile uint8_t CAN_UPDATE_FLAG=0;
 volatile BMS_STATUS warning_event;
@@ -13,7 +14,7 @@ volatile BMS_STATUS fatal_err;
 volatile uint8_t error_IC;
 volatile uint8_t error_CHIP;
 extern volatile BATTERYPACK mypack;
-volatile uint8_t CAN_DEBUG=1;
+volatile uint8_t CAN_DEBUG=0;
 
 
 
@@ -48,6 +49,7 @@ int main(void)
 	// Initialize
 	bms_init();
 	mypack_init();
+    monitor_init();
 
 	current_init();
     
@@ -98,7 +100,7 @@ int main(void)
 		
         if(CAN_UPDATE_FLAG){
             can_send_volt();
-           // can_send_temp();
+            can_send_temp();
             //can_send_current();
             CAN_UPDATE_FLAG=0;
         }
