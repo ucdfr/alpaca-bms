@@ -17,18 +17,19 @@ The datatype consists of three bytes:
 
 void can_send_temp()
 {
-    uint16_t avg_cell_temp=0;
-    uint16_t avg_board_temp=0;
+    uint32_t avg_temp=0;
+    uint32_t avg_board_temp=0;
     uint8_t max_cell_temp=0;
     uint8_t max_board_temp=0;
     uint8_t max_board=0;
     uint8_t max_cell=0;
+    uint8_t temp;
     uint8_t stack=0;
     uint8_t cell=0;
     
     //process temperature
     for(stack=0;stack<3;stack++){
-        avg_cell_temp=0;
+        avg_temp=0;
         avg_board_temp=0;
         max_cell_temp=0;
         max_board_temp=0;
@@ -37,38 +38,19 @@ void can_send_temp()
 
         
         for(cell=0;cell<20;cell++){
-            
-            
-            //board
-            if (cell/5 == 1 || cell/5 == 3 ){
-                if (mypack.temp[stack][cell].value16>max_board_temp){
-                    max_board_temp = mypack.temp[stack][cell].value16;
-                    max_board = cell;
-                }
-                avg_board_temp = avg_board_temp + mypack.temp[stack][cell].value16;
-            }
-            //cell
-            if (cell/5 == 0 || cell/5 == 2 ){
-                if (mypack.temp[stack][cell].value16>max_cell_temp){
-                    max_cell_temp = mypack.temp[stack][cell].value16;
-                    max_cell = cell;
-                }
-                avg_cell_temp = avg_cell_temp + mypack.temp[stack][cell].value16;
-            }
-            
+        avg_temp += temp_transfer(mypack.temp[stack][cell].value16);
         }
-
-        avg_cell_temp = avg_cell_temp/10;
-        avg_board_temp = avg_board_temp/10;
-
-        can_buffer[0] = stack;
-        can_buffer[1] = 0xff & avg_cell_temp;
-        can_buffer[2] = max_cell ; // upper byte of C
-        can_buffer[3] = max_cell_temp ; // lower byte of C
         
-        can_buffer[4] = 0xff & avg_board_temp;
-        can_buffer[5] = max_board ; // upper byte of C
-        can_buffer[6] = max_board_temp ; // lower byte of C
+        avg_temp = avg_temp/20;
+        
+        can_buffer[0] = stack;
+        can_buffer[1] = 0xff & (avg_temp>>24);
+        can_buffer[2] = 0xff & (avg_temp>>16); // upper byte of C
+        can_buffer[3] = 0xff & (avg_temp>>8);
+        
+        can_buffer[4] = 0xff & avg_temp;
+        can_buffer[5] = 0x00;
+        can_buffer[6] = 0x00;
         can_buffer[7] = 0x00;
           
         
@@ -91,7 +73,7 @@ void can_send_temp()
         
 		CAN_1_SendMsgtemp();
         CyDelay(5);
-        }
+    }
         
         
        // CAN_1_SendMsgtemp();

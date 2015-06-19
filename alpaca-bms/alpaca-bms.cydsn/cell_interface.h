@@ -232,7 +232,7 @@ void mypack_init();
  */
 void check_stack_fuse();
 
-uint8_t temp_transfer(uint16_t,uint16_t);
+uint8_t temp_transfer(uint16_t);
 
 void voltage_compensation();
 

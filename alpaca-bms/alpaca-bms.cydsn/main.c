@@ -76,7 +76,7 @@ int main(void)
 		//check_cfg();  //CANNOT be finished, because 
 		//check_cells();// TODO This function will be finished in get_cell_volt/check stack fuse
         get_cell_volt();// TODO Get voltage
-		check_stack_fuse(); // TODO: check if stacks are disconnected
+		//check_stack_fuse(); // TODO: check if stacks are disconnected
 		get_cell_temp();// TODO Get temperature
 		//get_current(); // TODO get current reading from sensor
 		//get_soc(); // TODO calculate SOC()
@@ -102,7 +102,7 @@ int main(void)
 		
         if(CAN_UPDATE_FLAG){
             can_send_volt();
-            //can_send_temp();
+            can_send_temp();
             //can_send_current();
             CAN_UPDATE_FLAG=0;
         }
