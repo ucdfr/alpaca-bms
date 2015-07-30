@@ -4,7 +4,8 @@
 #include <project.h>
 #include <stdint.h>
 
-uint16_t get_current();
-uint16_t get_soc();
+void current_init(void);
+uint16_t get_current(void);
+uint16_t get_soc(void);
 
 #endif

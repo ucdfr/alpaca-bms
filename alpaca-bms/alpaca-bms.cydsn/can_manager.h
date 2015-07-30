@@ -9,7 +9,7 @@ typedef enum{
     NO_ERROR=0x0000,
     CHARGEMODE=0x0001,
     PACK_TEMP_OVER=0x0002,
-    PACK_TEMP_CLOSE=0x0004,
+    STACK_FUSE_BROKEN=0x0004,
     PACK_TEMP_UNDER=0x0008,
     LOW_SOC = 0x0010,
     CRITICAL_SOC = 0x0020,
@@ -28,16 +28,15 @@ typedef enum{
     
     
     
-void can_send_temp(uint8_t IC_index, uint16_t temp[6]);
-void can_send_volt(uint8_t IC_index,
-                    uint8_t cell_index,
-                    uint16_t [TOTAL_IC][12]);
-void can_send_current(uint8_t IC_index, uint16_t battery_current);
+void can_send_temp();
+void can_send_volt();
+void can_send_current();
 void can_send_status(uint8_t SOC_P,
                     uint8_t AH,
                     BMS_STATUS status,
-                    uint16_t charge_cy,
-                    uint16_t delta);
+                    uint8_t stack,
+                    uint8_t cell,
+                    uint16_t value16);
 uint8_t can_test_send();
 void can_init();
 

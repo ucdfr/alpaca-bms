@@ -83,6 +83,8 @@ uint8_t ADAX[2]; //!< GPIO conversion command.
 void LTC6804_initialize()
 {
   set_adc(MD_NORMAL,DCP_DISABLED,CELL_CH_ALL,AUX_CH_ALL);
+    //set_adc(MD_NORMAL,DCP_DISABLED,CELL_CH_1and7 | CELL_CH_2and8 | CELL_CH_3and9,AUX_CH_ALL);
+    
   LTC6804_init_cfg();        //initialize the 6804 configuration array to be written
 }
 
@@ -239,12 +241,11 @@ void LTC6804_adow()
   //4
     //spi_write_array(4,cmd);
   LTC68_PutArray(cmd, 4);
-
   CyDelay(6);
 
-  LTC68_PutArray(cmd, 4);
+  //LTC68_PutArray(cmd, 4);
 
-  CyDelay(6);
+  //CyDelay(6);
   
 }
 /*
@@ -519,8 +520,12 @@ void LTC6804_rdcv_reg(uint8_t reg, //Determines which cell voltage register is r
    wakeup_idle(); //This will guarantee that the LTC6804 isoSPI port is awake. This command can be removed.
   
   //4
-
-    spi_write_read(cmd,4,data,(REG_LEN*total_ic));
+    if (reg == 1){
+        //spi_write_read(cmd,4,data,(REG_LEN*total_ic));
+        spi_write_read(cmd,4,data,(REG_LEN*total_ic));
+    }else{
+        spi_write_read(cmd,4,data,(REG_LEN*total_ic));
+    }
 
 }
 /*
@@ -1034,7 +1039,10 @@ void wakeup_sleep()
   // output_low(LTC6804_CS);
   // delay(1); // Guarantees the LTC6804 will be in standby
   // output_high(LTC6804_CS);
-  LTC68_WriteTxData(0xff);  //write dummy byte to wake up
+  LTC68_WriteTxData(0xff);  //write dummy byte to wake uph
+  while(! (LTC68_ReadTxStatus() & LTC68_STS_SPI_DONE)){
+    }
+   LTC68_ReadRxData();
   CyDelayUs(WAKE_UP_DELAY_US);
 }
 /*!**********************************************************
@@ -1105,7 +1113,7 @@ void spi_write_read(uint8_t tx_Data[],//array of data to be written on SPI port
 {
     LTC68_ClearRxBuffer();
     uint8_t i = 0;
-    uint8_t dummy_read=0;
+    uint8_t dummy_read;
     for(i = 0; i < tx_len; i++)
   {
 
